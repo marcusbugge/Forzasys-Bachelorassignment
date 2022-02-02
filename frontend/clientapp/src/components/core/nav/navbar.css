@@ -1,0 +1,15 @@
+.links-cnt {
+  margin-left: 15px;
+}
+
+.links-cnt h1 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: var(--secondary);
+  letter-spacing: 2px;
+}
+
+.links a {
+  color: white;
+  text-decoration: none;
+}
