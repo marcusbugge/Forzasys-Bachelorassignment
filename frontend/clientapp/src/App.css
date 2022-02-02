@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Manrope", sans-serif;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
+
+:root {
+  /* COLORS */
+  --primary: #2368a1;
+  --secondary: #aad5f5;
+  --hover-blue: #1a4971;
+  --black: #222429;
+  --red: #cc2c2d;
+}
+
+body {
+  overflow-x: hidden; /* Hide scrollbars */
+  scroll-behavior: smooth;
+}
+
+/* NAVIGATION */
+
+.application {
+  display: flex;
+}
+
+.content {
+  width: 87.5%;
+}
+
+.nav {
+  top: 0;
+  position: sticky;
+  min-width: 230px;
+  height: 100vh;
+  background-color: var(--primary);
+}
