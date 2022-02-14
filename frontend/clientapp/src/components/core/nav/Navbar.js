@@ -8,12 +8,18 @@ export default function Navbar() {
     <div className="nav">
       <div className="nav-header"></div>
 
+      <Link to="/login">
+        <button className="loginbtn-nav">Login</button>
+      </Link>
+
       <div className="links-cnt">
+        <div className="standings">
+          <Link to="/">Standings</Link>
+        </div>
         <h1>PROFIL</h1>
         <div className="links">
           <Link to="/profil">Profil</Link>
           <Link to="/feed">Feed</Link>
-          <Link to="/login">Login</Link>
         </div>
         <div className="a"></div>
       </div>
