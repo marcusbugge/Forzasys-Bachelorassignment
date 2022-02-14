@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./login.css";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [user, setUser] = useState();
@@ -34,7 +35,10 @@ export default function Login() {
     <div className="login-page">
       <div className="login-cnt">
         <div className="loginform">
-          <h1>LOGIN</h1>
+          <div className="loginheader-cnt">
+            <h1>LOGIN</h1>
+          </div>
+
           <form onSubmit={handleLogin}>
             <div className="label-cnt">
               <label>
@@ -45,10 +49,11 @@ export default function Login() {
                 <p>Password</p>
                 <input className="input" name="password" type="password" />
               </label>
+              <Link to="/signup">Dont have a user? Sign up now!</Link>
             </div>
 
-            <div className="buttons">
-              <button type="submit">
+            <div>
+              <button className="login-btn" type="submit">
                 <p>Login</p>
               </button>
             </div>
