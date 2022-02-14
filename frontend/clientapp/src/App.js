@@ -3,24 +3,25 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Footer from "./components/core/footer/Footer";
 import Navbar from "./components/core/nav/Navbar";
 import Welcome from "./components/pages/welcome/Welcome";
-import Feppe from "./components/feppetut/Feppe";
+import Login from "./components/pages/login/Login.js";
+import Profilepage from "./components/pages/profile/Profilepage";
+import FeedPosts from "./components/pages/feed/FeedPosts";
 
 function App() {
   return (
-    <BrowserRouter onUpdate={() => window.scrollTo(0, 0)}>
+    <BrowserRouter>
       <div className="application">
         <div className="nav">
           <Navbar />
-          <Welcome />
         </div>
 
         <div className="content">
           <Routes>
-            <Route path="/" element={""} />
-            <Route path="/feppe" element={Feppe} />
-            <Route path="/login" element={Welcome} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profil" element={<Profilepage />} />
+            <Route path="/feed" element={<FeedPosts />} />
+            <Route path="/" element={<Welcome />} />
           </Routes>
-          <Footer />
         </div>
       </div>
     </BrowserRouter>

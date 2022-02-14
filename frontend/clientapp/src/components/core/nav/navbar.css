@@ -12,4 +12,10 @@
 .links a {
   color: white;
   text-decoration: none;
+  margin-bottom: 5px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
 }
