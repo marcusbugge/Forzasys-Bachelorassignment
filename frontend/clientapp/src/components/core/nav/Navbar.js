@@ -12,9 +12,7 @@ export default function Navbar() {
         <h1>PROFIL</h1>
         <div className="links">
           <Link to="/profil">Profil</Link>
-          <Link to="/"></Link>
-
-          <Welcome />
+          <Link to="/login">Login</Link>
         </div>
         <div className="a"></div>
       </div>
