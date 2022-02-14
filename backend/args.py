@@ -1,4 +1,5 @@
 from flask_restful import reqparse, fields
+from sqlalchemy import LargeBinary
 
 
 user_post_args = reqparse.RequestParser()
@@ -42,6 +43,7 @@ video_put_args.add_argument('views', type=int, help='Please put in views on this
 resource_fields_video = {
     'id' : fields.Integer,
     'user_id' : fields.Integer,
+    'video' : fields.String,
     'caption' : fields.String,
     'likes' : fields.Integer,
     'views' : fields.Integer

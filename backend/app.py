@@ -2,10 +2,9 @@ from os import access
 from flask import Flask, url_for, redirect, session
 from flask_restful import Api, Resource, abort, marshal_with
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy import Integer, LargeBinary, String, ForeignKey
 from args import user_put_args, user_post_args, resource_fields_user, video_put_args, video_post_args, resource_fields_video, badge_put_args, badge_post_args, resource_fields_badge, team_put_args, team_post_args, resource_fields_team
-#from marshmallow import Schema, fields
-
+import base64
 
 app = Flask(__name__)
 api = Api(app)
@@ -45,6 +44,7 @@ class TeamModel(db.Model):
 class VideoModel(db.Model):
     id = db.Column(Integer, primary_key=True)
     user_id = db.Column(Integer, ForeignKey('user_model.id'), nullable=False)
+    video = db.Column(LargeBinary, nullable=False)
     caption = db.Column(String(50))
     likes = db.Column(Integer, nullable=False)
     views = db.Column(Integer, nullable=False)
@@ -147,9 +147,12 @@ class createVideo(Resource):
     @marshal_with(resource_fields_video)
     def post(self):
         args = video_post_args.parse_args()
+        with open('test1.mp4', 'rb') as videoFile:
+            binary = base64.b64encode(videoFile.read())
         video = VideoModel(
             user_id=args['user_id'],
             caption=args['caption'],
+            video= binary,
             likes=args['likes'],
             views=args['views']
             )
