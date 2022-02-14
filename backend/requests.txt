@@ -1,0 +1,19 @@
+/getUsers -> return all users
+
+/createUser -> creates an user and returns it
+
+/user/<int:user_id> -> get/ put(update)/ delete one user
+
+/usersVideos/<int:user_id> -> returns all videos for one user
+
+/createVideo -> creates a video and returns it
+
+/video/<int:video_id> -> get/ put(update)/ delete one video
+
+/badges -> get all badges/ create badge
+
+/badges/<int:badge_id> -> put(update)/ delete one badge
+
+/userBadges/<int:user_id> -> calculates and return badges for one user
+
+/team -> get all teams/ post a team
