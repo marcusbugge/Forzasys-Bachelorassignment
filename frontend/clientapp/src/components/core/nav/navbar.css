@@ -31,7 +31,6 @@
 .standings a {
   color: white;
   text-decoration: none;
-  margin-bottom: 5px;
 }
 
 .links {
@@ -41,4 +40,27 @@
 
 .standings {
   margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.rank-nav-cnt {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 15px;
+}
+
+.currentrank {
+  background-color: var(--lightgreen);
+  color: var(--darkgreen);
+  font-size: 12px;
+  border-radius: 10px;
+  min-width: 20px;
+  height: 22px;
+  padding: 0 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

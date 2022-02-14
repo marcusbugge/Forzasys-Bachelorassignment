@@ -83,7 +83,7 @@ export default function MainStandPage() {
   return (
     <div>
       <div className="standings-header">
-        <h1>Scoreboard</h1>
+        <h1>Standings</h1>
       </div>
 
       <div className="tables">

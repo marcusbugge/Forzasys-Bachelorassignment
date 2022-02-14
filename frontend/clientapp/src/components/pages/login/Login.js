@@ -11,6 +11,13 @@ export default function Login() {
   const headers = { "header-name": "value" };
   const config = { headers };
 
+  async function login(e) {
+    if (e.target.email.value === "user" && e.target.password.value === "1234") {
+      localStorage.setItem("loggedIn", true);
+      console.log("logged in!");
+    }
+  }
+
   async function handleLogin(e) {
     e.preventDefault();
     username = e.target.email.value;
@@ -39,7 +46,7 @@ export default function Login() {
             <h1>LOGIN</h1>
           </div>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={login}>
             <div className="label-cnt">
               <label>
                 <p>Username</p>
