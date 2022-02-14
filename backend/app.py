@@ -1,16 +1,19 @@
 from os import access
-from flask import Flask, url_for, redirect, session
+from flask import Flask, jsonify, session
 from flask_restful import Api, Resource, abort, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, LargeBinary, String, ForeignKey
 from args import user_put_args, user_post_args, resource_fields_user, video_put_args, video_post_args, resource_fields_video, badge_put_args, badge_post_args, resource_fields_badge, team_put_args, team_post_args, resource_fields_team
 import base64
+from flask_cors import CORS, cross_origin
+
 
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/forzasys'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 earned_badges = db.Table('earned_badges',
@@ -93,12 +96,13 @@ api.add_resource(createUser, '/createUser')
 
 
 class User(Resource):
+    @cross_origin(supports_credentials=True)
     @marshal_with(resource_fields_user)
     def get(self, user_id):
         result = UserModel.query.filter_by(id=user_id).first()
         if not result:
             abort(404, message='Could not find user with that id...')
-        return result
+        return jsonify(result), 200
 
 
     @marshal_with(resource_fields_user)
@@ -168,8 +172,10 @@ class Video(Resource):
         result = VideoModel.query.filter_by(id=video_id).first()
         if not result:
             abort(404, message='Could not find a video with that id...')
+        result.headers.add("Access-Control-Allow-Origin", "*")
         return result
 
+    @cross_origin(supports_credentials=True)
     @marshal_with(resource_fields_video)
     def put(self, video_id):
         args = video_put_args.parse_args()

@@ -6,6 +6,7 @@ import Welcome from "./components/pages/welcome/Welcome";
 import Login from "./components/pages/login/Login.js";
 import Profilepage from "./components/pages/profile/Profilepage";
 import FeedPosts from "./components/pages/feed/FeedPosts";
+import VideoTest from "./components/pages/videoTest/VideoTest";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/profil" element={<Profilepage />} />
             <Route path="/feed" element={<FeedPosts />} />
             <Route path="/" element={<Welcome />} />
+            <Route path="/videoTest" element={<VideoTest />} />
           </Routes>
         </div>
       </div>

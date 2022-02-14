@@ -14,6 +14,7 @@ export default function Navbar() {
           <Link to="/profil">Profil</Link>
           <Link to="/feed">Feed</Link>
           <Link to="/login">Login</Link>
+          <Link to="/videoTest">videoTest</Link>
         </div>
         <div className="a"></div>
       </div>
