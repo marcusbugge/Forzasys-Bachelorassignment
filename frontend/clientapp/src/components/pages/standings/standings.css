@@ -55,13 +55,19 @@
   margin: 20px 10px 20px 0px;
   height: 30px;
   padding: 5px 10px;
-  border-style: none;
+  border: 2px var(--secondary) solid;
+  cursor: pointer;
 }
 
 .filtering h1 {
   font-size: 25px;
   color: var(--black);
   margin-bottom: -5px;
+}
+
+.filtering button:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 2px var(--secondary) solid;
 }
 
 /** TABLE **/
