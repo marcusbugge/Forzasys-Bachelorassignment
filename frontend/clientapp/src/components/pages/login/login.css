@@ -86,16 +86,15 @@ label p {
 /* LOGINCONFIRMATION */
 
 .loginconfirm-cnt {
-  font-family: var(--asapfont);
   position: fixed;
   bottom: 0;
   right: 0;
   margin: 0 100px 40px 0;
-  background: var(--tae_foreground_primary);
+  background: var(--lightgreen);
   height: 60px;
   width: 250px;
   font-size: 18px;
-  color: black;
+  color: var(--darkgreen);
   display: flex;
   justify-content: center;
   align-items: center;

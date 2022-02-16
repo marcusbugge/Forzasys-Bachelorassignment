@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./login.css";
 import { Link } from "react-router-dom";
+import Loginconfirmation from "./LoginConfirmation";
 
 export default function Login() {
   const [user, setUser] = useState();
@@ -14,6 +15,7 @@ export default function Login() {
   async function login(e) {
     if (e.target.email.value === "user" && e.target.password.value === "1234") {
       localStorage.setItem("loggedIn", true);
+      localStorage.setItem("user", e.target.email.value);
       console.log("logged in!");
     }
   }
@@ -40,6 +42,7 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      {localStorage.getItem("loggedIn") ? <Loginconfirmation /> : ""}
       <div className="login-cnt">
         <div className="loginform">
           <div className="loginheader-cnt">
