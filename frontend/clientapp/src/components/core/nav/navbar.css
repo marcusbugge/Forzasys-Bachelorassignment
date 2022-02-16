@@ -2,6 +2,14 @@
   margin-left: 15px;
 }
 
+.welcome-nav {
+  color: white;
+  margin: 30px 15px;
+}
+
+.welcome-nav h1 {
+  font-size: 20px;
+}
 .loginbtn-nav {
   background-color: var(--secondary);
   color: var(--hover-blue);
@@ -17,6 +25,13 @@
 .loginbtn-nav:hover {
   background-color: var(--hover-blue);
   color: white;
+}
+
+.logout-btn {
+  cursor: pointer;
+  border-style: none;
+  background-color: rgba(240, 248, 255, 0);
+  color: var(--lightgray);
 }
 
 .links-cnt h1 {
