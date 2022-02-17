@@ -1,19 +1,25 @@
-/getUsers -> return all users
+/api/user [GET] -> all users
 
-/createUser -> creates an user and returns it
+/api/user [POST] -> create user (given_name, family_name, age, email, team_id)
 
-/user/<int:user_id> -> get/ put(update)/ delete one user
+/api/user/<int:id> [GET, PUT, DELETE] -> 
 
-/usersVideos/<int:user_id> -> returns all videos for one user
+/api/team [GET] -> [all teams]
 
-/createVideo -> creates a video and returns it
+/api/team [POST] -> create team (name, nickname, nationality, logo)
 
-/video/<int:video_id> -> get/ put(update)/ delete one video
+/api/team/<int:id> [GET, PUT, DELETE] -> 
 
-/badges -> get all badges/ create badge
+/api/video [GET] -> all videos
 
-/badges/<int:badge_id> -> put(update)/ delete one badge
+/api/video [POST] -> create video (user_id, video(binary KYSER), caption, likes, views)
 
-/userBadges/<int:user_id> -> calculates and return badges for one user
+/api/video/<int:id> [GET, PUT, DELETE] -> 
 
-/team -> get all teams/ post a team
+/api/badge [GET] -> all badges
+
+/api/badge [POST] -> create badge (name, description, level, picture, category, points_needed)
+
+/api/badge/<int:id> [GET, PUT, DELETE] ->
+
+/api/userBadges [PUT] -> gives badge to user if achieved
