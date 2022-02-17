@@ -69,17 +69,6 @@ export default function MainStandPage() {
     },
   ];
 
-  const User = () => {
-    return (
-      <div className="profiledata">
-        <div className="picture-icon-cnt">
-          <img src={usericon} alt="profilepicture" />
-        </div>
-        <h1>Navn Navnesen</h1>
-      </div>
-    );
-  };
-
   return (
     <div>
       <div className="standings-header">

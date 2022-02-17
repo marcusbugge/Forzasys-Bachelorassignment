@@ -5,10 +5,11 @@ import Welcome from "../../pages/welcome/Welcome";
 import { useState } from "react";
 
 export default function Navbar() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  function logout() {
+  function logout(e) {
     localStorage.removeItem("loggedIn");
+    setRefresh(true);
     console.log("log out??");
   }
 
@@ -16,7 +17,13 @@ export default function Navbar() {
     <div className="nav">
       <div className="nav-header"></div>
       {localStorage.getItem("loggedIn") ? (
-        ""
+        <div className="welcome-nav">
+          {" "}
+          <h1>{localStorage.getItem("user")} usersen</h1>
+          <button className="logout-btn" onClick={logout}>
+            Log out
+          </button>
+        </div>
       ) : (
         <Link to="/login">
           <button className="loginbtn-nav">Login</button>
@@ -25,7 +32,7 @@ export default function Navbar() {
 
       <div className="links-cnt">
         <h1>LEADERBOARD</h1>
-        <div className="standings">
+        <div className="links">
           <div className="rank-nav-cnt">
             <Link to="/">Allsvenskan</Link>
             <div className="currentrank">#2</div>
@@ -37,7 +44,7 @@ export default function Navbar() {
           </div>
         </div>
         <h1>COMPETITIONS</h1>
-        <div className="standings">
+        <div className="links">
           <div className="rank-nav-cnt">
             <Link to="/">Most popular video</Link>
           </div>
@@ -54,11 +61,6 @@ export default function Navbar() {
           <div className="rank-nav-cnt">
             <Link to="/feed">Feed</Link>
           </div>
-          {localStorage.getItem("loggedIn") ? (
-            <button onClick={logout}>Log out</button>
-          ) : (
-            ""
-          )}
         </div>
         <div className="a"></div>
       </div>

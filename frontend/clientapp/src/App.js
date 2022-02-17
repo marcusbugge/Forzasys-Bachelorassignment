@@ -23,6 +23,7 @@ function App() {
             <Route path="/feed" element={<FeedPosts />} />
             <Route path="/" element={<MainStandPage />} />
           </Routes>
+          <Footer />
         </div>
       </div>
     </BrowserRouter>
