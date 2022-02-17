@@ -1,52 +1,104 @@
-from os import access
-from flask import Flask, jsonify, session
-from flask_restful import Api, Resource, abort, marshal_with
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, LargeBinary, String, ForeignKey
-from args import user_put_args, user_post_args, resource_fields_user, video_put_args, video_post_args, resource_fields_video, badge_put_args, badge_post_args, resource_fields_badge, team_put_args, team_post_args, resource_fields_team
 import base64
-from flask_cors import CORS, cross_origin
+from xml.dom import ValidationErr
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Api, marshal_with
+from sqlalchemy import Integer, LargeBinary, String, ForeignKey
+from marshmallow import Schema, fields
+from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
 
 app = Flask(__name__)
 api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/forzasys'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
-
 
 earned_badges = db.Table('earned_badges',
-    db.Column('user_id', Integer, ForeignKey('user_model.id')),
-    db.Column('badge_id', Integer, ForeignKey('badge_model.id'))
+    db.Column('user_id', Integer, ForeignKey('user.id')),
+    db.Column('badge_id', Integer, ForeignKey('badge.id'))
 )
 
 
-class UserModel(db.Model):
+class User(db.Model):
     id = db.Column(Integer, primary_key=True)
     given_name = db.Column(String(50), nullable=False)
     family_name = db.Column(String(50), nullable=False)
     age = db.Column(Integer, nullable=False)
     email = db.Column(String(50), nullable=False)
-    team_id = db.Column(Integer, ForeignKey('team_model.id'), nullable=False)
-    videos = db.relationship('VideoModel', backref=db.backref('user_model', lazy='joined'), lazy='select')
-    badges = db.relationship('BadgeModel', secondary=earned_badges, backref='database', lazy='select')
+    team_id = db.Column(Integer, ForeignKey('team.id'), nullable=False)
+    videos = db.relationship('Video', backref=db.backref('user', lazy='joined'), lazy='select')
+    badges = db.relationship('Badge', secondary=earned_badges, backref='database', lazy='select')
     def __repr__(self):
         return f'{self.id}'
 
-class TeamModel(db.Model):
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class UserSchema(Schema):
+    id = fields.Integer()
+    given_name = fields.String()
+    family_name = fields.String()
+    age = fields.Integer()
+    email = fields.String()
+    team_id = fields.Integer()
+    videos = fields.List(fields.String())
+    badges = fields.List(fields.String())
+
+
+
+class Team(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(30), nullable=False)
     nickname = db.Column(String(5), nullable=False)
     nationality = db.Column(String(25), nullable=False)
     logo = db.Column(String(250), nullable=False)
-    supporters = db.relationship('UserModel', backref=db.backref('database', lazy='joined'), lazy='select')
+    supporters = db.relationship('User', backref=db.backref('database', lazy='joined'), lazy='select')
     def __repr__(self):
-        return f'TeamModel(name={self.name}, nickname={self.nickname}, nationality={self.nationality} logo={self.logo})'
+        return f'Team(name={self.name}, nickname={self.nickname}, nationality={self.nationality} logo={self.logo})'
 
-class VideoModel(db.Model):
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class TeamSchema(Schema):
+    id = fields.Integer()
+    name = fields.String()
+    nickname = fields.String()
+    nationality = fields.String()
+    logo = fields.String()
+    supporters = fields.List(fields.String())
+
+
+
+class Video(db.Model):
     id = db.Column(Integer, primary_key=True)
-    user_id = db.Column(Integer, ForeignKey('user_model.id'), nullable=False)
+    user_id = db.Column(Integer, ForeignKey('user.id'), nullable=False)
     video = db.Column(LargeBinary, nullable=False)
     caption = db.Column(String(50))
     likes = db.Column(Integer, nullable=False)
@@ -54,8 +106,41 @@ class VideoModel(db.Model):
     def __repr__(self):
         return f'{self.id}'
 
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
 
-class BadgeModel(db.Model):
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class BytesField(fields.Field):
+    def _validate(self, value):
+        if not isinstance(value, bytes):
+            raise ValidationErr('Invalid input type.')
+
+        if value is None or value == b'':
+            raise ValidationErr('Invalid value')
+            
+class VideoSchema(Schema):
+    id = fields.Integer()
+    user_id = fields.String()
+    #video = BytesField(required=True)
+    caption = fields.String()
+    views = fields.Integer()
+    likes = fields.Integer()
+
+
+
+class Badge(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(20), nullable=False)
     description = db.Column(String(150), nullable=False)
@@ -63,245 +148,315 @@ class BadgeModel(db.Model):
     picture = db.Column(String(250), nullable=False)
     category = db.Column(String(15), nullable=False)
     points_needed = db.Column(Integer, nullable=False)
-
     def __repr__(self):
         return f'{self.id}'
 
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
 
-class getUsers(Resource):
-    @marshal_with(resource_fields_user)
-    def get(self):
-        result = UserModel.query.all()
-        if not result:
-            abort(404, message='Cant find any users')
-        else:
-            return result, 200
-api.add_resource(getUsers, '/getUsers')
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
 
-class createUser(Resource):
-    @marshal_with(resource_fields_user)
-    def post(self):
-        args = user_post_args.parse_args()
-        user = UserModel(
-            given_name=args['given_name'],
-            family_name=args['family_name'],
-            email = args['email'],
-            age=args['age'],
-            team_id=args['team_id']
-            )
-        db.session.add(user)
+    def save(self):
+        db.session.add(self)
         db.session.commit()
-        return user, 201
-api.add_resource(createUser, '/createUser')
 
-
-class User(Resource):
-    @cross_origin(supports_credentials=True)
-    @marshal_with(resource_fields_user)
-    def get(self, user_id):
-        result = UserModel.query.filter_by(id=user_id).first()
-        if not result:
-            abort(404, message='Could not find user with that id...')
-        return jsonify(result), 200
-
-
-    @marshal_with(resource_fields_user)
-    def put(self, user_id):
-        args = user_put_args.parse_args()
-        result = UserModel.query.filter_by(id=user_id).first()
-        if not result:
-            abort(404, message='Could not find user with that id, can not update...')
-        if args['given_name']:
-            result.given_name = args['given_name']
-        if args['family_name']:
-            result.name = args['family_name']
-        if args['age']:
-            result.age = args['age']
-        if args['team_id']:
-            result.team_id = args['team_id']
-        
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
-        return result, 200
+
+class BadgeSchema(Schema):
+    id = fields.Integer()
+    name = fields.String()
+    description = fields.String()
+    level = fields.String()
+    picture = fields.String()
+    category = fields.String()
+    points_needed = fields.String()
 
 
-    @marshal_with(resource_fields_video)
-    def delete(self, user_id):
-        result = UserModel.query.filter_by(id=user_id).first()
-        db.session.delete(result)
-        db.session.commit()
-        return 'Deleted', 204
-api.add_resource(User, '/user/<int:user_id>')
+@app.route('/api/user', methods=['GET'])
+def get_all_users():
+    users = User.get_all()
+    serializer = UserSchema(many=True)
+    result = serializer.dump(users)
+    return jsonify(result), 200
 
+@app.route('/api/user', methods=['POST'])
+def create_user():
+    data = request.args
+    newUser = User(
+        given_name = data['given_name'],
+        family_name = data['family_name'],
+        age = data['age'],
+        email = data['email'],
+        team_id = data['team_id']
+    )
 
-class getUsersVideos(Resource):
-    @marshal_with(resource_fields_video)
-    def get(self, user_id):
-        list = VideoModel.query.all()
-        result = []
-        for i in list:
-            if i.user_id == user_id:
-                result.append(i)
-        if len(result) == 0:
-            abort(404, message='Could not find videos for user with that id...')
-        return result
-api.add_resource(getUsersVideos, '/usersVideos/<int:user_id>')
+    newUser.save()
 
+    serializer = UserSchema()
+    result = serializer.dump(newUser)
 
-class createVideo(Resource):
-    @marshal_with(resource_fields_video)
-    def post(self):
-        args = video_post_args.parse_args()
-        with open('test1.mp4', 'rb') as videoFile:
+    return jsonify(result), 201
+
+@app.route('/api/user/<int:id>', methods=['GET'])
+def get_user(id):
+    user = User.get_by_id(id)
+    serializer = UserSchema()
+    result = serializer.dump(user)
+
+    return jsonify(result), 200
+
+@app.route('/api/user/<int:id>', methods=['PUT'])
+def update_user(id):
+    user_to_uptdate = User.get_by_id(id)
+    data = user_put_args.parse_args()
+    if data['given_name']:
+        user_to_uptdate.given_name = data['given_name']
+    if data['family_name']:
+        user_to_uptdate.name = data['family_name']
+    if data['age']:
+        user_to_uptdate.age = data['age']
+    if data['team_id']:
+        user_to_uptdate.team_id = data['team_id']
+    if data['email']:
+        user_to_uptdate.email = data['email']
+
+    db.session.commit()
+
+    serializer = UserSchema()
+    result = serializer.dump(user_to_uptdate)
+    return jsonify(result), 200
+
+@app.route('/api/user/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    user_to_delete = User.get_by_id(id)
+    user_to_delete.delete()
+
+    return jsonify({
+        'message': 'deleted'
+    }), 204
+
+@app.route('/api/team', methods=['GET'])
+def get_all_teams():
+    teams = Team.get_all()
+    serializer = TeamSchema(many=True)
+    result = serializer.dump(teams)
+    return jsonify(result), 200
+
+@app.route('/api/team', methods=['POST'])
+def create_team():
+    data = request.args
+    newTeam = Team(
+        name = data['name'],
+        nickname = data['nickname'],
+        nationality = data['nationality'],            
+        logo = data['logo']
+    )
+    newTeam.save()
+    serializer = TeamSchema()
+    result = serializer.dump(newTeam)
+    return jsonify(result), 201
+
+@app.route('/api/team/<int:id>', methods=['GET'])
+def get_one_team(id):
+    team = Team.get_by_id(id)
+    serializer = TeamSchema()
+    result = serializer.dump(team)
+    return jsonify(result), 200
+
+@app.route('/api/team/<int:id>', methods=['PUT'])
+def update_team(id):
+    team_to_uptdate = Team.get_by_id(id)
+    data = team_put_args.parse_args()
+
+    if data['name']:
+        team_to_uptdate.name = data['name']
+    if data['nickname']:
+        team_to_uptdate.nickname = data['nickname']
+    if data['nationality']:
+        team_to_uptdate.nationality = data['nationality']
+    if data['logo']:
+        team_to_uptdate.logo = data['logo']
+
+    db.session.commit()
+
+    serializer = TeamSchema()
+    result = serializer.dump(team_to_uptdate)
+    return jsonify(result), 200
+
+@app.route('/api/team/<int:id>', methods=['DELETE'])
+def delete_team(id):
+    team_to_delete = Team.get_by_id(id)
+    team_to_delete.delete()
+
+    return jsonify({
+        'message': 'deleted'
+    }), 204
+
+@app.route('/api/video', methods=['GET'])
+def get_all_videos():
+    videos = Video.get_all()
+    serializer = VideoSchema(many=True)
+    result = serializer.dump(videos)
+    return jsonify(result), 200
+
+@app.route('/api/video', methods=['POST'])
+def create_video():
+    data = request.args
+    with open('test1.mp4', 'rb') as videoFile:
             binary = base64.b64encode(videoFile.read())
-        video = VideoModel(
-            user_id=args['user_id'],
-            caption=args['caption'],
-            video= binary,
-            likes=args['likes'],
-            views=args['views']
-            )
-        db.session.add(video)
-        db.session.commit()
-        return video, 201
-api.add_resource(createVideo, '/createVideo')
+    newVideo = Video(
+        user_id = data['user_id'],
+        video = binary,
+        caption = data['caption'],
+        likes = data['likes'],
+        views = data['views']
+    )
 
+    newVideo.save()
 
-class Video(Resource):
-    @marshal_with(resource_fields_video)
-    def get(self, video_id):
-        result = VideoModel.query.filter_by(id=video_id).first()
-        if not result:
-            abort(404, message='Could not find a video with that id...')
-        result.headers.add("Access-Control-Allow-Origin", "*")
-        return result
+    serializer = VideoSchema()
+    result = serializer.dump(newVideo)
 
-    @cross_origin(supports_credentials=True)
-    @marshal_with(resource_fields_video)
-    def put(self, video_id):
-        args = video_put_args.parse_args()
-        result = VideoModel.query.filter_by(id=video_id).first()
-        if not result:
-            abort(404, message='Could not find user with that id, can not update...')
-        if args['user_id']:
-            result.user_id = args['user_id']
-        if args['caption']:
-            result.caption = args['caption']
-        if args['likes']:
-            result.likes = args['likes']
-        if args['views']:
-            result.views = args['views']
-        
-        db.session.commit()
-        return result, 200
-    
-    @marshal_with(resource_fields_video)
-    def delete(self, video_id):
-        result = VideoModel.query.filter_by(id=video_id).first()
-        db.session.delete(result)
-        db.session.commit()
-        return 'Deleted', 204
-api.add_resource(Video, '/video/<int:video_id>')
+    return jsonify(result), 201
 
-class Badges(Resource):
-    @marshal_with(resource_fields_badge)
-    def get(self):
-        result = BadgeModel.query.all()
-        if not result:
-            abort(404, message='Cant find any badges')
-        else:
-            return result
+@app.route('/api/video/<int:id>', methods=['GET'])
+def get_video(id):
+    video = Video.get_by_id(id)
+    serializer = VideoSchema()
+    result = serializer.dump(video)
 
-    @marshal_with(resource_fields_badge)
-    def post(self):
-        args = badge_post_args.parse_args()
-        badge = BadgeModel(
-            name=args['name'],
-            description=args['description'],
-            level=args['level'],
-            picture=args['picture'],
-            category=args['category'],
-            points_needed=args['points_needed'])
-        db.session.add(badge)
-        db.session.commit()
-        return badge, 201
-api.add_resource(Badges, '/badges')
+    return jsonify(result), 200
 
-class editBadges(Resource):
-    @marshal_with(resource_fields_badge)
-    def put(self, badge_id):
-        args = badge_put_args.parse_args()
-        result = BadgeModel.query.filter_by(id=badge_id).first()
-        if not result:
-            abort(404, message='Could not find badge with that id, can not update...')
-        if args['name']:
-            result.name = args['name']
-        if args['name']:
-            result.description = args['description']
-        if args['level']:
-            result.level = args['level']
-        if args['picture']:
-            result.picture = args['picture']
-        if args['category']:
-            result.category = args['category']
-        if args['points_needed']:
-            result.points_needed = args['points_needed']
-        
-        db.session.commit()
-        return result, 200
-    
-    @marshal_with(resource_fields_badge)
-    def delete(self, badge_id):
-        result = BadgeModel.query.filter_by(id=badge_id).first()
-        db.session.delete(result)
-        db.session.commit()
-        return 'Deleted', 204
-api.add_resource(editBadges, '/badges/<int:badge_id>')
+@app.route('/api/video/<int:id>', methods=['PUT'])
+def update_video(id):
+    video_to_uptdate = Video.get_by_id(id)
+    data = video_put_args.parse_args()
+
+    if data['user_id']:
+        video_to_uptdate.user_id = data['user_id']
+    if data['caption']:
+        video_to_uptdate.caption = data['caption']
+    if data['likes']:
+        video_to_uptdate.likes = data['likes']
+    if data['views']:
+        video_to_uptdate.views = data['views']
+
+    db.session.commit()
+
+    serializer = VideoSchema()
+    result = serializer.dump(video_to_uptdate)
+    return jsonify(result), 200
+
+@app.route('/api/video/<int:id>', methods=['DELETE'])
+def delete_video(id):
+    video_to_delete = Video.get_by_id(id)
+    video_to_delete.delete()
+
+    return jsonify({
+        'message': 'deleted'
+    }), 204
+
+@app.route('/api/badge', methods=['GET'])
+def get_all_badges():
+    badges = Badge.get_all()
+    serializer = BadgeSchema(many=True)
+    result = serializer.dump(badges)
+    return jsonify(result), 200
+
+@app.route('/api/badge', methods=['POST'])
+def create_badge():
+    data = request.args
+    newBadge = Badge(
+        name = data['name'],
+        description = data['description'],
+        level = data['level'],
+        picture = data['picture'],
+        category = data['category'],
+        points_needed = data['points_needed']
+    )
+
+    newBadge.save()
+
+    serializer = BadgeSchema()
+    result = serializer.dump(newBadge)
+
+    return jsonify(result), 201
+
+@app.route('/api/badge/<int:id>', methods=['GET'])
+def get_badge(id):
+    badge = Badge.get_by_id(id)
+    serializer = BadgeSchema()
+    result = serializer.dump(badge)
+
+    return jsonify(result), 200
+
+@app.route('/api/badge/<int:id>', methods=['PUT'])
+def update_badge(id):
+    badge_to_uptdate = Badge.get_by_id(id)
+    data = badge_put_args.parse_args()
+
+    if data['name']:
+        badge_to_uptdate.name = data['name']
+    if data['name']:
+        badge_to_uptdate.description = data['description']
+    if data['level']:
+        badge_to_uptdate.level = data['level']
+    if data['picture']:
+        badge_to_uptdate.picture = data['picture']
+    if data['category']:
+        badge_to_uptdate.category = data['category']
+    if data['points_needed']:
+        badge_to_uptdate.points_needed = data['points_needed']
+
+    db.session.commit()
+
+    serializer = BadgeSchema()
+    result = serializer.dump(badge_to_uptdate)
+    return jsonify(result), 200
+
+@app.route('/api/badge/<int:id>', methods=['DELETE'])
+def delete_badge(id):
+    badge_to_delete = Badge.get_by_id(id)
+    badge_to_delete.delete()
+
+    return jsonify({
+        'message': 'deleted'
+    }), 204
+
+@app.route('/api/userBadges', methods=['PUT'])
+def user_badge():
+    users = User.get_all()
+    badges = Badge.get_all()
+    for user in users:
+        for badge in badges:
+            if calculateBadges(badge, user):
+                user.badges.append(badge)
+    db.session.commit()
+
+    serializer = UserSchema()
+    result = serializer.dump(users)
+    return jsonify(result), 200
 
 def calculateBadges(badge, user):
     for video in user.videos:
-        if badge.category == 'likes' and video.likes > badge.points_needed:
+        if badge.category == 'Likes' and video.likes >= badge.points_needed:
             return True
-        elif badge.category == 'views' and video.views > badge.points_needed:
+        elif badge.category == 'Views' and video.views >= badge.points_needed:
             return True
     return False
 
-class userBadges(Resource):
-    @marshal_with(resource_fields_user)
-    def put(self):
-        badges = BadgeModel.query.all()
-        users = UserModel.query.all()
-        for user in users:
-            for badge in badges:
-                if calculateBadges(badge, user):
-                    user.badges.append(badge)
-        db.session.commit()
-        return users, 200
-api.add_resource(userBadges, '/userBadges')
-                
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'message' : 'Resource not found'}), 404
 
-class team(Resource):
-    @marshal_with(resource_fields_team)
-    def get(self):
-        teams = TeamModel.query.all()
-        if not teams:
-            abort(404, message="Cant find the teams")
-        else:
-            return teams
-
-    @marshal_with(resource_fields_team)
-    def post(self):
-        args = team_post_args.parse_args()
-        team = TeamModel(
-            name=args['name'],
-            nickname=args['nickname'],
-            nationality=args['nationality'],
-            logo=args['logo'])
-        db.session.add(team)
-        db.session.commit()
-        return team, 201
-api.add_resource(team, '/team')
- 
-
+@app.errorhandler(500)
+def internal_server(error):
+    return jsonify({'message' : 'There is a problem'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
