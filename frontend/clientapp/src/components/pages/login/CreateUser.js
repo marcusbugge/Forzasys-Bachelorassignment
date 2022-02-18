@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import "./createuser.css";
 
 export default function CreateUser() {
   return <div>
@@ -12,46 +13,53 @@ export default function CreateUser() {
                 <div className="form-group">
                   <label htmlFor="name">
                   </label>
-                  <input type="text" name="name" id="name" autoComplete="off" placeholder="Your name"></input>
+                  <p>First Name</p>
+                  <input type="text" name="fname" id="fname" autoComplete="off" placeholder=""></input>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="name">
                   </label>
-                  <input type="text" name="name" id="name" autoComplete="off" placeholder="Your Name"></input>
+                  <p>Surname</p>
+                  <input type="text" name="lname" id="lname" autoComplete="off" placeholder=""></input>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="email">
                   </label>
-                  <input type="text" name="email" id="email" autoComplete="off" placeholder="Your Email"></input>
+                  <p>Email</p>
+                  <input type="text" name="email" id="email" autoComplete="off" placeholder=""></input>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="phone">
                   </label>
-                  <input type="text" name="phone" id="phone" autoComplete="off" placeholder="Mobile Number"></input>
+                  <p>Mobile Number</p>
+                  <input type="text" name="phone" id="phone" autoComplete="off" placeholder=""></input>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="team">
                   </label>
-                  <input type="text" name="team" id="team" autoComplete="off" placeholder="Favorite Team"></input>
+                  <p>Favorite Team</p>
+                  <input type="text" name="team" id="team" autoComplete="off" placeholder=""></input>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="password">
                   </label>
-                  <input type="password" name="password" id="password" autoComplete="off" placeholder="Password"></input>
+                  <p>Password</p>
+                  <input type="password" name="password" id="password" autoComplete="off" placeholder=""></input>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="cpassword">
                   </label>
-                  <input type="password" name="cpassword" id="cpassword" autoComplete="off" placeholder="Confirm Your Password"></input>
+                  <p>Confirm Your Password</p>
+                  <input type="password" name="cpassword" id="cpassword" autoComplete="off" placeholder=""></input>
                 </div>
-                <div className="form-grup form-button">
-                  <input type="submit" name="signup" id="signup" className="form-submit" value="register">
+                <div className="form-button">
+                  <input type="submit" name="signup" id="signup" className="form-submit" value="Register">
 
                   </input>
                 </div>
