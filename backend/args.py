@@ -1,5 +1,4 @@
 from flask_restful import reqparse, fields
-from sqlalchemy import LargeBinary
 
 
 user_post_args = reqparse.RequestParser()
