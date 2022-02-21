@@ -87,14 +87,15 @@ label p {
 
 .loginconfirm-cnt {
   position: fixed;
-  bottom: 0;
+
   right: 0;
+  margin-top: 100px;
   margin: 0 100px 40px 0;
-  background: var(--lightgreen);
+  background: var(--darkgreen);
   height: 60px;
   width: 250px;
   font-size: 18px;
-  color: var(--darkgreen);
+  color: var(--lightgray);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -106,22 +107,26 @@ label p {
 
 @keyframes loginani {
   0% {
+    margin-top: 50px;
     opacity: 0;
-    margin-bottom: 0;
+    margin-right: 0;
   }
 
   10% {
+    margin-top: 50px;
     opacity: 1;
-    margin-bottom: 40px;
+    margin-right: 40px;
   }
 
   90% {
+    margin-top: 50px;
     opacity: 1;
-    margin-bottom: 40px;
+    margin-right: 40px;
   }
 
   100% {
+    margin-top: 50px;
     opacity: 0;
-    margin-bottom: 0;
+    margin-right: 0;
   }
 }
