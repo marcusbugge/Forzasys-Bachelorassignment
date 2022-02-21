@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import "./feed.css";
+import VideoInput from "./VideoInput";
 
 export default function FeedPosts() {
   const posts = [
@@ -27,6 +28,10 @@ export default function FeedPosts() {
 
   return (
     <div className="feed">
+      <div className="">
+        <h1>Video upload</h1>
+        <VideoInput />
+      </div>
       {posts.map((post, index) => (
         <div key={index}>
           <div className="feed-element">
