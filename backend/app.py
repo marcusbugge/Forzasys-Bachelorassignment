@@ -1,4 +1,5 @@
 import base64
+from sre_constants import SUCCESS
 from xml.dom import ValidationErr
 from flask import Flask, request, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
@@ -6,17 +7,20 @@ from flask_restful import Api
 from sqlalchemy import Integer, LargeBinary, String, ForeignKey
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_cors import CORS
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
 #https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
 
 
 #-----------------------------------------START OF MODELS ----------------------------------
@@ -147,8 +151,8 @@ class Video(db.Model):
     user_id = db.Column(Integer, ForeignKey('user.id'), nullable=False)
     video = db.Column(LargeBinary, nullable=False)
     caption = db.Column(String(50))
-    likes = db.Column(Integer, nullable=False)
-    views = db.Column(Integer, nullable=False)
+    likes = db.Column(Integer)
+    views = db.Column(Integer)
     def __repr__(self):
         return f'{self.id}'
 
@@ -179,7 +183,7 @@ class BytesField(fields.Field):
 class VideoSchema(Schema):
     id = fields.Integer()
     user_id = fields.String()
-    #video = BytesField(required=True)
+    video = BytesField(required=True)
     caption = fields.String()
     views = fields.Integer()
     likes = fields.Integer()
@@ -417,22 +421,17 @@ def get_all_videos():
 @app.route('/api/video', methods=['POST'])
 def create_video():
     data = request.args
-    with open('test1.mp4', 'rb') as videoFile:
-            binary = base64.b64encode(videoFile.read())
     newVideo = Video(
-        user_id = data['user_id'],
-        video = binary,
-        caption = data['caption'],
-        likes = data['likes'],
-        views = data['views']
+        user_id = data.get('user_id'),
+        video = data.get('video'),
+        caption = data.get('caption'),
+        likes = 0,
+        views = 0
     )
 
     newVideo.save()
 
-    serializer = VideoSchema()
-    result = serializer.dump(newVideo)
-
-    return jsonify(result), 201
+    return jsonify(success=True)
 
 @app.route('/api/video/<int:id>', methods=['GET'])
 def get_video(id):
