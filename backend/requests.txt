@@ -1,8 +1,14 @@
+BASE = http://127.0.0.1:5000
+
 /api/user [GET] -> all users
 
-/api/user [POST] -> create user (given_name, family_name, age, email, team_id)
+/api/user [POST] -> create user (username, password, given_name, family_name, age, email, team_id)
 
 /api/user/<int:id> [GET, PUT, DELETE] -> 
+
+/api/user/follow/<int:id> [PUT] -> follow a user  (id - user following)
+
+/api/followers/<int:id> [GET] -> a list of followers
 
 /api/team [GET] -> [all teams]
 
