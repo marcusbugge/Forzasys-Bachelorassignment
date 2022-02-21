@@ -21,7 +21,12 @@ export default function VideoInput(props) {
   };
 
   const postVideo = () => {
-    axios.post("/api/postvideo", file);
+    const postData = {
+      user_id: "1",
+      video: file,
+      caption: "hahahahahah kys video",
+    };
+    axios.post("/api/postvideo", postData);
   };
 
   return (
