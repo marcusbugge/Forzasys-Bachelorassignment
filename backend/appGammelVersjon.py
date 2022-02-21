@@ -2,7 +2,6 @@ from flask import Flask, jsonify, make_response, session, json
 from flask_restful import Api, Resource, abort, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, LargeBinary, String, ForeignKey
-from args import user_put_args, user_post_args, resource_fields_user, video_put_args, video_post_args, resource_fields_video, badge_put_args, badge_post_args, resource_fields_badge, team_put_args, team_post_args, resource_fields_team
 import base64
 from flask_cors import CORS, cross_origin
 

@@ -46,6 +46,9 @@ export default function Navbar() {
         <h1>COMPETITIONS</h1>
         <div className="links">
           <div className="rank-nav-cnt">
+            <Link to="/goaloftheround">Goal of the round</Link>
+          </div>
+          <div className="rank-nav-cnt">
             <Link to="/">Most popular video</Link>
           </div>
 

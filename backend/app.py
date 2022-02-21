@@ -1,12 +1,13 @@
 import base64
 from xml.dom import ValidationErr
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api, marshal_with
+from flask_restful import Api
 from sqlalchemy import Integer, LargeBinary, String, ForeignKey
 from marshmallow import Schema, fields
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
+#https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,11 +15,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+
+
 earned_badges = db.Table('earned_badges',
     db.Column('user_id', Integer, ForeignKey('user.id')),
     db.Column('badge_id', Integer, ForeignKey('badge.id'))
 )
 
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+)
+
+class FollowerSchema(Schema):
+    id = fields.Integer()
 
 class User(db.Model):
     id = db.Column(Integer, primary_key=True)
@@ -27,8 +37,17 @@ class User(db.Model):
     age = db.Column(Integer, nullable=False)
     email = db.Column(String(50), nullable=False)
     team_id = db.Column(Integer, ForeignKey('team.id'), nullable=False)
+
+    #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
+    followed = db.relationship(
+        'User', secondary=followers,
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+    
     videos = db.relationship('Video', backref=db.backref('user', lazy='joined'), lazy='select')
     badges = db.relationship('Badge', secondary=earned_badges, backref='database', lazy='select')
+
     def __repr__(self):
         return f'{self.id}'
 
@@ -48,6 +67,20 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            db.session.commit()
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            db.session.commit()
+
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
 class UserSchema(Schema):
     id = fields.Integer()
     given_name = fields.String()
@@ -55,9 +88,9 @@ class UserSchema(Schema):
     age = fields.Integer()
     email = fields.String()
     team_id = fields.Integer()
+    followed = fields.List(fields.String())
     videos = fields.List(fields.String())
     badges = fields.List(fields.String())
-
 
 
 class Team(db.Model):
@@ -93,7 +126,6 @@ class TeamSchema(Schema):
     nationality = fields.String()
     logo = fields.String()
     supporters = fields.List(fields.String())
-
 
 
 class Video(db.Model):
@@ -137,7 +169,6 @@ class VideoSchema(Schema):
     caption = fields.String()
     views = fields.Integer()
     likes = fields.Integer()
-
 
 
 class Badge(db.Model):
@@ -239,6 +270,31 @@ def delete_user(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
+
+@app.route('/api/user/follow/<int:id>', methods=['PUT'])
+def follow_user(id):
+    user_to_follow = User.get_by_id(id)
+    data = request.args
+    user_following = User.get_by_id(data['user_id'])
+    user_following.follow(user_to_follow)
+    return jsonify({
+        'message': 'Following'
+    }), 200
+
+
+@app.route('/api/followers/<int:id>', methods=['GET'])
+def follow_table(id):
+    users = User.get_all()
+    theUser = User.get_by_id(id)
+    data = []
+    for user in users:
+        if user.is_following(theUser):
+            data.append(user)
+    serializer = UserSchema(many=True)
+    result = serializer.dump(data)
+    return jsonify(result), 200
+
 
 @app.route('/api/team', methods=['GET'])
 def get_all_teams():
