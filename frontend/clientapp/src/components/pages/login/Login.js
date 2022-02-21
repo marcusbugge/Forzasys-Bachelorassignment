@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 import Loginconfirmation from "./LoginConfirmation";
 
 export default function Login() {
+  const logout = () => {
+    localStorage.getItem("loggedIn", false);
+  };
+
   const [user, setUser] = useState();
   let username;
   let password;
@@ -63,9 +67,15 @@ export default function Login() {
             </div>
 
             <div>
-              <button className="login-btn" type="submit">
-                <p>Login</p>
-              </button>
+              {localStorage.getItem("loggedIn") ? (
+                <button onClick={logout} className="login-btn">
+                  <p>Sign out</p>
+                </button>
+              ) : (
+                <button className="login-btn" type="submit">
+                  <p>Sign in</p>
+                </button>
+              )}
             </div>
           </form>
         </div>
