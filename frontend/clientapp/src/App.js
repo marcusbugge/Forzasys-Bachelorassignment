@@ -7,7 +7,9 @@ import Login from "./components/pages/login/Login.js";
 import Profilepage from "./components/pages/profile/Profilepage";
 import FeedPosts from "./components/pages/feed/FeedPosts";
 import MainStandPage from "./components/pages/standings/MainStandPage";
-import Goaloftheweak from "./components/pages/competitions/goaloftheround/Goaloftheround";
+
+import CreateUser from "./components/pages/login/CreateUser";
+
 
 function App() {
   return (
@@ -22,8 +24,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/profil" element={<Profilepage />} />
             <Route path="/feed" element={<FeedPosts />} />
-            <Route path="/goaloftheround" element={<Goaloftheweak />} />
+
+            <Route path="/signup" element={<CreateUser />} />
+
             <Route path="/" element={<MainStandPage />} />
+
           </Routes>
           <Footer />
         </div>
