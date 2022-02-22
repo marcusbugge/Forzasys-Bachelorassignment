@@ -71,3 +71,11 @@ input{
     text-decoration: none;
     color: var(--hover-blue);
 }
+
+.error{
+    color: red;
+    font-size:16px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    float: right;
+}
