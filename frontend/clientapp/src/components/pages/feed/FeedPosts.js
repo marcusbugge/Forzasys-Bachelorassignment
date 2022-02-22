@@ -28,26 +28,22 @@ export default function FeedPosts() {
     },
   ];
 
-
-
-  function shareButton(actiontype, post){
-
+  function shareButton(actiontype, post) {
     const action = {
       user: post.owner,
       actiontype: actiontype,
-      video: post.url
-    }
+      video: post.url,
+    };
 
-    console.log(action)
+    console.log(action);
     console.log(post);
 
-    let url = '/api/actions';
+    let url = "/api/actions";
 
-    axios.post(url,action)
-    .then(response => {
-      console.log(response)});
+    axios.post(url, action).then((response) => {
+      console.log(response);
+    });
   }
-  
 
   return (
     <div className="feed">
@@ -64,7 +60,9 @@ export default function FeedPosts() {
             <div className="buttons">
               <button onClick={() => shareButton("share")}>Share</button>
               <button onClick={() => shareButton("like")}>Like</button>
-              <button onClick={() => shareButton("play", post)}>Play video</button>
+              <button onClick={() => shareButton("play", post)}>
+                Play video
+              </button>
             </div>
           </div>
         </div>
