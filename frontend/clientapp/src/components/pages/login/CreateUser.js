@@ -12,12 +12,19 @@ export default function CreateUser() {
   const [password, setPassword] = useState("");
   const [cpassword, setCpassword] = useState("");
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   function registrerButton(){
 
 =======
   function registrerButton() {
 >>>>>>> 75b483726017b4aab121b5c7d0552f87ce1a27ae
+=======
+
+  function signup(e) {
+    e.preventDefault();
+
+>>>>>>> 12a9e06966a81422aa7f2848e33ac3d98ecf0fb3
     const userdata = {
       username: "kys",
       password: password,
@@ -45,12 +52,16 @@ export default function CreateUser() {
 
   return (
     <div>
-      <section className="signup">
+      <div className="signup">
         <div className="signup-cnt">
           <div className="signup-content">
             <div className="signup-form">
-              <h2 className="form-title">Sign up</h2>
-              <form className="register-form" id="register-form">
+              <h1 className="form-title">Sign up</h1>
+              <form
+                onSubmit={signup}
+                className="register-form"
+                id="register-form"
+              >
                 <div className="form-group">
                   <label htmlFor="name"></label>
                   <p>First Name</p>
@@ -135,7 +146,9 @@ export default function CreateUser() {
                   ></input>
                 </div>
                 <div className="form-button">
-                  <button onClick={registrerButton}>Register</button>
+                  <button type="submit" className="login-btn">
+                    Register
+                  </button>
                 </div>
               </form>
               <NavLink to="/login" className="signup-image-link">
@@ -144,7 +157,7 @@ export default function CreateUser() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
