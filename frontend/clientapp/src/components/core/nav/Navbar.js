@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import Welcome from "../../pages/welcome/Welcome";
 import { useState } from "react";
 
+import { CgProfile } from "react-icons/cg";
+
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
 
@@ -12,6 +14,8 @@ export default function Navbar() {
     setRefresh(true);
     console.log("log out??");
   }
+
+  const style = { color: "white" };
 
   return (
     <div className="nav">
@@ -29,7 +33,6 @@ export default function Navbar() {
           <button className="loginbtn-nav">Login</button>
         </Link>
       )}
-
       <div className="links-cnt">
         <h1>LEADERBOARD</h1>
         <div className="links">
