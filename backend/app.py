@@ -270,8 +270,8 @@ def get_all_users():
 
 @app.route('/api/user', methods=['POST'])
 def create_user():
-    data = request.args
-    print(data)
+    data = request.get_json()
+    print('Data from frontend: ',data)
     newUser = User(
         username = data['username'],
         password = data['password'],
