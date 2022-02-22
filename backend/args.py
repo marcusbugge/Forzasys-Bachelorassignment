@@ -30,8 +30,8 @@ resource_fields_user = {
 video_post_args = reqparse.RequestParser()
 video_post_args.add_argument('user_id', type=int, help='The user id is required', required=True)
 video_post_args.add_argument('caption', type=str, help='This video does not have a caption')
-video_post_args.add_argument('likes', type=int, help='Please put in likes on this video', required=True)
-video_post_args.add_argument('views', type=int, help='Please put in views on this video', required=True)
+video_post_args.add_argument('likes', type=int, help='Please put in likes on this video')
+video_post_args.add_argument('views', type=int, help='Please put in views on this video')
 
 video_put_args = reqparse.RequestParser()
 video_put_args.add_argument('user_id', type=int, help='The user id is required')
