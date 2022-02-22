@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./createuser.css";
@@ -12,21 +13,23 @@ export default function CreateUser() {
   const [cpassword, setCpassword] = useState("");
   function registrerButton() {
     const userdata = {
+      username: "kys",
+      password: password,
       given_name: fname,
       family_name: lname,
-      age: age,
-      email: email,
-      team_id: team,
-      password: password,
-      cpassword: cpassword,
-    };
+      age: age, 
+      email: email, 
+      team_id:team,
+    }
     console.log(userdata);
 
-    let url = "/api/user";
+    let url = 'http://localhost:5000/api/user';
+
+    axios.post(url,userdata);
   }
-  return (
-    <div>
-      <section className="signup">
+
+  return <div>
+    <section className="signup">
         <div className="signup-cnt">
           <div className="signup-content">
             <div className="signup-form">
@@ -116,9 +119,7 @@ export default function CreateUser() {
                   ></input>
                 </div>
                 <div className="form-button">
-                  <button onClick={() => registrerButton("userinput")}>
-                    Register
-                  </button>
+                <button onClick={registrerButton}>Register</button>
                 </div>
               </form>
               <NavLink to="/login" className="signup-image-link">
