@@ -17,19 +17,29 @@ export default function CreateUser() {
       password: password,
       given_name: fname,
       family_name: lname,
-      age: age, 
-      email: email, 
-      team_id:team,
-    }
+      age: age,
+      email: email,
+      team_id: team,
+    };
     console.log(userdata);
 
-    let url = 'http://localhost:5000/api/user';
+    let url = "http://localhost:5000/api/user";
 
-    axios.post(url,userdata);
+    const headers = { "header-name": "value" };
+    const config = { headers };
+
+    axios
+      .post(url, userdata, config)
+      .then((response) => {
+        console.log(response.status);
+        console.log(response.data);
+      })
+      .catch((e) => console.log("something went wrong :(", e));
   }
 
-  return <div>
-    <section className="signup">
+  return (
+    <div>
+      <section className="signup">
         <div className="signup-cnt">
           <div className="signup-content">
             <div className="signup-form">
@@ -119,7 +129,7 @@ export default function CreateUser() {
                   ></input>
                 </div>
                 <div className="form-button">
-                <button onClick={registrerButton}>Register</button>
+                  <button onClick={registrerButton}>Register</button>
                 </div>
               </form>
               <NavLink to="/login" className="signup-image-link">
