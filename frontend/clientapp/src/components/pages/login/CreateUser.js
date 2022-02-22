@@ -1,7 +1,8 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./createuser.css";
+import PickTeam from "./pickTeam/PickTeam";
 
 export default function CreateUser() {
   const [fname, setFname] = useState("");
@@ -12,32 +13,38 @@ export default function CreateUser() {
   const [password, setPassword] = useState("");
   const [cpassword, setCpassword] = useState("");
 
-  function signup(e) {
+  const [errorPassword, setErrorPassword] = useState(true);
+
+  async function signup(e) {
     e.preventDefault();
+    if (password !== "" && password === cpassword) {
+      setErrorPassword(true);
+      const userdata = {
+        username: "kys2",
+        password: password,
+        given_name: fname,
+        family_name: lname,
+        age: age,
+        email: email,
+        team_id: team,
+      };
+      console.log(userdata);
 
-    const userdata = {
-      username: "kys",
-      password: password,
-      given_name: fname,
-      family_name: lname,
-      age: age,
-      email: email,
-      team_id: team,
-    };
-    console.log(userdata);
+      let url = "http://localhost:5000/api/user";
 
-    let url = "http://localhost:5000/api/user";
+      const headers = { "header-name": "value" };
+      const config = { headers };
 
-    const headers = { "header-name": "value" };
-    const config = { headers };
-
-    axios
-      .post(url, userdata, config)
-      .then((response) => {
-        console.log(response.status);
-        console.log(response.data);
-      })
-      .catch((e) => console.log("something went wrong :(", e));
+      axios
+        .post(url, userdata, config)
+        .then((response) => {
+          console.log(response.status);
+          console.log(response.data);
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    } else {
+      setErrorPassword(false);
+    }
   }
 
   return (
@@ -134,6 +141,9 @@ export default function CreateUser() {
                     autoComplete="off"
                     onChange={(e) => setCpassword(e.target.value)}
                   ></input>
+                  <h5 className="error" hidden={errorPassword}>
+                    Passwords don't match
+                  </h5>
                 </div>
                 <div className="form-button">
                   <button type="submit" className="login-btn">

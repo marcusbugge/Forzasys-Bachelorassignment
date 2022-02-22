@@ -4,7 +4,7 @@ from xml.dom import ValidationErr
 from flask import Flask, request, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from sqlalchemy import Integer, LargeBinary, String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
@@ -149,7 +149,7 @@ class TeamSchema(Schema):
 class Video(db.Model):
     id = db.Column(Integer, primary_key=True)
     user_id = db.Column(Integer, ForeignKey('user.id'), nullable=False)
-    video = db.Column(LargeBinary, nullable=False)
+    video = db.Column(String(500), nullable=False)
     caption = db.Column(String(50))
     likes = db.Column(Integer)
     views = db.Column(Integer)
@@ -183,7 +183,8 @@ class BytesField(fields.Field):
 class VideoSchema(Schema):
     id = fields.Integer()
     user_id = fields.String()
-    video = BytesField(required=True)
+    video = fields.String()
+    #video = BytesField(required=True)
     caption = fields.String()
     views = fields.Integer()
     likes = fields.Integer()
@@ -270,7 +271,7 @@ def get_all_users():
 
 @app.route('/api/user', methods=['POST'])
 def create_user():
-    data = request.get_json()
+    data = request.json
     print('Data from frontend: ',data)
     newUser = User(
         username = data['username'],
@@ -420,11 +421,11 @@ def get_all_videos():
 
 @app.route('/api/video', methods=['POST'])
 def create_video():
-    data = request.args
+    data = request.json
     newVideo = Video(
-        user_id = data.get('user_id'),
-        video = data.get('video'),
-        caption = data.get('caption'),
+        user_id = data['user_id'],
+        video = data['video'],
+        caption = data['caption'],
         likes = 0,
         views = 0
     )
@@ -571,24 +572,40 @@ def internal_server(error):
 def bootstrap_data():
     db.drop_all()
     db.create_all()
+    team1 = Team(name = 'Aalesund Fotballklubb', nickname = 'AaFK', nationality = 'Norway', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
+    team2 = Team(name = 'Fotballklubben Bodø/Glimt', nickname= 'B/Ø', nationality = 'Norway', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
+    team3 = Team(name = 'Hamarkameratene', nickname= 'HamKam', nationality = 'Norway', logo = 'https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
+    team4 = Team(name = 'Fotballklubben Haugesund', nickname= 'FKH', nationality = 'Norway', logo = 'https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
+    team5 = Team(name = 'Fotballklubben Jerv', nickname= 'FKJ', nationality = 'Norway', logo = 'https://www.fkjerv.no/ffo/_/image/af79704d-b782-4c83-95ae-2fb5d4b1ad72:9a68176dc8e024252ddb98acc9b51342e2c79b4e/wide-72-72/jer-logo-fra-ai.svg')
+    team6 = Team(name = 'Kristiansund Ballklubb', nickname= 'KBK', nationality = 'Norway', logo = 'https://www.kristiansundbk.no/_/asset/no.seeds.app.football:1631535449/img/logo/kri/logo.png')
+    team7 = Team(name = 'Lillestrøm Sportsklubb', nickname= 'LSK', nationality = 'Norway', logo = 'https://www.h-a.no/wp-content/uploads/2020/06/lsklogo.png')
+    team8 = Team(name = 'Model Fotballklubb', nickname= 'MFK', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Molde_Fotball_Logo.svg/1200px-Molde_Fotball_Logo.svg.png')
+    team9 = Team(name = 'Odds Ballklubb', nickname= 'Odd', nationality = 'Norway', logo = 'https://cdn.freebiesupply.com/logos/large/2x/odd-grenland-logo-png-transparent.png')
+    team10 = Team(name = 'Rosenborg Ballklubb', nickname= 'RBK', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Rosenborg_Trondheim_logo.svg/1280px-Rosenborg_Trondheim_logo.svg.png')
+    team11 = Team(name = 'Sandefjord Fotball', nickname= 'SF', nationality = 'Norway', logo = 'https://seeklogo.com/images/S/sandefjord-fotball-1998-logo-93446812B5-seeklogo.com.png')
+    team12 = Team(name = 'Sarpsborg 08', nickname= 'S08', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Sarpsborg-08-Logo.png')
+    team13 = Team(name = 'Strømsgodset Idrettsforening', nickname = 'SIF', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Stromsgodset-IF-Logo.png')
+    team14 = Team(name = 'Tromsø Idrettslag', nickname= 'TIL', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Tromso-IL-HD-Logo.png')
+    team15 = Team(name = 'Viking Fotballklubb', nickname= 'VFK', nationality = 'Norway', logo = 'https://www.vikingfotball.no/_/image/309088f1-0c15-443b-82de-2b92398cb259:2ff456063dec6faba9ad418cff12ac8ae3902665/wide-72-72/vik-logo_20200309.svg')
+    team16 = Team(name = 'Vålrenga Idrettsforening', nickname= 'VIF', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/V%C3%A5lerenga_Oslo_logo.svg/2560px-V%C3%A5lerenga_Oslo_logo.svg.png')
+    team1.save()
+    team2.save()
+    team3.save()
+    team4.save()
+    team5.save()
+    team6.save()
+    team7.save()
+    team8.save()
+    team9.save()
+    team10.save()
+    team11.save()
+    team12.save()
+    team13.save()
+    team14.save()
+    team15.save()
+    team16.save()
 
-    team1 = Team('Aalesund Fotballklubb', 'AaFK', 'Norway','https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
-    team2 = Team('Fotballklubben Bodø/Glimt', 'B/Ø', 'Norway', 'https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
-    team3 = Team('Hamarkameratene', 'HamKam', 'Norway', 'https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
-    team4 = Team('Fotballklubben Haugesund', 'FKH', 'Norway', 'https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
-    team5 = Team('Fotballklubben Jerv', 'FKJ', 'Norway', 'https://www.fkjerv.no/ffo/_/image/af79704d-b782-4c83-95ae-2fb5d4b1ad72:9a68176dc8e024252ddb98acc9b51342e2c79b4e/wide-72-72/jer-logo-fra-ai.svg')
-    team6 = Team('Kristiansund Ballklubb', 'KBK', 'Norway', 'https://www.kristiansundbk.no/_/asset/no.seeds.app.football:1631535449/img/logo/kri/logo.png')
-    team7 = Team('Lillestrøm Sportsklubb', 'LSK', 'Norway', 'https://www.h-a.no/wp-content/uploads/2020/06/lsklogo.png')
-
-    db.session.add(team1)
-    db.session.add(team2)
-    db.session.add(team3)
-    db.session.add(team4)
-    db.session.add(team5)
-    db.session.add(team6)
-    db.session.add(team7)
-
-    db.session.commit()
+    
 
 
     print('Added data to database')
