@@ -16,7 +16,8 @@ from args import user_put_args, video_put_args, badge_put_args, team_put_args
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/database'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///buggeDB.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -606,8 +607,8 @@ def bootstrap_data():
     team15.save()
     team16.save()
 
-    badge = Badge(name = 'Like king', description = 'Get 100 likes on a video', level = 'Bronze', picture = Image.open('./badgeIcons/bronze-like.png'), category = 'Likes', points_needed = '100')
-    badge.save()
+    #badge = Badge(name = 'Like king', description = 'Get 100 likes on a video', level = 'Bronze', picture = Image.open('./badgeIcons/bronze-like.png'), category = 'Likes', points_needed = '100')
+    #badge.save()
 
 
 
