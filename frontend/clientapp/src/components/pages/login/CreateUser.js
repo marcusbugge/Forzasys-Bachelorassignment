@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./createuser.css";
 import SelectTeam from "./SelectTeam";
+import soccerfan from "../../../assets/images/soccer-fan.jpg";
 
 export default function CreateUser() {
   const [fname, setFname] = useState("");
@@ -50,10 +51,17 @@ export default function CreateUser() {
   return (
     <div>
       <div className="signup">
+        <div className="imgholder-fan">
+          <img src={soccerfan} alt="soccerfan" />
+        </div>
+
         <div className="signup-cnt">
           <div className="signup-content">
             <div className="signup-form">
-              <h1 className="form-title">Sign up</h1>
+              <div className="signup-header-cnt">
+                <h1 className="form-title">Sign up</h1>
+              </div>
+
               <form
                 onSubmit={signup}
                 className="register-form"
@@ -108,12 +116,6 @@ export default function CreateUser() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="team"></label>
-                  <p>Favorite Team</p>
-                  <SelectTeam />
-                </div>
-
-                <div className="form-group">
                   <label htmlFor="password"></label>
                   <p>Password</p>
                   <input
@@ -139,15 +141,21 @@ export default function CreateUser() {
                     Passwords don't match
                   </h5>
                 </div>
+
+                <div className="testest">
+                  <h1 className="chooseteamh1">Choose your favorite team!</h1>
+                  <SelectTeam />
+                </div>
+
                 <div className="form-button">
                   <button type="submit" className="login-btn">
                     Register
                   </button>
+                  <NavLink to="/login" className="signup-image-link">
+                    Do you already have a account? Click here!
+                  </NavLink>
                 </div>
               </form>
-              <NavLink to="/login" className="signup-image-link">
-                I am already a user
-              </NavLink>
             </div>
           </div>
         </div>
