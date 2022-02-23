@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./createuser.css";
+import SelectTeam from "./SelectTeam";
 
 export default function CreateUser() {
   const [fname, setFname] = useState("");
@@ -103,13 +104,7 @@ export default function CreateUser() {
                 <div className="form-group">
                   <label htmlFor="team"></label>
                   <p>Favorite Team</p>
-                  <input
-                    type="text"
-                    name="team"
-                    id="team"
-                    autoComplete="off"
-                    onChange={(e) => setTeam(e.target.value)}
-                  ></input>
+                  <SelectTeam />
                 </div>
 
                 <div className="form-group">

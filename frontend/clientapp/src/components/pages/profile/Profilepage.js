@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./profiledata.css";
 import usericon from "../../../assets/icons/usericon.png";
 import FeedPosts from "../feed/FeedPosts";
@@ -9,11 +9,13 @@ export default function Profilepage() {
 
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");
-    console.log('Req: ',test);
+    console.log("Req: ", test);
     const data = test.data;
     setUsers(data);
-    console.log('State: ', users);
+    console.log("State: ", users);
   }
+
+  const [video, setVideo] = useState(null);
 
   const posts = [
     {
