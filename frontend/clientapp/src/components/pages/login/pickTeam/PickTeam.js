@@ -4,12 +4,11 @@ import axios from "axios";
 export default function PickTeam() {
   const [teams, setTeams] = useState([]);
 
-  async function getTeams() {
-    const test = await axios.get("http://localhost:5000/api/team");
-    console.log("Req: ", test);
-    setTeams(test.data);
-    console.log("State: ", teams);
-  }
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/team")
+    .then(response => response.json())
+    .then(data => setTeams(data.data))
+  },[])
 
   return (
     <div>

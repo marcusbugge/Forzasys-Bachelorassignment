@@ -4,10 +4,11 @@ from xml.dom import ValidationErr
 from flask import Flask, request, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey, LargeBinary
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
+from PIL import Image
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
 #https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
@@ -195,7 +196,7 @@ class Badge(db.Model):
     name = db.Column(String(20), nullable=False)
     description = db.Column(String(150), nullable=False)
     level = db.Column(String(10), nullable=False)
-    picture = db.Column(String(250), nullable=False)
+    picture = db.Column(LargeBinary, nullable=False)
     category = db.Column(String(15), nullable=False)
     points_needed = db.Column(Integer, nullable=False)
     def __repr__(self):
@@ -222,7 +223,7 @@ class BadgeSchema(Schema):
     name = fields.String()
     description = fields.String()
     level = fields.String()
-    picture = fields.String()
+    picture = BytesField(required=True)
     category = fields.String()
     points_needed = fields.String()
 
@@ -262,7 +263,7 @@ def loggedInUser():
 
     return jsonify(result), 200
 
-@app.route('/api/user', methods=['GET'])
+@app.route('/api/users', methods=['GET'])
 def get_all_users():
     users = User.get_all()
     serializer = UserSchema(many=True)
@@ -355,7 +356,7 @@ def follow_table(id):
     return jsonify(result), 200
 
 
-@app.route('/api/team', methods=['GET'])
+@app.route('/api/teams', methods=['GET'])
 def get_all_teams():
     teams = Team.get_all()
     serializer = TeamSchema(many=True)
@@ -412,7 +413,7 @@ def delete_team(id):
         'message': 'deleted'
     }), 204
 
-@app.route('/api/video', methods=['GET'])
+@app.route('/api/videos', methods=['GET'])
 def get_all_videos():
     videos = Video.get_all()
     serializer = VideoSchema(many=True)
@@ -471,7 +472,7 @@ def delete_video(id):
         'message': 'deleted'
     }), 204
 
-@app.route('/api/badge', methods=['GET'])
+@app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
     serializer = BadgeSchema(many=True)
@@ -568,7 +569,7 @@ def not_found(error):
 def internal_server(error):
     return jsonify({'message' : 'There is a problem'}), 500
 
-@app.cli.command("bootstrap")
+@app.cli.command("db-data")
 def bootstrap_data():
     db.drop_all()
     db.create_all()
@@ -605,7 +606,9 @@ def bootstrap_data():
     team15.save()
     team16.save()
 
-    
+    badge = Badge(name = 'Like king', description = 'Get 100 likes on a video', level = 'Bronze', picture = Image.open('./badgeIcons/bronze-like.png'), category = 'Likes', points_needed = '100')
+    badge.save()
+
 
 
     print('Added data to database')
