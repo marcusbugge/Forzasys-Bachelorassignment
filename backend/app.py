@@ -1,13 +1,12 @@
-import base64
-from sre_constants import SUCCESS
 from xml.dom import ValidationErr
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from sqlalchemy import Integer, String, ForeignKey, LargeBinary
+from sqlalchemy import Integer, String, ForeignKey, Text
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from PIL import Image
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
@@ -197,7 +196,7 @@ class Badge(db.Model):
     name = db.Column(String(20), nullable=False)
     description = db.Column(String(150), nullable=False)
     level = db.Column(String(10), nullable=False)
-    picture = db.Column(LargeBinary, nullable=False)
+    picture = db.Column(String(250), unique=True, nullable=False)
     category = db.Column(String(15), nullable=False)
     points_needed = db.Column(Integer, nullable=False)
     def __repr__(self):
@@ -224,7 +223,7 @@ class BadgeSchema(Schema):
     name = fields.String()
     description = fields.String()
     level = fields.String()
-    picture = BytesField(required=True)
+    picture = fields.String()
     category = fields.String()
     points_needed = fields.String()
 
@@ -274,7 +273,6 @@ def get_all_users():
 @app.route('/api/user', methods=['POST'])
 def create_user():
     data = request.json
-    print('Data from frontend: ',data)
     newUser = User(
         username = data['username'],
         password = data['password'],
@@ -507,6 +505,22 @@ def get_badge(id):
 
     return jsonify(result), 200
 
+@app.route('/api/badges/user/<int:id>', methods=['GET'])
+def get_users_badges(id):
+    badges = Badge.get_all()
+    user = User.get_by_id(id)
+    users_badges = user.badges
+    array = []
+    for badge in badges:
+        for user_badge in users_badges:
+            if badge == user_badge:
+                array.append(badge)
+    serializer = BadgeSchema(many=True)
+    result = serializer.dump(array)
+    return jsonify(result), 200
+    
+
+
 @app.route('/api/badge/<int:id>', methods=['PUT'])
 def update_badge(id):
     badge_to_uptdate = Badge.get_by_id(id)
@@ -540,7 +554,7 @@ def delete_badge(id):
         'message': 'deleted'
     }), 204
 
-@app.route('/api/userBadges', methods=['PUT'])
+@app.route('/api/badge/collect', methods=['PUT'])
 def user_badge():
     users = User.get_all()
     badges = Badge.get_all()
@@ -574,7 +588,7 @@ def internal_server(error):
 def bootstrap_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name = 'Aalesund Fotballklubb', nickname = 'AaFK', nationality = 'Norway', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
+    team1 = Team(name = 'AIK Fotboll', nickname = 'AIK', nationality = 'Sweden', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
     team2 = Team(name = 'Fotballklubben Bodø/Glimt', nickname= 'B/Ø', nationality = 'Norway', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
     team3 = Team(name = 'Hamarkameratene', nickname= 'HamKam', nationality = 'Norway', logo = 'https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
     team4 = Team(name = 'Fotballklubben Haugesund', nickname= 'FKH', nationality = 'Norway', logo = 'https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
@@ -607,9 +621,25 @@ def bootstrap_data():
     team15.save()
     team16.save()
 
-    #badge = Badge(name = 'Like king', description = 'Get 100 likes on a video', level = 'Bronze', picture = Image.open('./badgeIcons/bronze-like.png'), category = 'Likes', points_needed = '100')
-    #badge.save()
 
+    badge1 = Badge(name = 'Created account', description = 'Create an account', level = 'Normal', picture = '../../assets/badgeIcons/Setup.png', category = 'null', points_needed = '0')
+    badge2 = Badge(name = 'Overall bronze', description = 'Total points collected 100', level = 'Bronze', picture = '../../assets/badgeIcons/Bronze.png', category = 'totalPoints', points_needed = '100')
+    badge3 = Badge(name = 'Overall silver', description = 'Total points collected 500', level = 'Silver', picture = '../../assets/badgeIcons/Silver.png', category = 'totalPoints', points_needed = '500')
+    badge4 = Badge(name = 'Overall gold', description = 'Total points collected 1000', level = 'Gold', picture = '../../assets/badgeIcons/Gold.png', category = 'totalPoints', points_needed = '1000')
+    badge5 = Badge(name = 'Overall platinum', description = 'Total points collected 2500', level = 'Platinum', picture = '../../assets/badgeIcons/Platinum.png', category = 'totalPoints', points_needed = '2500')
+    badge6 = Badge(name = 'Overall diamond', description = 'Total points collected 5000', level = 'Diamond', picture = '../../assets/badgeIcons/Diamond.png', category = 'totalPoints', points_needed = '5000')
+
+    badge1.save()
+    badge2.save()
+    badge3.save()
+    badge4.save()
+    badge5.save()
+    badge6.save()
+
+    user1 = User(username = 'Forzasys-test', password = 'TestP', given_name = 'Forzasys', family_name = 'Test', age = 25, email = 'test@forzasys.no', team_id = 16)
+    user1.save()
+    user1.badges.append(badge1)
+    db.session.commit()
 
 
     print('Added data to database')
