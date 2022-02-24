@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./profiledata.css";
 import usericon from "../../../assets/icons/usericon.png";
 import FeedPosts from "../feed/FeedPosts";
@@ -9,32 +9,15 @@ export default function Profilepage() {
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { data: response } = await axios.get(
-          "http://127.0.0.1:5000/api/user/1"
-        );
-
-        setUser(response);
-      } catch (error) {
-        console.error(error.message);
-      }
-      setLoading(false);
-      getBadges();
-    };
-
-    fetchData();
-  }, []);
-
-  async function getBadges() {
-    const api_request = await axios.get(
-      "http://localhost:5000/api/badges/user/1"
-    );
-    setBadges(api_request.data);
-    console.log("Badges", api_request.data);
+  async function getUsers() {
+    const test = await axios.get("http://localhost:5000/api/user");
+    console.log("Req: ", test);
+    const data = test.data;
+    setUsers(data);
+    console.log("State: ", users);
   }
+
+  const [video, setVideo] = useState(null);
 
   const posts = [
     {
