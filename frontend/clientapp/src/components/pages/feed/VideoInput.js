@@ -26,7 +26,16 @@ export default function VideoInput(props) {
       video: file,
       caption: "hahahahahah kys video",
     };
-    axios.post("/api/postvideo", postData);
+    const headers = { "header-name": "value" };
+    const config = { headers };
+
+    axios
+      .post('http://localhost:5000/api/video', postData, config)
+      .then((response) => {
+        console.log(response.status);
+        console.log(response.data);
+      })
+      .catch((e) => console.log("something went wrong :(", e));
   };
 
   return (

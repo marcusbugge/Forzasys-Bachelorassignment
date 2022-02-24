@@ -1,13 +1,13 @@
-import base64
-from sre_constants import SUCCESS
 from xml.dom import ValidationErr
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from sqlalchemy import Integer, LargeBinary, String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey, Text
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
+from PIL import Image
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
 #https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
@@ -15,7 +15,8 @@ from args import user_put_args, video_put_args, badge_put_args, team_put_args
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/database'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost/database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///buggeDB.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -149,7 +150,7 @@ class TeamSchema(Schema):
 class Video(db.Model):
     id = db.Column(Integer, primary_key=True)
     user_id = db.Column(Integer, ForeignKey('user.id'), nullable=False)
-    video = db.Column(LargeBinary, nullable=False)
+    video = db.Column(String(500), nullable=False)
     caption = db.Column(String(50))
     likes = db.Column(Integer)
     views = db.Column(Integer)
@@ -183,7 +184,8 @@ class BytesField(fields.Field):
 class VideoSchema(Schema):
     id = fields.Integer()
     user_id = fields.String()
-    video = BytesField(required=True)
+    video = fields.String()
+    #video = BytesField(required=True)
     caption = fields.String()
     views = fields.Integer()
     likes = fields.Integer()
@@ -194,7 +196,7 @@ class Badge(db.Model):
     name = db.Column(String(20), nullable=False)
     description = db.Column(String(150), nullable=False)
     level = db.Column(String(10), nullable=False)
-    picture = db.Column(String(250), nullable=False)
+    picture = db.Column(String(250), unique=True, nullable=False)
     category = db.Column(String(15), nullable=False)
     points_needed = db.Column(Integer, nullable=False)
     def __repr__(self):
@@ -261,7 +263,7 @@ def loggedInUser():
 
     return jsonify(result), 200
 
-@app.route('/api/user', methods=['GET'])
+@app.route('/api/users', methods=['GET'])
 def get_all_users():
     users = User.get_all()
     serializer = UserSchema(many=True)
@@ -270,8 +272,7 @@ def get_all_users():
 
 @app.route('/api/user', methods=['POST'])
 def create_user():
-    data = request.get_json()
-    print('Data from frontend: ',data)
+    data = request.json
     newUser = User(
         username = data['username'],
         password = data['password'],
@@ -354,7 +355,7 @@ def follow_table(id):
     return jsonify(result), 200
 
 
-@app.route('/api/team', methods=['GET'])
+@app.route('/api/teams', methods=['GET'])
 def get_all_teams():
     teams = Team.get_all()
     serializer = TeamSchema(many=True)
@@ -411,7 +412,7 @@ def delete_team(id):
         'message': 'deleted'
     }), 204
 
-@app.route('/api/video', methods=['GET'])
+@app.route('/api/videos', methods=['GET'])
 def get_all_videos():
     videos = Video.get_all()
     serializer = VideoSchema(many=True)
@@ -420,11 +421,11 @@ def get_all_videos():
 
 @app.route('/api/video', methods=['POST'])
 def create_video():
-    data = request.args
+    data = request.json
     newVideo = Video(
-        user_id = data.get('user_id'),
-        video = data.get('video'),
-        caption = data.get('caption'),
+        user_id = data['user_id'],
+        video = data['video'],
+        caption = data['caption'],
         likes = 0,
         views = 0
     )
@@ -470,7 +471,7 @@ def delete_video(id):
         'message': 'deleted'
     }), 204
 
-@app.route('/api/badge', methods=['GET'])
+@app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
     serializer = BadgeSchema(many=True)
@@ -503,6 +504,22 @@ def get_badge(id):
     result = serializer.dump(badge)
 
     return jsonify(result), 200
+
+@app.route('/api/badges/user/<int:id>', methods=['GET'])
+def get_users_badges(id):
+    badges = Badge.get_all()
+    user = User.get_by_id(id)
+    users_badges = user.badges
+    array = []
+    for badge in badges:
+        for user_badge in users_badges:
+            if badge == user_badge:
+                array.append(badge)
+    serializer = BadgeSchema(many=True)
+    result = serializer.dump(array)
+    return jsonify(result), 200
+    
+
 
 @app.route('/api/badge/<int:id>', methods=['PUT'])
 def update_badge(id):
@@ -537,7 +554,7 @@ def delete_badge(id):
         'message': 'deleted'
     }), 204
 
-@app.route('/api/userBadges', methods=['PUT'])
+@app.route('/api/badge/collect', methods=['PUT'])
 def user_badge():
     users = User.get_all()
     badges = Badge.get_all()
@@ -567,27 +584,61 @@ def not_found(error):
 def internal_server(error):
     return jsonify({'message' : 'There is a problem'}), 500
 
-@app.cli.command("bootstrap")
+@app.cli.command("db-data")
 def bootstrap_data():
     db.drop_all()
     db.create_all()
+    team1 = Team(name = 'AIK Fotboll', nickname = 'AIK', nationality = 'Sweden', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
+    team2 = Team(name = 'Fotballklubben Bodø/Glimt', nickname= 'B/Ø', nationality = 'Norway', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
+    team3 = Team(name = 'Hamarkameratene', nickname= 'HamKam', nationality = 'Norway', logo = 'https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
+    team4 = Team(name = 'Fotballklubben Haugesund', nickname= 'FKH', nationality = 'Norway', logo = 'https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
+    team5 = Team(name = 'Fotballklubben Jerv', nickname= 'FKJ', nationality = 'Norway', logo = 'https://www.fkjerv.no/ffo/_/image/af79704d-b782-4c83-95ae-2fb5d4b1ad72:9a68176dc8e024252ddb98acc9b51342e2c79b4e/wide-72-72/jer-logo-fra-ai.svg')
+    team6 = Team(name = 'Kristiansund Ballklubb', nickname= 'KBK', nationality = 'Norway', logo = 'https://www.kristiansundbk.no/_/asset/no.seeds.app.football:1631535449/img/logo/kri/logo.png')
+    team7 = Team(name = 'Lillestrøm Sportsklubb', nickname= 'LSK', nationality = 'Norway', logo = 'https://www.h-a.no/wp-content/uploads/2020/06/lsklogo.png')
+    team8 = Team(name = 'Model Fotballklubb', nickname= 'MFK', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Molde_Fotball_Logo.svg/1200px-Molde_Fotball_Logo.svg.png')
+    team9 = Team(name = 'Odds Ballklubb', nickname= 'Odd', nationality = 'Norway', logo = 'https://cdn.freebiesupply.com/logos/large/2x/odd-grenland-logo-png-transparent.png')
+    team10 = Team(name = 'Rosenborg Ballklubb', nickname= 'RBK', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Rosenborg_Trondheim_logo.svg/1280px-Rosenborg_Trondheim_logo.svg.png')
+    team11 = Team(name = 'Sandefjord Fotball', nickname= 'SF', nationality = 'Norway', logo = 'https://seeklogo.com/images/S/sandefjord-fotball-1998-logo-93446812B5-seeklogo.com.png')
+    team12 = Team(name = 'Sarpsborg 08', nickname= 'S08', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Sarpsborg-08-Logo.png')
+    team13 = Team(name = 'Strømsgodset Idrettsforening', nickname = 'SIF', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Stromsgodset-IF-Logo.png')
+    team14 = Team(name = 'Tromsø Idrettslag', nickname= 'TIL', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Tromso-IL-HD-Logo.png')
+    team15 = Team(name = 'Viking Fotballklubb', nickname= 'VFK', nationality = 'Norway', logo = 'https://www.vikingfotball.no/_/image/309088f1-0c15-443b-82de-2b92398cb259:2ff456063dec6faba9ad418cff12ac8ae3902665/wide-72-72/vik-logo_20200309.svg')
+    team16 = Team(name = 'Vålrenga Idrettsforening', nickname= 'VIF', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/V%C3%A5lerenga_Oslo_logo.svg/2560px-V%C3%A5lerenga_Oslo_logo.svg.png')
+    team1.save()
+    team2.save()
+    team3.save()
+    team4.save()
+    team5.save()
+    team6.save()
+    team7.save()
+    team8.save()
+    team9.save()
+    team10.save()
+    team11.save()
+    team12.save()
+    team13.save()
+    team14.save()
+    team15.save()
+    team16.save()
 
-    team1 = Team('Aalesund Fotballklubb', 'AaFK', 'Norway','https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
-    team2 = Team('Fotballklubben Bodø/Glimt', 'B/Ø', 'Norway', 'https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
-    team3 = Team('Hamarkameratene', 'HamKam', 'Norway', 'https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
-    team4 = Team('Fotballklubben Haugesund', 'FKH', 'Norway', 'https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
-    team5 = Team('Fotballklubben Jerv', 'FKJ', 'Norway', 'https://www.fkjerv.no/ffo/_/image/af79704d-b782-4c83-95ae-2fb5d4b1ad72:9a68176dc8e024252ddb98acc9b51342e2c79b4e/wide-72-72/jer-logo-fra-ai.svg')
-    team6 = Team('Kristiansund Ballklubb', 'KBK', 'Norway', 'https://www.kristiansundbk.no/_/asset/no.seeds.app.football:1631535449/img/logo/kri/logo.png')
-    team7 = Team('Lillestrøm Sportsklubb', 'LSK', 'Norway', 'https://www.h-a.no/wp-content/uploads/2020/06/lsklogo.png')
 
-    db.session.add(team1)
-    db.session.add(team2)
-    db.session.add(team3)
-    db.session.add(team4)
-    db.session.add(team5)
-    db.session.add(team6)
-    db.session.add(team7)
+    badge1 = Badge(name = 'Created account', description = 'Create an account', level = 'Normal', picture = '../../assets/badgeIcons/Setup.png', category = 'null', points_needed = '0')
+    badge2 = Badge(name = 'Overall bronze', description = 'Total points collected 100', level = 'Bronze', picture = '../../assets/badgeIcons/Bronze.png', category = 'totalPoints', points_needed = '100')
+    badge3 = Badge(name = 'Overall silver', description = 'Total points collected 500', level = 'Silver', picture = '../../assets/badgeIcons/Silver.png', category = 'totalPoints', points_needed = '500')
+    badge4 = Badge(name = 'Overall gold', description = 'Total points collected 1000', level = 'Gold', picture = '../../assets/badgeIcons/Gold.png', category = 'totalPoints', points_needed = '1000')
+    badge5 = Badge(name = 'Overall platinum', description = 'Total points collected 2500', level = 'Platinum', picture = '../../assets/badgeIcons/Platinum.png', category = 'totalPoints', points_needed = '2500')
+    badge6 = Badge(name = 'Overall diamond', description = 'Total points collected 5000', level = 'Diamond', picture = '../../assets/badgeIcons/Diamond.png', category = 'totalPoints', points_needed = '5000')
 
+    badge1.save()
+    badge2.save()
+    badge3.save()
+    badge4.save()
+    badge5.save()
+    badge6.save()
+
+    user1 = User(username = 'Forzasys-test', password = 'TestP', given_name = 'Forzasys', family_name = 'Test', age = 25, email = 'test@forzasys.no', team_id = 16)
+    user1.save()
+    user1.badges.append(badge1)
     db.session.commit()
 
 

@@ -1,7 +1,9 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./createuser.css";
+import SelectTeam from "./SelectTeam";
+import soccerfan from "../../../assets/images/soccer-fan.jpg";
 
 export default function CreateUser() {
   const [fname, setFname] = useState("");
@@ -12,41 +14,54 @@ export default function CreateUser() {
   const [password, setPassword] = useState("");
   const [cpassword, setCpassword] = useState("");
 
-  function signup(e) {
+  const [errorPassword, setErrorPassword] = useState(true);
+
+  async function signup(e) {
     e.preventDefault();
+    if (password !== "" && password === cpassword) {
+      setErrorPassword(true);
+      const userdata = {
+        username: "kys2",
+        password: password,
+        given_name: fname,
+        family_name: lname,
+        age: age,
+        email: email,
+        team_id: team,
+      };
+      console.log(userdata);
 
-    const userdata = {
-      username: "kys",
-      password: password,
-      given_name: fname,
-      family_name: lname,
-      age: age,
-      email: email,
-      team_id: team,
-    };
-    console.log(userdata);
+      let url = "http://localhost:5000/api/user";
 
-    let url = "http://localhost:5000/api/user";
+      const headers = { "header-name": "value" };
+      const config = { headers };
 
-    const headers = { "header-name": "value" };
-    const config = { headers };
-
-    axios
-      .post(url, userdata, config)
-      .then((response) => {
-        console.log(response.status);
-        console.log(response.data);
-      })
-      .catch((e) => console.log("something went wrong :(", e));
+      axios
+        .post(url, userdata, config)
+        .then((response) => {
+          console.log(response.status);
+          console.log(response.data);
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    } else {
+      setErrorPassword(false);
+    }
   }
 
   return (
     <div>
       <div className="signup">
+        <div className="imgholder-fan">
+          <img src={soccerfan} alt="soccerfan" />
+        </div>
+
         <div className="signup-cnt">
           <div className="signup-content">
             <div className="signup-form">
-              <h1 className="form-title">Sign up</h1>
+              <div className="signup-header-cnt">
+                <h1 className="form-title">Sign up</h1>
+              </div>
+
               <form
                 onSubmit={signup}
                 className="register-form"
@@ -101,18 +116,6 @@ export default function CreateUser() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="team"></label>
-                  <p>Favorite Team</p>
-                  <input
-                    type="text"
-                    name="team"
-                    id="team"
-                    autoComplete="off"
-                    onChange={(e) => setTeam(e.target.value)}
-                  ></input>
-                </div>
-
-                <div className="form-group">
                   <label htmlFor="password"></label>
                   <p>Password</p>
                   <input
@@ -134,16 +137,25 @@ export default function CreateUser() {
                     autoComplete="off"
                     onChange={(e) => setCpassword(e.target.value)}
                   ></input>
+                  <h5 className="error" hidden={errorPassword}>
+                    Passwords don't match
+                  </h5>
                 </div>
+
+                <div className="testest">
+                  <h1 className="chooseteamh1">Choose your favorite team!</h1>
+                  <SelectTeam />
+                </div>
+
                 <div className="form-button">
                   <button type="submit" className="login-btn">
                     Register
                   </button>
+                  <NavLink to="/login" className="signup-image-link">
+                    Do you already have a account? Click here!
+                  </NavLink>
                 </div>
               </form>
-              <NavLink to="/login" className="signup-image-link">
-                I am already a user
-              </NavLink>
             </div>
           </div>
         </div>

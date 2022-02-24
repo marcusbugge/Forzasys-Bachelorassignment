@@ -24,8 +24,10 @@ BASE = http://127.0.0.1:5000
 
 /api/badge [GET] -> all badges
 
+/api/badges/user/<int:id> [GET] -> all badges for user with id
+
 /api/badge [POST] -> create badge (name, description, level, picture, category, points_needed)
 
 /api/badge/<int:id> [GET, PUT, DELETE] ->
 
-/api/userBadges [PUT] -> gives badge to user if achieved
+/api/badge/collect [PUT] -> gives badge to user if achieved
