@@ -1,18 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./profiledata.css";
 import usericon from "../../../assets/icons/usericon.png";
 import FeedPosts from "../feed/FeedPosts";
 import axios from "axios";
 
 export default function Profilepage() {
-  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState();
+  const [badges, setBadges] = useState([]);
+  const [loading, setLoading] = useState();
 
-  async function getUsers() {
-    const test = await axios.get("http://localhost:5000/api/user");
-    console.log('Req: ',test);
-    const data = test.data;
-    setUsers(data);
-    console.log('State: ', users);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { data: response } = await axios.get(
+          "http://127.0.0.1:5000/api/user/1"
+        );
+
+        setUser(response);
+      } catch (error) {
+        console.error(error.message);
+      }
+      setLoading(false);
+      getBadges();
+    };
+
+    fetchData();
+  }, []);
+
+  async function getBadges() {
+    const api_request = await axios.get(
+      "http://localhost:5000/api/badges/user/1"
+    );
+    setBadges(api_request.data);
+    console.log("Badges", api_request.data);
   }
 
   const posts = [
@@ -53,12 +74,9 @@ export default function Profilepage() {
         <div className="badge">3</div>
         <div className="badge">4</div>
         <div className="badge">5</div>
-        <div className="badge">6</div>
+        <div className="badge">5</div>
       </div>
 
-      <div>
-        <button onClick={getUsers}>Trykk her</button>
-      </div>
 
       <div className="most-popularclips-cnt">
         <div className="stroke-blue"></div>
@@ -80,3 +98,4 @@ export default function Profilepage() {
     </div>
   );
 }
+
