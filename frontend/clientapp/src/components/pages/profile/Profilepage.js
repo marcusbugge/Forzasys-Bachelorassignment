@@ -45,6 +45,10 @@ export default function Profilepage() {
       <div className="profiledata">
         <div className="picture-icon-cnt">
           <img src={usericon} alt="profilepicture" />
+          <img
+            src={require("../../../assets/icons/usericon.png")}
+            alt="profilepicture"
+          />
         </div>
         <h1>Navn Navnesen</h1>
       </div>

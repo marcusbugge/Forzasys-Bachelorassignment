@@ -18,16 +18,16 @@ export default function CreateUser() {
 
   async function signup(e) {
     e.preventDefault();
+
     if (password !== "" && password === cpassword) {
       setErrorPassword(true);
       const userdata = {
-        username: "kys2",
         password: password,
         given_name: fname,
         family_name: lname,
         age: age,
         email: email,
-        team_id: team,
+        team_id: localStorage.getItem("team"),
       };
       console.log(userdata);
 
@@ -143,8 +143,7 @@ export default function CreateUser() {
                 </div>
 
                 <div className="testest">
-                  <h1 className="chooseteamh1">Choose your favorite team!</h1>
-                  <SelectTeam />
+                  <SelectTeam setTeam={setTeam} />
                 </div>
 
                 <div className="form-button">
