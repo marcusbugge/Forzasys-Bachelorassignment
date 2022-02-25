@@ -9,9 +9,11 @@ import FeedPosts from "./components/pages/feed/FeedPosts";
 import MainStandPage from "./components/pages/standings/MainStandPage";
 
 import CreateUser from "./components/pages/login/CreateUser";
-
+import { useEffect, useState } from "react";
 
 function App() {
+  const [signedIn, setSignedIn] = useState(false);
+
   return (
     <BrowserRouter>
       <div className="application">
@@ -28,7 +30,6 @@ function App() {
             <Route path="/signup" element={<CreateUser />} />
 
             <Route path="/" element={<MainStandPage />} />
-
           </Routes>
           <Footer />
         </div>

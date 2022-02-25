@@ -18,9 +18,6 @@ export default function Login() {
 
   async function login(e) {
     if (e.target.email.value === "user" && e.target.password.value === "1234") {
-      localStorage.setItem("loggedIn", true);
-      localStorage.setItem("user", e.target.email.value);
-      console.log("logged in!");
     }
   }
 
@@ -30,15 +27,20 @@ export default function Login() {
     password = e.target.password.value;
 
     const user = {
-      Username: username,
-      Password: password,
+      email: username,
+      password: password,
     };
 
+    console.log(user);
+
     axios
-      .post("/api/user/login", user, config)
+      .post("http://127.0.0.1:5000/api/login", user)
       .then((response) => {
         console.log(response.status);
         console.log(response.data);
+        localStorage.setItem("loggedIn", true);
+        localStorage.setItem("user", e.target.email.value);
+        console.log("logged in!");
         setUser(response.data);
       })
       .catch((e) => console.log("something went wrong :(", e));
@@ -53,10 +55,10 @@ export default function Login() {
             <h1>LOGIN</h1>
           </div>
 
-          <form onSubmit={login}>
+          <form onSubmit={handleLogin}>
             <div className="label-cnt">
               <label>
-                <p>Username</p>
+                <p>Email</p>
                 <input className="input" name="email" type="text" />
               </label>
               <label>
