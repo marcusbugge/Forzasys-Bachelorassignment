@@ -95,10 +95,10 @@ class User(UserMixin, db.Model):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
 
-    def is_authenticated(self, username, password):
+    def is_authenticated(self, email, password):
         users = User.get_all()
         for user in users:
-            if username.lower() == user.username.lower() and password == user.password:
+            if email.lower() == user.email.lower() and password == user.password:
                 return True
         return False
 
@@ -249,15 +249,15 @@ def load_user(id):
 def login():
     try:
         data = request.args
-        user_to_login = User.is_authenticated(
-            data['username'], data['password'])
-        login_user(user_to_login)
-        return jsonify({
+        users = User.get_all()
+        for user in users:
+            if data['email'] == user.email and data['password'] == user.password:
+                return jsonify({
             'message': 'Logging in...'
         }), 200
     except:
         return jsonify({
-            'error': 'Wrong username and/ or password'
+            'error': 'Wrong email and/ or password'
         }), 404
 
 
@@ -622,22 +622,22 @@ def internal_server(error):
 def bootstrap_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = '../../../assets/teamLogos/AIK-logo.png')
-    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = '../../../assets/teamLogos/Hacken-logo.png')
-    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Degerfors-logo.png')
-    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = '../../../assets/teamLogos/Djurgardens-logo.png')
-    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = '../../../assets/teamLogos/Sundsvall-logo.png')
-    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Hammarby-logo.png')
-    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Helsingborgs-logo.png')
-    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = '../../../assets/teamLogos/Ekfsborg-logo.png')
-    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = '../../../assets/teamLogos/Goteborg-logo.png')
-    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = '../../../assets/teamLogos/Norrkoping-logo.png')
-    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = '../../../assets/teamLogos/Varnamo-logo.png')
-    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = '../../../assets/teamLogos/Sirius-logo.png')
-    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Kalmar-logo.png')
-    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Malmo-logo.png')
-    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Mjallby-logo.png')
-    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = '../../../assets/teamLogos/Varbergs-logo.png')
+    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = "../../../assets/teamLogos/AIK-Logo.png")
+    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = "../../../assets/teamLogos/Hacken-Logo.png")
+    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Degerfors-Logo.png")
+    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = "../../../assets/teamLogos/Djurgardens-Logo.png")
+    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = "../../../assets/teamLogos/Sundsvall-Logo.png")
+    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Hammarby-logo.png")
+    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Helsingborgs-Logo.png")
+    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = "../../../assets/teamLogos/Ekfsborg-Logo.png")
+    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = "../../../assets/teamLogos/Goteborg-Logo.png")
+    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = "../../../assets/teamLogos/Norrkoping-Logo.png")
+    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = "../../../assets/teamLogos/Varnamo-Logo.png")
+    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = "../../../assets/teamLogos/Sirius-Logo.png")
+    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Kalmar-Logo.png")
+    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Malmo-Logo.png")
+    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Mjallby-Logo.png")
+    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = "../../../assets/teamLogos/Varbergs-Logo.png")
 
     team1.save()
     team2.save()
@@ -676,7 +676,7 @@ def bootstrap_data():
     badge5.save()
     badge6.save()
 
-    user1 = User(username='Forzasys-test', password='TestP', given_name='Forzasys',
+    user1 = User(password='TestP', given_name='Forzasys',
                  family_name='Test', age=25, email='test@forzasys.no', team_id=16)
     user1.save()
     user1.badges.append(badge1)
