@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Loading from "../../parts/Loading";
+
 import "./createuser.css";
 
 export default function SelectTeam(props) {
@@ -8,20 +10,23 @@ export default function SelectTeam(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { data: response } = await axios.get(
-          "http://127.0.0.1:5000/api/teams"
-        );
-        setTeams(response);
-      } catch (error) {
-        console.error(error.message);
-      }
-      setLoading(false);
+      axios
+        .get("http://localhost:5000/api/teams")
+        .then((response) => checkData(response.data))
+        .catch((error) => {
+          console.error("There was an error!", error);
+        });
     };
 
     fetchData();
   }, []);
+
+  function checkData(data) {
+    if (data !== "") {
+      setTeams(data);
+      setLoading(false);
+    }
+  }
 
   function selectTeam(team) {
     localStorage.setItem("team", team);
@@ -31,22 +36,28 @@ export default function SelectTeam(props) {
 
   return (
     <div className="testest">
-      <h1 className="chooseteamh1">Choose your favorite team!</h1>
-      <div className="chooseteam-cnt">
-        {teams.map((item) => (
-          <div
-            onClick={(e) => selectTeam(item.id)}
-            key={item.name}
-            className="team"
-          >
-            <div className="team-img-cnt" value={item.name}>
-              <img src={item.logo} alt={item.name} />
-            </div>
+      {loading ? (
+        <Loading className="loading-signup" />
+      ) : (
+        <div>
+          <h1 className="chooseteamh1">Choose your favorite team!</h1>
+          <div className="chooseteam-cnt">
+            {teams.map((item) => (
+              <div
+                onClick={(e) => selectTeam(item.id)}
+                key={item.name}
+                className="team"
+              >
+                <div className="team-img-cnt" value={item.name}>
+                  <img src={item.logo} alt={item.name} />
+                </div>
 
-            <h1>{item.name}</h1>
+                <h1>{item.name}</h1>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
