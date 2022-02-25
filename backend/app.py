@@ -6,8 +6,6 @@ from sqlalchemy import Integer, String, ForeignKey, Text
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
-from PIL import Image
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
 # https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
@@ -96,10 +94,8 @@ class User(UserMixin, db.Model):
             followers.c.followed_id == user.id).count() > 0
 
     def is_authenticated(self, email, password):
-        users = User.get_all()
-        for user in users:
-            if email.lower() == user.email.lower() and password == user.password:
-                return True
+        if email.lower() == self.email.lower() and password == self.password:
+            return True
         return False
 
 
@@ -247,18 +243,18 @@ def load_user(id):
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    try:
-        data = request.args
-        users = User.get_all()
-        for user in users:
-            if data['email'] == user.email and data['password'] == user.password:
-                return jsonify({
-            'message': 'Logging in...'
-        }), 200
-    except:
-        return jsonify({
-            'error': 'Wrong email and/ or password'
-        }), 404
+    data = request.args
+    email = data['email']
+    password = data['password']
+    users = User.get_all()
+    for user in users:
+        if user.is_authenticated(email, password):
+            return jsonify({
+                'message': 'Logging in...'
+            }), 200
+    return jsonify({
+        'error': 'Wrong email and/ or password'
+    }), 404
 
 
 @app.route('/api/logout', methods=['POST'])
@@ -622,22 +618,22 @@ def internal_server(error):
 def bootstrap_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = "../../../assets/teamLogos/AIK-Logo.png")
-    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = "../../../assets/teamLogos/Hacken-Logo.png")
-    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Degerfors-Logo.png")
-    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = "../../../assets/teamLogos/Djurgardens-Logo.png")
-    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = "../../../assets/teamLogos/Sundsvall-Logo.png")
-    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Hammarby-logo.png")
-    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Helsingborgs-Logo.png")
-    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = "../../../assets/teamLogos/Ekfsborg-Logo.png")
-    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = "../../../assets/teamLogos/Goteborg-Logo.png")
-    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = "../../../assets/teamLogos/Norrkoping-Logo.png")
-    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = "../../../assets/teamLogos/Varnamo-Logo.png")
-    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = "../../../assets/teamLogos/Sirius-Logo.png")
-    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Kalmar-Logo.png")
-    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Malmo-Logo.png")
-    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = "../../../assets/teamLogos/Mjallby-Logo.png")
-    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = "../../../assets/teamLogos/Varbergs-Logo.png")
+    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = "AIK-Logo.png")
+    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = "Hacken-Logo.png")
+    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = "Degerfors-Logo.png")
+    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = "Djurgardens-Logo.png")
+    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = "Sundsvall-Logo.png")
+    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = "Hammarby-Logo.png")
+    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = "Helsingborgs-Logo.png")
+    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = "Elfsborg-Logo.png")
+    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = "Goteborg-Logo.png")
+    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = "Norrkoping-Logo.png")
+    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = "Varnamo-Logo.png")
+    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = "Sirius-Logo.png")
+    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = "Kalmar-Logo.png")
+    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = "Malmo-Logo.png")
+    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = "Mjallby-Logo.png")
+    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = "Varbergs-Logo.png")
 
     team1.save()
     team2.save()
@@ -657,17 +653,17 @@ def bootstrap_data():
     team16.save()
 
     badge1 = Badge(name='Created account', description='Create an account', level='Normal',
-                   picture='../../assets/badgeIcons/Setup.png', category='null', points_needed='0')
+                   picture='Setup.png', category='null', points_needed='0')
     badge2 = Badge(name='Overall bronze', description='Total points collected 100', level='Bronze',
-                   picture='../../assets/badgeIcons/Bronze.png', category='totalPoints', points_needed='100')
+                   picture='Bronze.png', category='totalPoints', points_needed='100')
     badge3 = Badge(name='Overall silver', description='Total points collected 500', level='Silver',
-                   picture='../../assets/badgeIcons/Silver.png', category='totalPoints', points_needed='500')
+                   picture='Silver.png', category='totalPoints', points_needed='500')
     badge4 = Badge(name='Overall gold', description='Total points collected 1000', level='Gold',
-                   picture='../../assets/badgeIcons/Gold.png', category='totalPoints', points_needed='1000')
+                   picture='Gold.png', category='totalPoints', points_needed='1000')
     badge5 = Badge(name='Overall platinum', description='Total points collected 2500', level='Platinum',
-                   picture='../../assets/badgeIcons/Platinum.png', category='totalPoints', points_needed='2500')
+                   picture='Platinum.png', category='totalPoints', points_needed='2500')
     badge6 = Badge(name='Overall diamond', description='Total points collected 5000', level='Diamond',
-                   picture='../../assets/badgeIcons/Diamond.png', category='totalPoints', points_needed='5000')
+                   picture='Diamond.png', category='totalPoints', points_needed='5000')
 
     badge1.save()
     badge2.save()

@@ -41,7 +41,13 @@ export default function Profilepage() {
       owner: "owner3",
     },
   ];
-
+/**
+ * {badges.map((item) => {
+      <div className="badges-cnt">
+        <img src={require("../../../assets/badgeIcons/" + item.picture)} alt={item.name}/>
+      </div>
+      })}
+ */
   return (
     <div className="profile-cnt">
       <div className="profiledata">
