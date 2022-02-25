@@ -27,14 +27,15 @@ export default function Login() {
     password = e.target.password.value;
 
     const user = {
-      Username: username,
-      Password: password,
+      email: username,
+      password: password,
     };
 
+    console.log(user);
+
     axios
-      .post("http://localhost:5000/api/login", user)
+      .post("http://127.0.0.1:5000/api/login", user)
       .then((response) => {
-        console.log(user);
         console.log(response.status);
         console.log(response.data);
         localStorage.setItem("loggedIn", true);
