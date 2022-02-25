@@ -71,7 +71,6 @@ export default function Profilepage() {
         <div className="badge">5</div>
       </div>
 
-
       <div className="most-popularclips-cnt">
         <div className="stroke-blue"></div>
         <div className="posts">
@@ -92,4 +91,3 @@ export default function Profilepage() {
     </div>
   );
 }
-
