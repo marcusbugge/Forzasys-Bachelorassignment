@@ -115,12 +115,11 @@ class UserSchema(Schema):
 class Team(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(30), nullable=False)
-    nickname = db.Column(String(6), nullable=False)
     nationality = db.Column(String(25), nullable=False)
     logo = db.Column(String(250), nullable=False)
     supporters = db.relationship('User', backref=db.backref('database', lazy='joined'), lazy='select')
     def __repr__(self):
-        return f'Team(name={self.name}, nickname={self.nickname}, nationality={self.nationality} logo={self.logo})'
+        return f'Team(name={self.name}, nationality={self.nationality} logo={self.logo})'
 
     @classmethod
     def get_all(cls):
@@ -141,7 +140,6 @@ class Team(db.Model):
 class TeamSchema(Schema):
     id = fields.Integer()
     name = fields.String()
-    nickname = fields.String()
     nationality = fields.String()
     logo = fields.String()
     supporters = fields.List(fields.String())
@@ -367,7 +365,6 @@ def create_team():
     data = request.args
     newTeam = Team(
         name = data['name'],
-        nickname = data['nickname'],
         nationality = data['nationality'],            
         logo = data['logo']
     )
@@ -390,8 +387,6 @@ def update_team(id):
 
     if data['name']:
         team_to_uptdate.name = data['name']
-    if data['nickname']:
-        team_to_uptdate.nickname = data['nickname']
     if data['nationality']:
         team_to_uptdate.nationality = data['nationality']
     if data['logo']:
@@ -588,22 +583,23 @@ def internal_server(error):
 def bootstrap_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name = 'AIK Fotboll', nickname = 'AIK', nationality = 'Sweden', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
-    team2 = Team(name = 'Fotballklubben Bodø/Glimt', nickname= 'B/Ø', nationality = 'Norway', logo = 'https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
-    team3 = Team(name = 'Hamarkameratene', nickname= 'HamKam', nationality = 'Norway', logo = 'https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
-    team4 = Team(name = 'Fotballklubben Haugesund', nickname= 'FKH', nationality = 'Norway', logo = 'https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
-    team5 = Team(name = 'Fotballklubben Jerv', nickname= 'FKJ', nationality = 'Norway', logo = 'https://www.fkjerv.no/ffo/_/image/af79704d-b782-4c83-95ae-2fb5d4b1ad72:9a68176dc8e024252ddb98acc9b51342e2c79b4e/wide-72-72/jer-logo-fra-ai.svg')
-    team6 = Team(name = 'Kristiansund Ballklubb', nickname= 'KBK', nationality = 'Norway', logo = 'https://www.kristiansundbk.no/_/asset/no.seeds.app.football:1631535449/img/logo/kri/logo.png')
-    team7 = Team(name = 'Lillestrøm Sportsklubb', nickname= 'LSK', nationality = 'Norway', logo = 'https://www.h-a.no/wp-content/uploads/2020/06/lsklogo.png')
-    team8 = Team(name = 'Model Fotballklubb', nickname= 'MFK', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Molde_Fotball_Logo.svg/1200px-Molde_Fotball_Logo.svg.png')
-    team9 = Team(name = 'Odds Ballklubb', nickname= 'Odd', nationality = 'Norway', logo = 'https://cdn.freebiesupply.com/logos/large/2x/odd-grenland-logo-png-transparent.png')
-    team10 = Team(name = 'Rosenborg Ballklubb', nickname= 'RBK', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Rosenborg_Trondheim_logo.svg/1280px-Rosenborg_Trondheim_logo.svg.png')
-    team11 = Team(name = 'Sandefjord Fotball', nickname= 'SF', nationality = 'Norway', logo = 'https://seeklogo.com/images/S/sandefjord-fotball-1998-logo-93446812B5-seeklogo.com.png')
-    team12 = Team(name = 'Sarpsborg 08', nickname= 'S08', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Sarpsborg-08-Logo.png')
-    team13 = Team(name = 'Strømsgodset Idrettsforening', nickname = 'SIF', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Stromsgodset-IF-Logo.png')
-    team14 = Team(name = 'Tromsø Idrettslag', nickname= 'TIL', nationality = 'Norway', logo = 'https://www.logofootball.net/wp-content/uploads/Tromso-IL-HD-Logo.png')
-    team15 = Team(name = 'Viking Fotballklubb', nickname= 'VFK', nationality = 'Norway', logo = 'https://www.vikingfotball.no/_/image/309088f1-0c15-443b-82de-2b92398cb259:2ff456063dec6faba9ad418cff12ac8ae3902665/wide-72-72/vik-logo_20200309.svg')
-    team16 = Team(name = 'Vålrenga Idrettsforening', nickname= 'VIF', nationality = 'Norway', logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/V%C3%A5lerenga_Oslo_logo.svg/2560px-V%C3%A5lerenga_Oslo_logo.svg.png')
+    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = '../../../assets/teamLogos/AIK-logo.png')
+    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = '../../../assets/teamLogos/Hacken-logo.png')
+    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Degerfors-logo.png')
+    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = '../../../assets/teamLogos/Djurgardens-logo.png')
+    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = '../../../assets/teamLogos/Sundsvall-logo.png')
+    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Hammarby-logo.png')
+    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Helsingborgs-logo.png')
+    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = '../../../assets/teamLogos/Ekfsborg-logo.png')
+    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = '../../../assets/teamLogos/Goteborg-logo.png')
+    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = '../../../assets/teamLogos/Norrkoping-logo.png')
+    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = '../../../assets/teamLogos/Varnamo-logo.png')
+    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = '../../../assets/teamLogos/Sirius-logo.png')
+    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Kalmar-logo.png')
+    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Malmo-logo.png')
+    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = '../../../assets/teamLogos/Mjallby-logo.png')
+    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = '../../../assets/teamLogos/Varbergs-logo.png')
+
     team1.save()
     team2.save()
     team3.save()
