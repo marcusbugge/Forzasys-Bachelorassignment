@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
-#https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
+# https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
 
 app = Flask(__name__)
 api = Api(app)
@@ -23,24 +23,26 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-
-#-----------------------------------------START OF MODELS ----------------------------------
+# -----------------------------------------START OF MODELS ----------------------------------
 earned_badges = db.Table('earned_badges',
-    db.Column('user_id', Integer, ForeignKey('user.id')),
-    db.Column('badge_id', Integer, ForeignKey('badge.id'))
-)
+                         db.Column('user_id', Integer, ForeignKey('user.id')),
+                         db.Column('badge_id', Integer, ForeignKey('badge.id'))
+                         )
 
 followers = db.Table('followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-)
+                     db.Column('follower_id', db.Integer,
+                               db.ForeignKey('user.id')),
+                     db.Column('followed_id', db.Integer,
+                               db.ForeignKey('user.id'))
+                     )
+
 
 class FollowerSchema(Schema):
     id = fields.Integer()
 
+
 class User(UserMixin, db.Model):
     id = db.Column(Integer, primary_key=True)
-    username = db.Column(String(30), unique=True, nullable=True)
     password = db.Column(String(40), nullable=False)
     given_name = db.Column(String(50), nullable=False)
     family_name = db.Column(String(50), nullable=False)
@@ -48,15 +50,17 @@ class User(UserMixin, db.Model):
     email = db.Column(String(50), nullable=False)
     team_id = db.Column(Integer, ForeignKey('team.id'), nullable=False)
 
-    #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
+    # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
-    
-    videos = db.relationship('Video', backref=db.backref('user', lazy='joined'), lazy='select')
-    badges = db.relationship('Badge', secondary=earned_badges, backref='database', lazy='select')
+
+    videos = db.relationship('Video', backref=db.backref(
+        'user', lazy='joined'), lazy='select')
+    badges = db.relationship(
+        'Badge', secondary=earned_badges, backref='database', lazy='select')
 
     def __repr__(self):
         return f'{self.id}'
@@ -98,9 +102,9 @@ class User(UserMixin, db.Model):
                 return True
         return False
 
+
 class UserSchema(Schema):
     id = fields.Integer()
-    username = fields.String()
     password = fields.String()
     given_name = fields.String()
     family_name = fields.String()
@@ -117,7 +121,9 @@ class Team(db.Model):
     name = db.Column(String(30), nullable=False)
     nationality = db.Column(String(25), nullable=False)
     logo = db.Column(String(250), nullable=False)
-    supporters = db.relationship('User', backref=db.backref('database', lazy='joined'), lazy='select')
+    supporters = db.relationship('User', backref=db.backref(
+        'database', lazy='joined'), lazy='select')
+
     def __repr__(self):
         return f'Team(name={self.name}, nationality={self.nationality} logo={self.logo})'
 
@@ -137,6 +143,7 @@ class Team(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class TeamSchema(Schema):
     id = fields.Integer()
     name = fields.String()
@@ -152,6 +159,7 @@ class Video(db.Model):
     caption = db.Column(String(50))
     likes = db.Column(Integer)
     views = db.Column(Integer)
+
     def __repr__(self):
         return f'{self.id}'
 
@@ -171,6 +179,7 @@ class Video(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class BytesField(fields.Field):
     def _validate(self, value):
         if not isinstance(value, bytes):
@@ -178,7 +187,8 @@ class BytesField(fields.Field):
 
         if value is None or value == b'':
             raise ValidationErr('Invalid value')
-            
+
+
 class VideoSchema(Schema):
     id = fields.Integer()
     user_id = fields.String()
@@ -197,6 +207,7 @@ class Badge(db.Model):
     picture = db.Column(String(250), unique=True, nullable=False)
     category = db.Column(String(15), nullable=False)
     points_needed = db.Column(Integer, nullable=False)
+
     def __repr__(self):
         return f'{self.id}'
 
@@ -216,6 +227,7 @@ class Badge(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class BadgeSchema(Schema):
     id = fields.Integer()
     name = fields.String()
@@ -225,33 +237,38 @@ class BadgeSchema(Schema):
     category = fields.String()
     points_needed = fields.String()
 
-#--------------------------------------- END OF MODELS ----------------------------------
+# --------------------------------------- END OF MODELS ----------------------------------
+
 
 @login_manager.user_loader
 def load_user(id):
     return User.get_by_id(id)
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
         data = request.args
-        user_to_login = User.is_authenticated(data['username'], data['password'])
+        user_to_login = User.is_authenticated(
+            data['username'], data['password'])
         login_user(user_to_login)
         return jsonify({
-            'message' : 'Logging in...'
+            'message': 'Logging in...'
         }), 200
     except:
         return jsonify({
-            'error' : 'Wrong username and/ or password'
+            'error': 'Wrong username and/ or password'
         }), 404
+
 
 @app.route('/api/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
     return jsonify({
-        'message' : 'Logging out...'
+        'message': 'Logging out...'
     }), 200
+
 
 @app.route('/api/loggedInUser', methods=['GET'])
 @login_required
@@ -261,6 +278,7 @@ def loggedInUser():
 
     return jsonify(result), 200
 
+
 @app.route('/api/users', methods=['GET'])
 def get_all_users():
     users = User.get_all()
@@ -268,17 +286,17 @@ def get_all_users():
     result = serializer.dump(users)
     return jsonify(result), 200
 
+
 @app.route('/api/user', methods=['POST'])
 def create_user():
     data = request.json
     newUser = User(
-        username = data['username'],
-        password = data['password'],
-        given_name = data['given_name'],
-        family_name = data['family_name'],
-        age = data['age'],
-        email = data['email'],
-        team_id = data['team_id']
+        password=data['password'],
+        given_name=data['given_name'],
+        family_name=data['family_name'],
+        age=data['age'],
+        email=data['email'],
+        team_id=data['team_id']
     )
 
     newUser.save()
@@ -288,6 +306,7 @@ def create_user():
 
     return jsonify(result), 201
 
+
 @app.route('/api/user/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.get_by_id(id)
@@ -295,6 +314,7 @@ def get_user(id):
     result = serializer.dump(user)
 
     return jsonify(result), 200
+
 
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
@@ -318,6 +338,7 @@ def update_user(id):
     serializer = UserSchema()
     result = serializer.dump(user_to_uptdate)
     return jsonify(result), 200
+
 
 @app.route('/api/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
@@ -360,6 +381,7 @@ def get_all_teams():
     result = serializer.dump(teams)
     return jsonify(result), 200
 
+
 @app.route('/api/team', methods=['POST'])
 def create_team():
     data = request.args
@@ -373,12 +395,14 @@ def create_team():
     result = serializer.dump(newTeam)
     return jsonify(result), 201
 
+
 @app.route('/api/team/<int:id>', methods=['GET'])
 def get_one_team(id):
     team = Team.get_by_id(id)
     serializer = TeamSchema()
     result = serializer.dump(team)
     return jsonify(result), 200
+
 
 @app.route('/api/team/<int:id>', methods=['PUT'])
 def update_team(id):
@@ -398,6 +422,7 @@ def update_team(id):
     result = serializer.dump(team_to_uptdate)
     return jsonify(result), 200
 
+
 @app.route('/api/team/<int:id>', methods=['DELETE'])
 def delete_team(id):
     team_to_delete = Team.get_by_id(id)
@@ -407,6 +432,7 @@ def delete_team(id):
         'message': 'deleted'
     }), 204
 
+
 @app.route('/api/videos', methods=['GET'])
 def get_all_videos():
     videos = Video.get_all()
@@ -414,20 +440,22 @@ def get_all_videos():
     result = serializer.dump(videos)
     return jsonify(result), 200
 
+
 @app.route('/api/video', methods=['POST'])
 def create_video():
     data = request.json
     newVideo = Video(
-        user_id = data['user_id'],
-        video = data['video'],
-        caption = data['caption'],
-        likes = 0,
-        views = 0
+        user_id=data['user_id'],
+        video=data['video'],
+        caption=data['caption'],
+        likes=0,
+        views=0
     )
 
     newVideo.save()
 
     return jsonify(success=True)
+
 
 @app.route('/api/video/<int:id>', methods=['GET'])
 def get_video(id):
@@ -436,6 +464,7 @@ def get_video(id):
     result = serializer.dump(video)
 
     return jsonify(result), 200
+
 
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
@@ -457,6 +486,7 @@ def update_video(id):
     result = serializer.dump(video_to_uptdate)
     return jsonify(result), 200
 
+
 @app.route('/api/video/<int:id>', methods=['DELETE'])
 def delete_video(id):
     video_to_delete = Video.get_by_id(id)
@@ -466,6 +496,7 @@ def delete_video(id):
         'message': 'deleted'
     }), 204
 
+
 @app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
@@ -473,16 +504,17 @@ def get_all_badges():
     result = serializer.dump(badges)
     return jsonify(result), 200
 
+
 @app.route('/api/badge', methods=['POST'])
 def create_badge():
     data = request.args
     newBadge = Badge(
-        name = data['name'],
-        description = data['description'],
-        level = data['level'],
-        picture = data['picture'],
-        category = data['category'],
-        points_needed = data['points_needed']
+        name=data['name'],
+        description=data['description'],
+        level=data['level'],
+        picture=data['picture'],
+        category=data['category'],
+        points_needed=data['points_needed']
     )
 
     newBadge.save()
@@ -492,6 +524,7 @@ def create_badge():
 
     return jsonify(result), 201
 
+
 @app.route('/api/badge/<int:id>', methods=['GET'])
 def get_badge(id):
     badge = Badge.get_by_id(id)
@@ -499,6 +532,7 @@ def get_badge(id):
     result = serializer.dump(badge)
 
     return jsonify(result), 200
+
 
 @app.route('/api/badges/user/<int:id>', methods=['GET'])
 def get_users_badges(id):
@@ -513,7 +547,6 @@ def get_users_badges(id):
     serializer = BadgeSchema(many=True)
     result = serializer.dump(array)
     return jsonify(result), 200
-    
 
 
 @app.route('/api/badge/<int:id>', methods=['PUT'])
@@ -540,6 +573,7 @@ def update_badge(id):
     result = serializer.dump(badge_to_uptdate)
     return jsonify(result), 200
 
+
 @app.route('/api/badge/<int:id>', methods=['DELETE'])
 def delete_badge(id):
     badge_to_delete = Badge.get_by_id(id)
@@ -548,6 +582,7 @@ def delete_badge(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
 
 @app.route('/api/badge/collect', methods=['PUT'])
 def user_badge():
@@ -563,6 +598,7 @@ def user_badge():
     result = serializer.dump(users)
     return jsonify(result), 200
 
+
 def calculateBadges(badge, user):
     for video in user.videos:
         if badge.category == 'Likes' and video.likes >= badge.points_needed:
@@ -571,13 +607,16 @@ def calculateBadges(badge, user):
             return True
     return False
 
+
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'message' : 'Resource not found'}), 404
+    return jsonify({'message': 'Resource not found'}), 404
+
 
 @app.errorhandler(500)
 def internal_server(error):
-    return jsonify({'message' : 'There is a problem'}), 500
+    return jsonify({'message': 'There is a problem'}), 500
+
 
 @app.cli.command("db-data")
 def bootstrap_data():
@@ -617,13 +656,18 @@ def bootstrap_data():
     team15.save()
     team16.save()
 
-
-    badge1 = Badge(name = 'Created account', description = 'Create an account', level = 'Normal', picture = '../../assets/badgeIcons/Setup.png', category = 'null', points_needed = '0')
-    badge2 = Badge(name = 'Overall bronze', description = 'Total points collected 100', level = 'Bronze', picture = '../../assets/badgeIcons/Bronze.png', category = 'totalPoints', points_needed = '100')
-    badge3 = Badge(name = 'Overall silver', description = 'Total points collected 500', level = 'Silver', picture = '../../assets/badgeIcons/Silver.png', category = 'totalPoints', points_needed = '500')
-    badge4 = Badge(name = 'Overall gold', description = 'Total points collected 1000', level = 'Gold', picture = '../../assets/badgeIcons/Gold.png', category = 'totalPoints', points_needed = '1000')
-    badge5 = Badge(name = 'Overall platinum', description = 'Total points collected 2500', level = 'Platinum', picture = '../../assets/badgeIcons/Platinum.png', category = 'totalPoints', points_needed = '2500')
-    badge6 = Badge(name = 'Overall diamond', description = 'Total points collected 5000', level = 'Diamond', picture = '../../assets/badgeIcons/Diamond.png', category = 'totalPoints', points_needed = '5000')
+    badge1 = Badge(name='Created account', description='Create an account', level='Normal',
+                   picture='../../assets/badgeIcons/Setup.png', category='null', points_needed='0')
+    badge2 = Badge(name='Overall bronze', description='Total points collected 100', level='Bronze',
+                   picture='../../assets/badgeIcons/Bronze.png', category='totalPoints', points_needed='100')
+    badge3 = Badge(name='Overall silver', description='Total points collected 500', level='Silver',
+                   picture='../../assets/badgeIcons/Silver.png', category='totalPoints', points_needed='500')
+    badge4 = Badge(name='Overall gold', description='Total points collected 1000', level='Gold',
+                   picture='../../assets/badgeIcons/Gold.png', category='totalPoints', points_needed='1000')
+    badge5 = Badge(name='Overall platinum', description='Total points collected 2500', level='Platinum',
+                   picture='../../assets/badgeIcons/Platinum.png', category='totalPoints', points_needed='2500')
+    badge6 = Badge(name='Overall diamond', description='Total points collected 5000', level='Diamond',
+                   picture='../../assets/badgeIcons/Diamond.png', category='totalPoints', points_needed='5000')
 
     badge1.save()
     badge2.save()
@@ -632,13 +676,14 @@ def bootstrap_data():
     badge5.save()
     badge6.save()
 
-    user1 = User(username = 'Forzasys-test', password = 'TestP', given_name = 'Forzasys', family_name = 'Test', age = 25, email = 'test@forzasys.no', team_id = 16)
+    user1 = User(username='Forzasys-test', password='TestP', given_name='Forzasys',
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16)
     user1.save()
     user1.badges.append(badge1)
     db.session.commit()
 
-
     print('Added data to database')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
