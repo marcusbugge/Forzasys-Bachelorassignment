@@ -13,8 +13,8 @@ export default function Profilepage() {
     const test = await axios.get("http://localhost:5000/api/user");
     console.log("Req: ", test);
     const data = test.data;
-    setUsers(data);
-    console.log("State: ", users);
+    setUser(data);
+    console.log("State: ", user);
   }
 
   const [video, setVideo] = useState(null);
@@ -52,6 +52,13 @@ export default function Profilepage() {
       </div>
 
       <div className="badges-cnt">
+      {badges.map((icon) => (
+          <div className="team">
+            <div className="team-img-cnt">
+              <img src={icon.picture} alt="" />
+            </div>
+            </div>
+            ))}
         <div className="badge">1</div>
         <div className="badge">2</div>
         <div className="badge">3</div>
