@@ -48,7 +48,7 @@ class User(UserMixin, db.Model):
     email = db.Column(String(50), nullable=False)
     team_id = db.Column(Integer, ForeignKey('team.id'), nullable=False)
 
-    # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
+    #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -249,6 +249,7 @@ def login():
     users = User.get_all()
     for user in users:
         if user.is_authenticated(email, password):
+            login_user(user)
             return jsonify({
                 'message': 'Logging in...'
             }), 200
@@ -267,7 +268,6 @@ def logout():
 
 
 @app.route('/api/loggedInUser', methods=['GET'])
-@login_required
 def loggedInUser():
     serializer = UserSchema()
     result = serializer.dump(current_user)
@@ -349,7 +349,7 @@ def delete_user(id):
 @app.route('/api/user/follow/<int:id>', methods=['PUT'])
 def follow_user(id):
     user_to_follow = User.get_by_id(id)
-    data = request.args
+    data = request.json
     user_following = User.get_by_id(data['user_id'])
     user_following.follow(user_to_follow)
     return jsonify({
@@ -380,7 +380,7 @@ def get_all_teams():
 
 @app.route('/api/team', methods=['POST'])
 def create_team():
-    data = request.args
+    data = request.json
     newTeam = Team(
         name = data['name'],
         nationality = data['nationality'],            
@@ -503,7 +503,7 @@ def get_all_badges():
 
 @app.route('/api/badge', methods=['POST'])
 def create_badge():
-    data = request.args
+    data = request.json
     newBadge = Badge(
         name=data['name'],
         description=data['description'],
@@ -580,18 +580,16 @@ def delete_badge(id):
     }), 204
 
 
-@app.route('/api/badge/collect', methods=['PUT'])
-def user_badge():
-    users = User.get_all()
-    badges = Badge.get_all()
-    for user in users:
-        for badge in badges:
-            if calculateBadges(badge, user):
-                user.badges.append(badge)
+@app.route('/api/badge/collect/<int:id>', methods=['PUT'])
+def user_badge(id):
+    user = User.get_by_id(id)
+    data = request.args
+    badge = Badge.get_by_id(data['id'])
+    user.badges.append(badge)
     db.session.commit()
 
     serializer = UserSchema()
-    result = serializer.dump(users)
+    result = serializer.dump(user)
     return jsonify(result), 200
 
 
