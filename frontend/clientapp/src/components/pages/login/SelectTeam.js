@@ -49,7 +49,7 @@ export default function SelectTeam(props) {
                 className="team"
               >
                 <div className="team-img-cnt" value={item.name}>
-                  <img src={item.logo} alt={item.name} />
+                  <img src={require("../../../assets/teamLogos/"+item.logo)} alt={item.name} />
                 </div>
 
                 <h1>{item.name}</h1>

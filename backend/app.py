@@ -6,8 +6,6 @@ from sqlalchemy import Integer, String, ForeignKey, Text
 from marshmallow import Schema, fields
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
-from PIL import Image
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
 # https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
@@ -50,7 +48,7 @@ class User(UserMixin, db.Model):
     email = db.Column(String(50), nullable=False)
     team_id = db.Column(Integer, ForeignKey('team.id'), nullable=False)
 
-    # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
+    #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -95,11 +93,9 @@ class User(UserMixin, db.Model):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
 
-    def is_authenticated(self, username, password):
-        users = User.get_all()
-        for user in users:
-            if username.lower() == user.username.lower() and password == user.password:
-                return True
+    def is_authenticated(self, email, password):
+        if email.lower() == self.email.lower() and password == self.password:
+            return True
         return False
 
 
@@ -119,14 +115,13 @@ class UserSchema(Schema):
 class Team(db.Model):
     id = db.Column(Integer, primary_key=True)
     name = db.Column(String(30), nullable=False)
-    nickname = db.Column(String(6), nullable=False)
     nationality = db.Column(String(25), nullable=False)
     logo = db.Column(String(250), nullable=False)
     supporters = db.relationship('User', backref=db.backref(
         'database', lazy='joined'), lazy='select')
 
     def __repr__(self):
-        return f'Team(name={self.name}, nickname={self.nickname}, nationality={self.nationality} logo={self.logo})'
+        return f'Team(name={self.name}, nationality={self.nationality} logo={self.logo})'
 
     @classmethod
     def get_all(cls):
@@ -148,7 +143,6 @@ class Team(db.Model):
 class TeamSchema(Schema):
     id = fields.Integer()
     name = fields.String()
-    nickname = fields.String()
     nationality = fields.String()
     logo = fields.String()
     supporters = fields.List(fields.String())
@@ -249,18 +243,19 @@ def load_user(id):
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    try:
-        data = request.args
-        user_to_login = User.is_authenticated(
-            data['username'], data['password'])
-        login_user(user_to_login)
-        return jsonify({
-            'message': 'Logging in...'
-        }), 200
-    except:
-        return jsonify({
-            'error': 'Wrong username and/ or password'
-        }), 404
+    data = request.args
+    email = data['email']
+    password = data['password']
+    users = User.get_all()
+    for user in users:
+        if user.is_authenticated(email, password):
+            login_user(user)
+            return jsonify({
+                'message': 'Logging in...'
+            }), 200
+    return jsonify({
+        'error': 'Wrong email and/ or password'
+    }), 404
 
 
 @app.route('/api/logout', methods=['POST'])
@@ -273,7 +268,6 @@ def logout():
 
 
 @app.route('/api/loggedInUser', methods=['GET'])
-@login_required
 def loggedInUser():
     serializer = UserSchema()
     result = serializer.dump(current_user)
@@ -355,7 +349,7 @@ def delete_user(id):
 @app.route('/api/user/follow/<int:id>', methods=['PUT'])
 def follow_user(id):
     user_to_follow = User.get_by_id(id)
-    data = request.args
+    data = request.json
     user_following = User.get_by_id(data['user_id'])
     user_following.follow(user_to_follow)
     return jsonify({
@@ -386,12 +380,11 @@ def get_all_teams():
 
 @app.route('/api/team', methods=['POST'])
 def create_team():
-    data = request.args
+    data = request.json
     newTeam = Team(
-        name=data['name'],
-        nickname=data['nickname'],
-        nationality=data['nationality'],
-        logo=data['logo']
+        name = data['name'],
+        nationality = data['nationality'],            
+        logo = data['logo']
     )
     newTeam.save()
     serializer = TeamSchema()
@@ -414,8 +407,6 @@ def update_team(id):
 
     if data['name']:
         team_to_uptdate.name = data['name']
-    if data['nickname']:
-        team_to_uptdate.nickname = data['nickname']
     if data['nationality']:
         team_to_uptdate.nationality = data['nationality']
     if data['logo']:
@@ -512,7 +503,7 @@ def get_all_badges():
 
 @app.route('/api/badge', methods=['POST'])
 def create_badge():
-    data = request.args
+    data = request.json
     newBadge = Badge(
         name=data['name'],
         description=data['description'],
@@ -589,18 +580,16 @@ def delete_badge(id):
     }), 204
 
 
-@app.route('/api/badge/collect', methods=['PUT'])
-def user_badge():
-    users = User.get_all()
-    badges = Badge.get_all()
-    for user in users:
-        for badge in badges:
-            if calculateBadges(badge, user):
-                user.badges.append(badge)
+@app.route('/api/badge/collect/<int:id>', methods=['PUT'])
+def user_badge(id):
+    user = User.get_by_id(id)
+    data = request.args
+    badge = Badge.get_by_id(data['id'])
+    user.badges.append(badge)
     db.session.commit()
 
     serializer = UserSchema()
-    result = serializer.dump(users)
+    result = serializer.dump(user)
     return jsonify(result), 200
 
 
@@ -627,38 +616,23 @@ def internal_server(error):
 def bootstrap_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name='AIK Fotboll', nickname='AIK', nationality='Sweden',
-                 logo='https://divisjonsforeningen.no/wp-content/uploads/2015/03/aalesund_logo_512.png')
-    team2 = Team(name='Fotballklubben Bodø/Glimt', nickname='B/Ø', nationality='Norway',
-                 logo='https://divisjonsforeningen.no/wp-content/uploads/2019/01/glimt.png')
-    team3 = Team(name='Hamarkameratene', nickname='HamKam', nationality='Norway',
-                 logo='https://www.fotballnerd.no/wp-content/uploads/2018/08/73F74FB6-E83E-4773-BE46-0A4D12A2F5CC.png')
-    team4 = Team(name='Fotballklubben Haugesund', nickname='FKH', nationality='Norway',
-                 logo='https://seeklogo.com/images/F/fk-haugesund-logo-A0F2A7E062-seeklogo.com.png')
-    team5 = Team(name='Fotballklubben Jerv', nickname='FKJ', nationality='Norway',
-                 logo='https://www.fkjerv.no/ffo/_/image/af79704d-b782-4c83-95ae-2fb5d4b1ad72:9a68176dc8e024252ddb98acc9b51342e2c79b4e/wide-72-72/jer-logo-fra-ai.svg')
-    team6 = Team(name='Kristiansund Ballklubb', nickname='KBK', nationality='Norway',
-                 logo='https://www.kristiansundbk.no/_/asset/no.seeds.app.football:1631535449/img/logo/kri/logo.png')
-    team7 = Team(name='Lillestrøm Sportsklubb', nickname='LSK', nationality='Norway',
-                 logo='https://www.h-a.no/wp-content/uploads/2020/06/lsklogo.png')
-    team8 = Team(name='Model Fotballklubb', nickname='MFK', nationality='Norway',
-                 logo='https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Molde_Fotball_Logo.svg/1200px-Molde_Fotball_Logo.svg.png')
-    team9 = Team(name='Odds Ballklubb', nickname='Odd', nationality='Norway',
-                 logo='https://cdn.freebiesupply.com/logos/large/2x/odd-grenland-logo-png-transparent.png')
-    team10 = Team(name='Rosenborg Ballklubb', nickname='RBK', nationality='Norway',
-                  logo='https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Rosenborg_Trondheim_logo.svg/1280px-Rosenborg_Trondheim_logo.svg.png')
-    team11 = Team(name='Sandefjord Fotball', nickname='SF', nationality='Norway',
-                  logo='https://seeklogo.com/images/S/sandefjord-fotball-1998-logo-93446812B5-seeklogo.com.png')
-    team12 = Team(name='Sarpsborg 08', nickname='S08', nationality='Norway',
-                  logo='https://www.logofootball.net/wp-content/uploads/Sarpsborg-08-Logo.png')
-    team13 = Team(name='Strømsgodset Idrettsforening', nickname='SIF', nationality='Norway',
-                  logo='https://www.logofootball.net/wp-content/uploads/Stromsgodset-IF-Logo.png')
-    team14 = Team(name='Tromsø Idrettslag', nickname='TIL', nationality='Norway',
-                  logo='https://www.logofootball.net/wp-content/uploads/Tromso-IL-HD-Logo.png')
-    team15 = Team(name='Viking Fotballklubb', nickname='VFK', nationality='Norway',
-                  logo='https://www.vikingfotball.no/_/image/309088f1-0c15-443b-82de-2b92398cb259:2ff456063dec6faba9ad418cff12ac8ae3902665/wide-72-72/vik-logo_20200309.svg')
-    team16 = Team(name='Vålrenga Idrettsforening', nickname='VIF', nationality='Norway',
-                  logo='https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/V%C3%A5lerenga_Oslo_logo.svg/2560px-V%C3%A5lerenga_Oslo_logo.svg.png')
+    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = "AIK-Logo.png")
+    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = "Hacken-Logo.png")
+    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = "Degerfors-Logo.png")
+    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = "Djurgardens-Logo.png")
+    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = "Sundsvall-Logo.png")
+    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = "Hammarby-Logo.png")
+    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = "Helsingborgs-Logo.png")
+    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = "Elfsborg-Logo.png")
+    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = "Goteborg-Logo.png")
+    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = "Norrkoping-Logo.png")
+    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = "Varnamo-Logo.png")
+    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = "Sirius-Logo.png")
+    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = "Kalmar-Logo.png")
+    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = "Malmo-Logo.png")
+    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = "Mjallby-Logo.png")
+    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = "Varbergs-Logo.png")
+
     team1.save()
     team2.save()
     team3.save()
@@ -677,17 +651,17 @@ def bootstrap_data():
     team16.save()
 
     badge1 = Badge(name='Created account', description='Create an account', level='Normal',
-                   picture='../../assets/badgeIcons/Setup.png', category='null', points_needed='0')
+                   picture='Setup.png', category='null', points_needed='0')
     badge2 = Badge(name='Overall bronze', description='Total points collected 100', level='Bronze',
-                   picture='../../assets/badgeIcons/Bronze.png', category='totalPoints', points_needed='100')
+                   picture='Bronze.png', category='totalPoints', points_needed='100')
     badge3 = Badge(name='Overall silver', description='Total points collected 500', level='Silver',
-                   picture='../../assets/badgeIcons/Silver.png', category='totalPoints', points_needed='500')
+                   picture='Silver.png', category='totalPoints', points_needed='500')
     badge4 = Badge(name='Overall gold', description='Total points collected 1000', level='Gold',
-                   picture='../../assets/badgeIcons/Gold.png', category='totalPoints', points_needed='1000')
+                   picture='Gold.png', category='totalPoints', points_needed='1000')
     badge5 = Badge(name='Overall platinum', description='Total points collected 2500', level='Platinum',
-                   picture='../../assets/badgeIcons/Platinum.png', category='totalPoints', points_needed='2500')
+                   picture='Platinum.png', category='totalPoints', points_needed='2500')
     badge6 = Badge(name='Overall diamond', description='Total points collected 5000', level='Diamond',
-                   picture='../../assets/badgeIcons/Diamond.png', category='totalPoints', points_needed='5000')
+                   picture='Diamond.png', category='totalPoints', points_needed='5000')
 
     badge1.save()
     badge2.save()
@@ -696,7 +670,7 @@ def bootstrap_data():
     badge5.save()
     badge6.save()
 
-    user1 = User(username='Forzasys-test', password='TestP', given_name='Forzasys',
+    user1 = User(password='TestP', given_name='Forzasys',
                  family_name='Test', age=25, email='test@forzasys.no', team_id=16)
     user1.save()
     user1.badges.append(badge1)

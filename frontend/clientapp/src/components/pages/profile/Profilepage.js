@@ -29,7 +29,6 @@ export default function Profilepage() {
 
   const [video, setVideo] = useState(null);
 
-
   return (
     <div className="profile-cnt">
       <div className="profiledata">
