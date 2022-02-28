@@ -2,9 +2,9 @@ from xml.dom import ValidationErr
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
+from itsdangerous import json
 from sqlalchemy import Integer, String, ForeignKey, Text
 from marshmallow import Schema, fields
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_cors import CORS
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
@@ -17,8 +17,6 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///buggeDB.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 
 # -----------------------------------------START OF MODELS ----------------------------------
@@ -39,13 +37,14 @@ class FollowerSchema(Schema):
     id = fields.Integer()
 
 
-class User(UserMixin, db.Model):
+class User(db.Model):
     id = db.Column(Integer, primary_key=True)
     password = db.Column(String(40), nullable=False)
     given_name = db.Column(String(50), nullable=False)
     family_name = db.Column(String(50), nullable=False)
     age = db.Column(Integer, nullable=False)
     email = db.Column(String(50), nullable=False)
+    total_points = db.Column(Integer, nullable=False)
     team_id = db.Column(Integer, ForeignKey('team.id'), nullable=False)
 
     #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
@@ -107,6 +106,7 @@ class UserSchema(Schema):
     age = fields.Integer()
     email = fields.String()
     team_id = fields.Integer()
+    total_points = fields.Integer()
     followed = fields.List(fields.String())
     videos = fields.List(fields.String())
     badges = fields.List(fields.String())
@@ -236,43 +236,20 @@ class BadgeSchema(Schema):
 # --------------------------------------- END OF MODELS ----------------------------------
 
 
-@login_manager.user_loader
-def load_user(id):
-    return User.get_by_id(id)
-
-
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.args
+    data = request.json
     email = data['email']
     password = data['password']
     users = User.get_all()
     for user in users:
         if user.is_authenticated(email, password):
-            login_user(user)
             return jsonify({
                 'message': 'Logging in...'
             }), 200
     return jsonify({
         'error': 'Wrong email and/ or password'
     }), 404
-
-
-@app.route('/api/logout', methods=['POST'])
-@login_required
-def logout():
-    logout_user()
-    return jsonify({
-        'message': 'Logging out...'
-    }), 200
-
-
-@app.route('/api/loggedInUser', methods=['GET'])
-def loggedInUser():
-    serializer = UserSchema()
-    result = serializer.dump(current_user)
-
-    return jsonify(result), 200
 
 
 @app.route('/api/users', methods=['GET'])
@@ -287,12 +264,13 @@ def get_all_users():
 def create_user():
     data = request.json
     newUser = User(
-        password=data['password'],
-        given_name=data['given_name'],
-        family_name=data['family_name'],
-        age=data['age'],
-        email=data['email'],
-        team_id=data['team_id']
+        password = data['password'],
+        given_name = data['given_name'],
+        family_name = data['family_name'],
+        total_points = 0,
+        age = data['age'],
+        email = data['email'],
+        team_id = data['team_id']
     )
 
     newUser.save()
@@ -427,6 +405,19 @@ def delete_team(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
+@app.route('/api/leaderboard/<int:team_id>', methods=['GET'])
+def supporter_leaderboard(team_id):
+    users = User.get_all()
+    users_to_return = []
+    for user in users:
+        if user.team_id == team_id:
+            users_to_return.append(user)
+    users_to_return.sort(key=lambda x: x.total_points, reverse=True)
+    serializer = UserSchema(many=True)
+    result = serializer.dump(users_to_return)
+    return jsonify(result), 200
+    
 
 
 @app.route('/api/videos', methods=['GET'])
@@ -613,7 +604,7 @@ def internal_server(error):
 
 
 @app.cli.command("db-data")
-def bootstrap_data():
+def db_data():
     db.drop_all()
     db.create_all()
     team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = "AIK-Logo.png")
@@ -671,8 +662,17 @@ def bootstrap_data():
     badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16)
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 0)
+    user2 = User(password='TestP', given_name='Forzasys',
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 1)
+    user3 = User(password='TestP', given_name='Forzasys',
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 2)
+    user4 = User(password='TestP', given_name='Forzasys',
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 3)
     user1.save()
+    user2.save()
+    user3.save()
+    user4.save()
     user1.badges.append(badge1)
     db.session.commit()
 
