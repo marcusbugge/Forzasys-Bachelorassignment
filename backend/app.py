@@ -1,6 +1,4 @@
 from flask import request, jsonify
-from itsdangerous import json
-from sqlalchemy import null
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
 from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Answer, AnswerSchema
@@ -29,7 +27,6 @@ def get_all_users():
     result = serializer.dump(users)
     return jsonify(result), 200
 
-
 @app.route('/api/user', methods=['POST'])
 def create_user():
     data = request.json
@@ -50,7 +47,6 @@ def create_user():
 
     return jsonify(result), 201
 
-
 @app.route('/api/user/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.get_by_id(id)
@@ -58,7 +54,6 @@ def get_user(id):
     result = serializer.dump(user)
 
     return jsonify(result), 200
-
 
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
@@ -82,7 +77,6 @@ def update_user(id):
     serializer = UserSchema()
     result = serializer.dump(user_to_uptdate)
     return jsonify(result), 200
-
 
 @app.route('/api/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
@@ -125,7 +119,6 @@ def get_all_teams():
     result = serializer.dump(teams)
     return jsonify(result), 200
 
-
 @app.route('/api/team', methods=['POST'])
 def create_team():
     data = request.json
@@ -139,14 +132,12 @@ def create_team():
     result = serializer.dump(newTeam)
     return jsonify(result), 201
 
-
 @app.route('/api/team/<int:id>', methods=['GET'])
 def get_one_team(id):
     team = Team.get_by_id(id)
     serializer = TeamSchema()
     result = serializer.dump(team)
     return jsonify(result), 200
-
 
 @app.route('/api/team/<int:id>', methods=['PUT'])
 def update_team(id):
@@ -165,7 +156,6 @@ def update_team(id):
     serializer = TeamSchema()
     result = serializer.dump(team_to_uptdate)
     return jsonify(result), 200
-
 
 @app.route('/api/team/<int:id>', methods=['DELETE'])
 def delete_team(id):
@@ -200,22 +190,20 @@ def get_all_videos():
     result = serializer.dump(videos)
     return jsonify(result), 200
 
-
 @app.route('/api/video', methods=['POST'])
 def create_video():
     data = request.json
     newVideo = Video(
-        user_id=data['user_id'],
-        video=data['video'],
-        caption=data['caption'],
-        likes=0,
-        views=0
+        user_id = data['user_id'],
+        video = data['video'],
+        caption = data['caption'],
+        likes = 0,
+        views = 0
     )
 
     newVideo.save()
 
     return jsonify(success=True)
-
 
 @app.route('/api/video/<int:id>', methods=['GET'])
 def get_video(id):
@@ -224,7 +212,6 @@ def get_video(id):
     result = serializer.dump(video)
 
     return jsonify(result), 200
-
 
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
@@ -278,7 +265,6 @@ def delete_video(id):
         'message': 'deleted'
     }), 204
 
-
 @app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
@@ -286,17 +272,16 @@ def get_all_badges():
     result = serializer.dump(badges)
     return jsonify(result), 200
 
-
 @app.route('/api/badge', methods=['POST'])
 def create_badge():
     data = request.json
     newBadge = Badge(
-        name=data['name'],
-        description=data['description'],
-        level=data['level'],
-        picture=data['picture'],
-        category=data['category'],
-        points_needed=data['points_needed']
+        name = data['name'],
+        description = data['description'],
+        level = data['level'],
+        picture = data['picture'],
+        category = data['category'],
+        points_needed = data['points_needed']
     )
 
     newBadge.save()
@@ -306,7 +291,6 @@ def create_badge():
 
     return jsonify(result), 201
 
-
 @app.route('/api/badge/<int:id>', methods=['GET'])
 def get_badge(id):
     badge = Badge.get_by_id(id)
@@ -314,7 +298,6 @@ def get_badge(id):
     result = serializer.dump(badge)
 
     return jsonify(result), 200
-
 
 @app.route('/api/badges/user/<int:id>', methods=['GET'])
 def get_users_badges(id):
@@ -329,6 +312,7 @@ def get_users_badges(id):
     serializer = BadgeSchema(many=True)
     result = serializer.dump(array)
     return jsonify(result), 200
+    
 
 
 @app.route('/api/badge/<int:id>', methods=['PUT'])
@@ -354,7 +338,6 @@ def update_badge(id):
     serializer = BadgeSchema()
     result = serializer.dump(badge_to_uptdate)
     return jsonify(result), 200
-
 
 @app.route('/api/badge/<int:id>', methods=['DELETE'])
 def delete_badge(id):
@@ -416,16 +399,13 @@ def answer_a_comment(comment_id):
     result = serializer.dump(answer)
     return jsonify(result), 200
 
-
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'message': 'Resource not found'}), 404
-
+    return jsonify({'message' : 'Resource not found'}), 404
 
 @app.errorhandler(500)
 def internal_server(error):
-    return jsonify({'message': 'There is a problem'}), 500
-
+    return jsonify({'message' : 'There is a problem'}), 500
 
 @app.cli.command("db-data")
 def db_data():
@@ -506,6 +486,7 @@ def db_data():
 
     print('Added data to database')
 
+    print('Added data to database')
 
 if __name__ == '__main__':
     app.run(debug=True)

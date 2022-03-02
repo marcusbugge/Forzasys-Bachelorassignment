@@ -52,6 +52,9 @@ export default function Navbar() {
             <Link to="/goaloftheround">Goal of the round</Link>
           </div>
           <div className="rank-nav-cnt">
+            <Link to="/weeklytrivia">Weekly trivia</Link>
+          </div>
+          <div className="rank-nav-cnt">
             <Link to="/">Most popular video</Link>
           </div>
 
