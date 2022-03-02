@@ -12,7 +12,19 @@ import CreateUser from "./components/pages/login/CreateUser";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [signedIn, setSignedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  //Function to validate if user is logged in
+  async function validateIfIserIsLoggedIn() {
+    if (localStorage.getItem("loggedIn")) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }
+  useEffect(() => {
+    validateIfIserIsLoggedIn();
+  }, []);
 
   return (
     <BrowserRouter>
@@ -25,7 +37,11 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/profil" element={<Profilepage />} />
-            <Route path="/feed" element={<FeedPosts />} />
+            {isLoggedIn ? (
+              <Route path="/feed" element={<FeedPosts />} />
+            ) : (
+              <Route path="/signup" element={<CreateUser />} />
+            )}
 
             <Route path="/signup" element={<CreateUser />} />
 

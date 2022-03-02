@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./standings.css";
 import usericon from "../../../assets/icons/usericon.png";
+import axios from "axios";
 
 export default function MainStandPage() {
+  const [standFilter, setStandFilter] = useState([1, 10]);
+  const [stand, setStand] = useState();
+
+  useEffect(() => {
+    updateStanding();
+  }, []);
+
+  /* const fetchData = async () => {
+    axios
+      .get(
+        "http://localhost:5000/api/standings/" +
+          standFilter[0] +
+          "-" +
+          standFilter[1]
+      )
+      .then((response) => setStand(response.data))
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  }; */
+
+  async function updateStanding(lower, upper) {
+    setStandFilter([lower, upper]);
+    setStand(userstats[lower]);
+  }
+
   const userstats = [
     {
       name: "navn1",
@@ -69,6 +96,17 @@ export default function MainStandPage() {
     },
   ];
 
+  function StepButtons({ updateStanding }) {
+    return (
+      <div className="step-buttons">
+        <button className="prev-btn">Prev</button>
+        <button onClick={() => updateStanding(3, 5)} className="next-btn">
+          Next
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="standings-header">
@@ -100,10 +138,7 @@ export default function MainStandPage() {
             </div>
           ))}
         </div>
-        <div className="step-buttons">
-          <button className="prev-btn">Prev</button>
-          <button className="next-btn">Next</button>
-        </div>
+        <StepButtons updateStanding={updateStanding} />
       </div>
     </div>
   );
