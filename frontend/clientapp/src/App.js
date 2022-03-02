@@ -10,6 +10,7 @@ import MainStandPage from "./components/pages/standings/MainStandPage";
 
 import CreateUser from "./components/pages/login/CreateUser";
 import { useEffect, useState } from "react";
+import Weeklytrivia from "./components/pages/competitions/weeklytrivia/Weeklytrivia";
 
 function App() {
   const [signedIn, setSignedIn] = useState(false);
@@ -29,6 +30,7 @@ function App() {
 
             <Route path="/signup" element={<CreateUser />} />
 
+            <Route path="/weeklytrivia" element={<Weeklytrivia />} />
             <Route path="/" element={<MainStandPage />} />
           </Routes>
           <Footer />

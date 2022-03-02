@@ -8,7 +8,7 @@ from marshmallow import Schema, fields
 from flask_cors import CORS
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 
-# https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
+#https://medium.com/@ns2586/sqlalchemys-relationship-and-lazy-parameter-4a553257d9ef
 
 app = Flask(__name__)
 api = Api(app)
@@ -19,19 +19,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-# -----------------------------------------START OF MODELS ----------------------------------
+
+#-----------------------------------------START OF MODELS ----------------------------------
 earned_badges = db.Table('earned_badges',
-                         db.Column('user_id', Integer, ForeignKey('user.id')),
-                         db.Column('badge_id', Integer, ForeignKey('badge.id'))
-                         )
+    db.Column('user_id', Integer, ForeignKey('user.id')),
+    db.Column('badge_id', Integer, ForeignKey('badge.id'))
+)
 
 followers = db.Table('followers',
-                     db.Column('follower_id', db.Integer,
-                               db.ForeignKey('user.id')),
-                     db.Column('followed_id', db.Integer,
-                               db.ForeignKey('user.id'))
-                     )
-
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 class FollowerSchema(Schema):
     id = fields.Integer()
@@ -39,6 +37,7 @@ class FollowerSchema(Schema):
 
 class User(db.Model):
     id = db.Column(Integer, primary_key=True)
+    username = db.Column(String(30), unique=True, nullable=True)
     password = db.Column(String(40), nullable=False)
     given_name = db.Column(String(50), nullable=False)
     family_name = db.Column(String(50), nullable=False)
@@ -53,11 +52,9 @@ class User(db.Model):
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
-
-    videos = db.relationship('Video', backref=db.backref(
-        'user', lazy='joined'), lazy='select')
-    badges = db.relationship(
-        'Badge', secondary=earned_badges, backref='database', lazy='select')
+    
+    videos = db.relationship('Video', backref=db.backref('user', lazy='joined'), lazy='select')
+    badges = db.relationship('Badge', secondary=earned_badges, backref='database', lazy='select')
 
     def __repr__(self):
         return f'{self.id}'
@@ -97,9 +94,9 @@ class User(db.Model):
             return True
         return False
 
-
 class UserSchema(Schema):
     id = fields.Integer()
+    username = fields.String()
     password = fields.String()
     given_name = fields.String()
     family_name = fields.String()
@@ -117,9 +114,7 @@ class Team(db.Model):
     name = db.Column(String(30), nullable=False)
     nationality = db.Column(String(25), nullable=False)
     logo = db.Column(String(250), nullable=False)
-    supporters = db.relationship('User', backref=db.backref(
-        'database', lazy='joined'), lazy='select')
-
+    supporters = db.relationship('User', backref=db.backref('database', lazy='joined'), lazy='select')
     def __repr__(self):
         return f'Team(name={self.name}, nationality={self.nationality} logo={self.logo})'
 
@@ -139,7 +134,6 @@ class Team(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
 class TeamSchema(Schema):
     id = fields.Integer()
     name = fields.String()
@@ -155,7 +149,6 @@ class Video(db.Model):
     caption = db.Column(String(50))
     likes = db.Column(Integer)
     views = db.Column(Integer)
-
     def __repr__(self):
         return f'{self.id}'
 
@@ -175,7 +168,6 @@ class Video(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
 class BytesField(fields.Field):
     def _validate(self, value):
         if not isinstance(value, bytes):
@@ -183,8 +175,7 @@ class BytesField(fields.Field):
 
         if value is None or value == b'':
             raise ValidationErr('Invalid value')
-
-
+            
 class VideoSchema(Schema):
     id = fields.Integer()
     user_id = fields.String()
@@ -203,7 +194,6 @@ class Badge(db.Model):
     picture = db.Column(String(250), unique=True, nullable=False)
     category = db.Column(String(15), nullable=False)
     points_needed = db.Column(Integer, nullable=False)
-
     def __repr__(self):
         return f'{self.id}'
 
@@ -223,7 +213,6 @@ class Badge(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
 class BadgeSchema(Schema):
     id = fields.Integer()
     name = fields.String()
@@ -233,8 +222,7 @@ class BadgeSchema(Schema):
     category = fields.String()
     points_needed = fields.String()
 
-# --------------------------------------- END OF MODELS ----------------------------------
-
+#--------------------------------------- END OF MODELS ----------------------------------
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -259,7 +247,6 @@ def get_all_users():
     result = serializer.dump(users)
     return jsonify(result), 200
 
-
 @app.route('/api/user', methods=['POST'])
 def create_user():
     data = request.json
@@ -280,7 +267,6 @@ def create_user():
 
     return jsonify(result), 201
 
-
 @app.route('/api/user/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.get_by_id(id)
@@ -288,7 +274,6 @@ def get_user(id):
     result = serializer.dump(user)
 
     return jsonify(result), 200
-
 
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
@@ -312,7 +297,6 @@ def update_user(id):
     serializer = UserSchema()
     result = serializer.dump(user_to_uptdate)
     return jsonify(result), 200
-
 
 @app.route('/api/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
@@ -355,7 +339,6 @@ def get_all_teams():
     result = serializer.dump(teams)
     return jsonify(result), 200
 
-
 @app.route('/api/team', methods=['POST'])
 def create_team():
     data = request.json
@@ -369,14 +352,12 @@ def create_team():
     result = serializer.dump(newTeam)
     return jsonify(result), 201
 
-
 @app.route('/api/team/<int:id>', methods=['GET'])
 def get_one_team(id):
     team = Team.get_by_id(id)
     serializer = TeamSchema()
     result = serializer.dump(team)
     return jsonify(result), 200
-
 
 @app.route('/api/team/<int:id>', methods=['PUT'])
 def update_team(id):
@@ -395,7 +376,6 @@ def update_team(id):
     serializer = TeamSchema()
     result = serializer.dump(team_to_uptdate)
     return jsonify(result), 200
-
 
 @app.route('/api/team/<int:id>', methods=['DELETE'])
 def delete_team(id):
@@ -427,22 +407,20 @@ def get_all_videos():
     result = serializer.dump(videos)
     return jsonify(result), 200
 
-
 @app.route('/api/video', methods=['POST'])
 def create_video():
     data = request.json
     newVideo = Video(
-        user_id=data['user_id'],
-        video=data['video'],
-        caption=data['caption'],
-        likes=0,
-        views=0
+        user_id = data['user_id'],
+        video = data['video'],
+        caption = data['caption'],
+        likes = 0,
+        views = 0
     )
 
     newVideo.save()
 
     return jsonify(success=True)
-
 
 @app.route('/api/video/<int:id>', methods=['GET'])
 def get_video(id):
@@ -451,7 +429,6 @@ def get_video(id):
     result = serializer.dump(video)
 
     return jsonify(result), 200
-
 
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
@@ -473,7 +450,6 @@ def update_video(id):
     result = serializer.dump(video_to_uptdate)
     return jsonify(result), 200
 
-
 @app.route('/api/video/<int:id>', methods=['DELETE'])
 def delete_video(id):
     video_to_delete = Video.get_by_id(id)
@@ -483,7 +459,6 @@ def delete_video(id):
         'message': 'deleted'
     }), 204
 
-
 @app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
@@ -491,17 +466,16 @@ def get_all_badges():
     result = serializer.dump(badges)
     return jsonify(result), 200
 
-
 @app.route('/api/badge', methods=['POST'])
 def create_badge():
     data = request.json
     newBadge = Badge(
-        name=data['name'],
-        description=data['description'],
-        level=data['level'],
-        picture=data['picture'],
-        category=data['category'],
-        points_needed=data['points_needed']
+        name = data['name'],
+        description = data['description'],
+        level = data['level'],
+        picture = data['picture'],
+        category = data['category'],
+        points_needed = data['points_needed']
     )
 
     newBadge.save()
@@ -511,7 +485,6 @@ def create_badge():
 
     return jsonify(result), 201
 
-
 @app.route('/api/badge/<int:id>', methods=['GET'])
 def get_badge(id):
     badge = Badge.get_by_id(id)
@@ -519,7 +492,6 @@ def get_badge(id):
     result = serializer.dump(badge)
 
     return jsonify(result), 200
-
 
 @app.route('/api/badges/user/<int:id>', methods=['GET'])
 def get_users_badges(id):
@@ -534,6 +506,7 @@ def get_users_badges(id):
     serializer = BadgeSchema(many=True)
     result = serializer.dump(array)
     return jsonify(result), 200
+    
 
 
 @app.route('/api/badge/<int:id>', methods=['PUT'])
@@ -560,7 +533,6 @@ def update_badge(id):
     result = serializer.dump(badge_to_uptdate)
     return jsonify(result), 200
 
-
 @app.route('/api/badge/<int:id>', methods=['DELETE'])
 def delete_badge(id):
     badge_to_delete = Badge.get_by_id(id)
@@ -583,7 +555,6 @@ def user_badge(id):
     result = serializer.dump(user)
     return jsonify(result), 200
 
-
 def calculateBadges(badge, user):
     for video in user.videos:
         if badge.category == 'Likes' and video.likes >= badge.points_needed:
@@ -592,16 +563,13 @@ def calculateBadges(badge, user):
             return True
     return False
 
-
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'message': 'Resource not found'}), 404
-
+    return jsonify({'message' : 'Resource not found'}), 404
 
 @app.errorhandler(500)
 def internal_server(error):
-    return jsonify({'message': 'There is a problem'}), 500
-
+    return jsonify({'message' : 'There is a problem'}), 500
 
 @app.cli.command("db-data")
 def db_data():
@@ -676,8 +644,8 @@ def db_data():
     user1.badges.append(badge1)
     db.session.commit()
 
-    print('Added data to database')
 
+    print('Added data to database')
 
 if __name__ == '__main__':
     app.run(debug=True)
