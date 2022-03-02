@@ -69,31 +69,6 @@ export default function MainStandPage() {
       points: 200,
       posted_videos: 2,
     },
-    {
-      name: "navn3",
-      club: "club3",
-      points: 300,
-      posted_videos: 3,
-    },
-
-    {
-      name: "navn4",
-      club: "club4",
-      points: 400,
-      posted_videos: 4,
-    },
-    {
-      name: "navn1",
-      club: "club1",
-      points: 100,
-      posted_videos: 1,
-    },
-    {
-      name: "navn2",
-      club: "club2",
-      points: 200,
-      posted_videos: 2,
-    },
   ];
 
   function StepButtons({ updateStanding }) {
@@ -107,8 +82,23 @@ export default function MainStandPage() {
     );
   }
 
+  /* FILTER REQUESTS */
+
+  const [disabled, setDisabled] = useState(false);
+
+  function kyse(hey) {
+    console.log(hey);
+    setDisabled(true);
+  }
+
   return (
     <div>
+      <div className="fdghjkl">
+        <button disabled={disabled} onClick={() => kyse("HEYYYY")}>
+          ff ASAP
+        </button>
+        {true ? <div>sdfsdf</div> : ""}
+      </div>
       <div className="standings-header">
         <h1>Standings</h1>
       </div>
@@ -116,9 +106,9 @@ export default function MainStandPage() {
       <div className="tables">
         <div className="filtering">
           <h1>Sort by</h1>
-          <div>
-            <button>Sweden</button>
-            <button>Sw</button>
+          <div className="sort-buttons">
+            <button>Total points</button>
+            <button>Total points by club</button>
             <button>Your club</button>
           </div>
         </div>

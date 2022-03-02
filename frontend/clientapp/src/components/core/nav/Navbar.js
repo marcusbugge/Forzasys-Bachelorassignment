@@ -22,7 +22,7 @@ export default function Navbar() {
       {localStorage.getItem("loggedIn") ? (
         <div className="welcome-nav">
           {" "}
-          <h1>{localStorage.getItem("user")} usersen</h1>
+          <h1>{localStorage.getItem("user")}</h1>
           <button className="logout-btn" onClick={logout}>
             Log out
           </button>
