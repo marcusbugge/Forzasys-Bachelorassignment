@@ -251,15 +251,15 @@ def load_user(id):
 def login():
     try:
         data = request.args
-        user_to_login = User.is_authenticated(
-            data['username'], data['password'])
-        login_user(user_to_login)
-        return jsonify({
-            'message': 'Logging in...'
-        }), 200
+        users = User.get_all()
+        for user in users:
+            if data['email'] == user.email and data['password'] == user.password:
+                return jsonify({
+                    'message': 'Logging in...'
+                }), 200
     except:
         return jsonify({
-            'error': 'Wrong username and/ or password'
+            'error': 'Wrong email and/ or password'
         }), 404
 
 
