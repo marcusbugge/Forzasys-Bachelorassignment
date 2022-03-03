@@ -13,8 +13,8 @@ export default function Profilepage() {
     const test = await axios.get("http://localhost:5000/api/user");
     console.log("Req: ", test);
     const data = test.data;
-    setUsers(data);
-    console.log("State: ", users);
+    setUser(data);
+    console.log("State: ", user);
   }
 
   const [video, setVideo] = useState(null);
