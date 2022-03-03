@@ -47,7 +47,7 @@ export default function FeedPosts() {
 
   return (
     <div className="feed">
-      <div className="VideoUpload">
+      <div className="">
         <h1>Video upload</h1>
         <VideoInput />
       </div>
