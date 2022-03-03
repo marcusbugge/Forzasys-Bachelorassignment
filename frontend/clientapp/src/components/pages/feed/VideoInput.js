@@ -1,6 +1,8 @@
 import axios from "axios";
 import React from "react";
 
+import "./feed.css";
+
 export default function VideoInput(props) {
   const { width, height } = props;
 
@@ -40,13 +42,18 @@ export default function VideoInput(props) {
 
   return (
     <div className="VideoInput">
-      <input
-        ref={inputRef}
-        className="VideoInput_input"
-        type="file"
-        onChange={handleFileChange}
-        accept=".mov,.mp4"
-      />
+      <div className="VideoInput_box">
+        <input
+          ref={inputRef}
+          className="VideoInput_input"
+          type="file"
+          onChange={handleFileChange}
+          id="file"
+          accept=".mov,.mp4"
+        />
+        <label for="file">Choose a file</label>
+      </div>
+      <div className="VideoInput_buttons">
       {!source && <button onClick={handleChoose}>Choose</button>}
       {source && (
         <video
@@ -59,6 +66,7 @@ export default function VideoInput(props) {
       )}
       <div className="VideoInput_footer">
         <button onClick={postVideo}>Upload</button>
+      </div>
       </div>
     </div>
   );
