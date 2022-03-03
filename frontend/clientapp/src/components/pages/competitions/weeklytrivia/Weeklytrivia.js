@@ -9,34 +9,43 @@ export default function Weeklytrivia() {
 
   const questionlist = [
     {
-      spørsmål1: "spørsmål",
+      spørsmål1: "Spørsmål",
       answers: ["henke", "brede", "bugge"],
       correct: "henke",
     },
     {
-      spørsmål1: "spørsmå2",
+      spørsmål1: "Spørsmå2",
       answers: ["hengyke", "bredfgfdhde", "budfggge"],
       correct: "bredfgfdhde",
     },
     {
-      spørsmål1: "spørsmå3",
+      spørsmål1: "Spørsmå3",
       answers: ["henke", "brdfggdfede", "bugge"],
       correct: "bugge",
     },
     {
-      spørsmål1: "spørsmå4",
+      spørsmål1: "Spørsmå4",
       answers: ["henke", "brdfgdgfdfdfgede", "bugge"],
       correct: "henke",
     },
   ];
 
   function questionHandler(answer, correct) {
+    changeStyle();
     if (answer === correct) {
       console.log("correct!");
     } else console.log("wrong");
 
     console.log(answer);
   }
+
+  const [quizStyle, setQuizStyle] = useState("answers-cnt");
+
+  const changeStyle = () => {
+    console.log("you just clicked");
+
+    setQuizStyle("answers-cnt-active");
+  };
 
   return (
     <div className="quizpage">
@@ -50,15 +59,15 @@ export default function Weeklytrivia() {
         <div className="quizbox-cnt">
           <div className="quizheader">
             <div className="questionselection">
-              {questionlist.map((qObj) => (
-                <div key={qObj.spørsmål1} className="qustionobj">
+              {questionlist.map((qObj, index) => (
+                <div key={index} className="qustionobj">
                   <h1 className="question">{qObj.spørsmål1}</h1>
                   <div className="answers">
-                    {qObj.answers.map((answer) => (
+                    {qObj.answers.map((answer, index) => (
                       <div
-                        key={answer}
+                        key={index}
                         onClick={() => questionHandler(answer, qObj.correct)}
-                        className="answers-cnt"
+                        className={quizStyle}
                       >
                         <h2>{answer}</h2>
                       </div>
