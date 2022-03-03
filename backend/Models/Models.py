@@ -1,5 +1,7 @@
 from marshmallow import Schema, fields
 from xml.dom import ValidationErr
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy import PickleType
 from db import db
 
 earned_badges = db.Table('earned_badges',
@@ -13,6 +15,13 @@ followers = db.Table('followers',
                      db.Column('followed_id', db.Integer,
                                db.ForeignKey('user.id'))
                      )
+
+question_answer = db.Table('question_answer',
+                         db.Column('question_id', db.Integer,
+                                db.ForeignKey('question.id')),
+                         db.Column('answer_id', db.Integer, 
+                                db.ForeignKey('answer.id'))
+                         )
 
 
 class FollowerSchema(Schema):
@@ -69,6 +78,10 @@ class User(db.Model):
         if self.is_following(user):
             self.followed.remove(user)
             db.session.commit()
+
+    def add_badge(self, badge):
+        self.badges.append(badge)
+        db.session.commit()
 
     def is_following(self, user):
         return self.followed.filter(
@@ -228,7 +241,7 @@ class Comment(db.Model):
     content = db.Column(db.String(150), nullable=False)
     upvotes = db.Column(db.Integer)
     downvotes = db.Column(db.Integer)
-    answers = db.relationship('Answer', backref=db.backref(
+    reply = db.relationship('Reply', backref=db.backref(
         'database', lazy='joined'), lazy='select')
 
     def __repr__(self):
@@ -267,7 +280,7 @@ class CommentSchema(Schema):
     downvotes = fields.Integer()
     answers = fields.List(fields.String())
 
-class Answer(db.Model):
+class Reply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=False)
@@ -294,7 +307,7 @@ class Answer(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def answer(self, comment):
+    def reply(self, comment):
         self.comments.append(comment)
         db.session.commit()
 
@@ -302,10 +315,123 @@ class Answer(db.Model):
         self.comments.remove(comment)
         db.session.commit()
 
-class AnswerSchema(Schema):
+class ReplySchema(Schema):
     id = fields.Integer()
     user_id = fields.Integer()
     comment_id = fields.Integer()
     content = fields.String()
     upvotes = fields.Integer()
     downvotes = fields.Integer()
+
+
+class Quiz(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    questions = db.relationship('Question', backref=db.backref(
+        'database', lazy='joined'), lazy='select')
+    max_score = db.Column(db.Integer, nullable=False)
+    scores = db.Column(MutableList.as_mutable(PickleType),
+                                    default=[])
+    avg_score = db.Column(db.Integer)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def add_question(self, question):
+        self.questions.append(question)
+        db.session.commit()
+
+    def delete_question(self, question):
+        self.questions.remove(question)
+        db.session.commit()
+
+    def set_avg_score(self):
+        total_score = 0
+        for score in self.scores:
+            total_score += score
+        self.avg_score = total_score/len(self.scores)
+        db.session.commit()
+
+
+class QuizSchema(Schema):
+    id = fields.Integer()
+    question = fields.List(fields.String())
+    max_score = fields.Integer()
+    scores = fields.List(fields.Integer())
+    avg_score = fields.Integer()
+    
+
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
+    question = db.Column(db.String(150), unique=True, nullable=False)
+    answers = db.relationship('Answer', backref=db.backref(
+        'database', lazy='joined'), lazy='select')
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def add_answer(self, answer):
+        self.answers.append(answer)
+        db.session.commit()
+
+    def delete_question(self, answer):
+        self.answers.remove(answer)
+        db.session.commit()
+
+class QuestionSchema(Schema):
+    id = fields.Integer()
+    question = fields.String()
+    answers = fields.List(fields.String())
+
+class Answer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    content = db.Column(db.String, nullable=False)
+    correct = db.Column(db.Boolean, nullable=False)
+    
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+class AnswerSchema(Schema):
+    id = fields.Integer()
+    question_id = fields.Integer()
+    correct = fields.Boolean()

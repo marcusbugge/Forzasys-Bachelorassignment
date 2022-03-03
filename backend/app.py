@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
-from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Answer, AnswerSchema
+from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Quiz, QuizSchema, Question, QuestionSchema, Answer, AnswerSchema
 
 
 @app.route('/api/login', methods=['POST'])
@@ -384,19 +384,27 @@ def comment_a_video(video_id):
     result = serializer.dump(video)
     return jsonify(result), 200
 
-@app.route('/api/answer/comment/<int:comment_id>', methods=['POST'])
-def answer_a_comment(comment_id):
+@app.route('/api/reply/comment/<int:comment_id>', methods=['POST'])
+def reply_a_comment(comment_id):
     data = request.args
-    answer = Answer(
+    reply = Reply(
         user_id = data['user_id'],
         comment_id = comment_id,
         content = data['content'],
         upvotes = 0,
         downvotes = 0
     )
-    answer.save()
-    serializer = AnswerSchema()
-    result = serializer.dump(answer)
+    reply.save()
+    serializer = ReplySchema()
+    result = serializer.dump(reply)
+    return jsonify(result), 200
+
+
+@app.route('/api/quizzes', methods=['GET'])
+def get_all_quizzes():
+    quizzes = Quiz.get_all()
+    serializer = QuizSchema(many=True)
+    result = serializer.dump(quizzes)
     return jsonify(result), 200
 
 @app.errorhandler(404)
@@ -477,16 +485,29 @@ def db_data():
     user2.save()
     user3.save()
     user4.save()
-    user1.badges.append(badge1)
-    db.session.commit()
+    user1.add_badge(badge1)
 
     video = Video(caption = 'Funny video', likes = 0, views = 0, video = 'Random Video', user_id = 1)
     video.save()
-    db.session.commit()
+
+    quiz = Quiz(max_score = 1)
+    quiz.save()
+    question = Question(question = 'Hvem er eldst?', quiz_id = 1)
+    question.save()
+    a1 = Answer(content = 'Henke', question_id=1, correct = True)
+    a2 = Answer(content = 'Bugge', question_id=1, correct = False)
+    a3 = Answer(content = 'Feppe', question_id=1, correct = False)
+
+    a1.save()
+    a2.save()
+    a3.save()
+
+    question.answers.append(a1)
+    question.answers.append(a2)
+    question.answers.append(a3)
 
     print('Added data to database')
 
-    print('Added data to database')
 
 if __name__ == '__main__':
     app.run(debug=True)
