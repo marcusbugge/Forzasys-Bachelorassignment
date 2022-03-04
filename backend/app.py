@@ -27,17 +27,18 @@ def get_all_users():
     result = serializer.dump(users)
     return jsonify(result), 200
 
+
 @app.route('/api/user', methods=['POST'])
 def create_user():
     data = request.json
     newUser = User(
-        password = data['password'],
-        given_name = data['given_name'],
-        family_name = data['family_name'],
-        total_points = 0,
-        age = data['age'],
-        email = data['email'],
-        team_id = data['team_id']
+        password=data['password'],
+        given_name=data['given_name'],
+        family_name=data['family_name'],
+        total_points=0,
+        age=data['age'],
+        email=data['email'],
+        team_id=data['team_id']
     )
 
     newUser.save()
@@ -47,6 +48,7 @@ def create_user():
 
     return jsonify(result), 201
 
+
 @app.route('/api/user/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.get_by_id(id)
@@ -54,6 +56,7 @@ def get_user(id):
     result = serializer.dump(user)
 
     return jsonify(result), 200
+
 
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
@@ -77,6 +80,7 @@ def update_user(id):
     serializer = UserSchema()
     result = serializer.dump(user_to_uptdate)
     return jsonify(result), 200
+
 
 @app.route('/api/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
@@ -119,18 +123,20 @@ def get_all_teams():
     result = serializer.dump(teams)
     return jsonify(result), 200
 
+
 @app.route('/api/team', methods=['POST'])
 def create_team():
     data = request.json
     newTeam = Team(
-        name = data['name'],
-        nationality = data['nationality'],            
-        logo = data['logo']
+        name=data['name'],
+        nationality=data['nationality'],
+        logo=data['logo']
     )
     newTeam.save()
     serializer = TeamSchema()
     result = serializer.dump(newTeam)
     return jsonify(result), 201
+
 
 @app.route('/api/team/<int:id>', methods=['GET'])
 def get_one_team(id):
@@ -138,6 +144,7 @@ def get_one_team(id):
     serializer = TeamSchema()
     result = serializer.dump(team)
     return jsonify(result), 200
+
 
 @app.route('/api/team/<int:id>', methods=['PUT'])
 def update_team(id):
@@ -157,6 +164,7 @@ def update_team(id):
     result = serializer.dump(team_to_uptdate)
     return jsonify(result), 200
 
+
 @app.route('/api/team/<int:id>', methods=['DELETE'])
 def delete_team(id):
     team_to_delete = Team.get_by_id(id)
@@ -165,6 +173,7 @@ def delete_team(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
 
 @app.route('/api/leaderboard/<int:team_id>', methods=['GET'])
 def supporter_leaderboard(team_id):
@@ -179,8 +188,7 @@ def supporter_leaderboard(team_id):
         result = serializer.dump(users_to_return)
         return jsonify(result), 200
     else:
-        return jsonify({'message' : 'The team with id ' + team_id + 'has no supporters'}), 404
-    
+        return jsonify({'message': 'The team with id ' + team_id + 'has no supporters'}), 404
 
 
 @app.route('/api/videos', methods=['GET'])
@@ -190,20 +198,22 @@ def get_all_videos():
     result = serializer.dump(videos)
     return jsonify(result), 200
 
+
 @app.route('/api/video', methods=['POST'])
 def create_video():
     data = request.json
     newVideo = Video(
-        user_id = data['user_id'],
-        video = data['video'],
-        caption = data['caption'],
-        likes = 0,
-        views = 0
+        user_id=data['user_id'],
+        video=data['video'],
+        caption=data['caption'],
+        likes=0,
+        views=0
     )
 
     newVideo.save()
 
     return jsonify(success=True)
+
 
 @app.route('/api/video/<int:id>', methods=['GET'])
 def get_video(id):
@@ -212,6 +222,7 @@ def get_video(id):
     result = serializer.dump(video)
 
     return jsonify(result), 200
+
 
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
@@ -233,22 +244,24 @@ def update_video(id):
     result = serializer.dump(video_to_uptdate)
     return jsonify(result), 200
 
-@app.route('/api/video/view/<int:id>', methods = ['PUT'])
+
+@app.route('/api/video/view/<int:id>', methods=['PUT'])
 def view_a_video(id):
     video_to_uptdate = Video.get_by_id(id)
     video_to_uptdate.views += 1
-    
+
     db.session.commit()
 
     serializer = VideoSchema()
     result = serializer.dump(video_to_uptdate)
     return jsonify(result), 200
-    
-@app.route('/api/video/like/<int:id>', methods = ['PUT'])
+
+
+@app.route('/api/video/like/<int:id>', methods=['PUT'])
 def like_a_video(id):
     video_to_uptdate = Video.get_by_id(id)
     video_to_uptdate.likes += 1
-    
+
     db.session.commit()
 
     serializer = VideoSchema()
@@ -265,6 +278,7 @@ def delete_video(id):
         'message': 'deleted'
     }), 204
 
+
 @app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
@@ -272,16 +286,17 @@ def get_all_badges():
     result = serializer.dump(badges)
     return jsonify(result), 200
 
+
 @app.route('/api/badge', methods=['POST'])
 def create_badge():
     data = request.json
     newBadge = Badge(
-        name = data['name'],
-        description = data['description'],
-        level = data['level'],
-        picture = data['picture'],
-        category = data['category'],
-        points_needed = data['points_needed']
+        name=data['name'],
+        description=data['description'],
+        level=data['level'],
+        picture=data['picture'],
+        category=data['category'],
+        points_needed=data['points_needed']
     )
 
     newBadge.save()
@@ -291,6 +306,7 @@ def create_badge():
 
     return jsonify(result), 201
 
+
 @app.route('/api/badge/<int:id>', methods=['GET'])
 def get_badge(id):
     badge = Badge.get_by_id(id)
@@ -298,6 +314,7 @@ def get_badge(id):
     result = serializer.dump(badge)
 
     return jsonify(result), 200
+
 
 @app.route('/api/badges/user/<int:id>', methods=['GET'])
 def get_users_badges(id):
@@ -312,7 +329,6 @@ def get_users_badges(id):
     serializer = BadgeSchema(many=True)
     result = serializer.dump(array)
     return jsonify(result), 200
-    
 
 
 @app.route('/api/badge/<int:id>', methods=['PUT'])
@@ -339,6 +355,7 @@ def update_badge(id):
     result = serializer.dump(badge_to_uptdate)
     return jsonify(result), 200
 
+
 @app.route('/api/badge/<int:id>', methods=['DELETE'])
 def delete_badge(id):
     badge_to_delete = Badge.get_by_id(id)
@@ -361,6 +378,7 @@ def user_badge(id):
     result = serializer.dump(user)
     return jsonify(result), 200
 
+
 @app.route('/api/comment', methods=['GET'])
 def get_all_comments():
     comments = Comment.get_all()
@@ -368,15 +386,16 @@ def get_all_comments():
     result = serializer.dump(comments)
     return jsonify(result), 200
 
+
 @app.route('/api/comment/<int:video_id>', methods=['POST'])
 def comment_a_video(video_id):
     data = request.args
     comment = Comment(
-        user_id = data['user_id'],
+        user_id=data['user_id'],
         video_id=video_id,
-        content = data['content'],
-        upvotes = 0,
-        downvotes = 0
+        content=data['content'],
+        upvotes=0,
+        downvotes=0
     )
     comment.save()
     video = Video.get_by_id(video_id)
@@ -384,15 +403,16 @@ def comment_a_video(video_id):
     result = serializer.dump(video)
     return jsonify(result), 200
 
+
 @app.route('/api/reply/comment/<int:comment_id>', methods=['POST'])
 def reply_a_comment(comment_id):
     data = request.args
     reply = Reply(
-        user_id = data['user_id'],
-        comment_id = comment_id,
-        content = data['content'],
-        upvotes = 0,
-        downvotes = 0
+        user_id=data['user_id'],
+        comment_id=comment_id,
+        content=data['content'],
+        upvotes=0,
+        downvotes=0
     )
     reply.save()
     serializer = ReplySchema()
@@ -407,34 +427,51 @@ def get_all_quizzes():
     result = serializer.dump(quizzes)
     return jsonify(result), 200
 
+
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'message' : 'Resource not found'}), 404
+    return jsonify({'message': 'Resource not found'}), 404
+
 
 @app.errorhandler(500)
 def internal_server(error):
-    return jsonify({'message' : 'There is a problem'}), 500
+    return jsonify({'message': 'There is a problem'}), 500
+
 
 @app.cli.command("db-data")
 def db_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name = 'AIK Fotboll', nationality = 'Sweden', logo = "AIK-Logo.png")
-    team2 = Team(name = 'BK Häcken', nationality = 'Sweden', logo = "Hacken-Logo.png")
-    team3 = Team(name = 'Degerfors IF', nationality = 'Sweden', logo = "Degerfors-Logo.png")
-    team4 = Team(name = 'Djurgårdens IF Fotboll', nationality = 'Sweden', logo = "Djurgardens-Logo.png")
-    team5 = Team(name = 'GIF Sundsvall', nationality = 'Sweden', logo = "Sundsvall-Logo.png")
-    team6 = Team(name = 'Hammarby IF', nationality = 'Sweden', logo = "Hammarby-Logo.png")
-    team7 = Team(name = 'Helsingborgs IF', nationality = 'Sweden', logo = "Helsingborgs-Logo.png")
-    team8 = Team(name = 'IF Elfsborg', nationality = 'Sweden', logo = "Elfsborg-Logo.png")
-    team9 = Team(name = 'IFK Göteborg', nationality = 'Sweden', logo = "Goteborg-Logo.png")
-    team10 = Team(name = 'IFK Norrköping', nationality = 'Sweden', logo = "Norrkoping-Logo.png")
-    team11 = Team(name = 'IFK Värnamo', nationality = 'Sweden', logo = "Varnamo-Logo.png")
-    team12 = Team(name = 'IK Sirius', nationality = 'Sweden', logo = "Sirius-Logo.png")
-    team13 = Team(name = 'Kalmar FF', nationality = 'Sweden', logo = "Kalmar-Logo.png")
-    team14 = Team(name = 'Malmö FF', nationality = 'Sweden', logo = "Malmo-Logo.png")
-    team15 = Team(name = 'Mjällby AIF', nationality = 'Sweden', logo = "Mjallby-Logo.png")
-    team16 = Team(name = 'Varbergs BoIS', nationality = 'Sweden', logo = "Varbergs-Logo.png")
+    team1 = Team(name='AIK Fotboll', nationality='Sweden', logo="AIK-Logo.png")
+    team2 = Team(name='BK Häcken', nationality='Sweden',
+                 logo="Hacken-Logo.png")
+    team3 = Team(name='Degerfors IF', nationality='Sweden',
+                 logo="Degerfors-Logo.png")
+    team4 = Team(name='Djurgårdens IF Fotboll',
+                 nationality='Sweden', logo="Djurgardens-Logo.png")
+    team5 = Team(name='GIF Sundsvall', nationality='Sweden',
+                 logo="Sundsvall-Logo.png")
+    team6 = Team(name='Hammarby IF', nationality='Sweden',
+                 logo="Hammarby-Logo.png")
+    team7 = Team(name='Helsingborgs IF', nationality='Sweden',
+                 logo="Helsingborgs-Logo.png")
+    team8 = Team(name='IF Elfsborg', nationality='Sweden',
+                 logo="Elfsborg-Logo.png")
+    team9 = Team(name='IFK Göteborg', nationality='Sweden',
+                 logo="Goteborg-Logo.png")
+    team10 = Team(name='IFK Norrköping', nationality='Sweden',
+                  logo="Norrkoping-Logo.png")
+    team11 = Team(name='IFK Värnamo', nationality='Sweden',
+                  logo="Varnamo-Logo.png")
+    team12 = Team(name='IK Sirius', nationality='Sweden',
+                  logo="Sirius-Logo.png")
+    team13 = Team(name='Kalmar FF', nationality='Sweden',
+                  logo="Kalmar-Logo.png")
+    team14 = Team(name='Malmö FF', nationality='Sweden', logo="Malmo-Logo.png")
+    team15 = Team(name='Mjällby AIF', nationality='Sweden',
+                  logo="Mjallby-Logo.png")
+    team16 = Team(name='Varbergs BoIS', nationality='Sweden',
+                  logo="Varbergs-Logo.png")
 
     team1.save()
     team2.save()
@@ -474,29 +511,30 @@ def db_data():
     badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 0)
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=0)
     user2 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 1)
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=1)
     user3 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 2)
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=2)
     user4 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points = 3)
+                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=3)
     user1.save()
     user2.save()
     user3.save()
     user4.save()
     user1.add_badge(badge1)
 
-    video = Video(caption = 'Funny video', likes = 0, views = 0, video = 'Random Video', user_id = 1)
+    video = Video(caption='Funny video', likes=0, views=0,
+                  video='Random Video', user_id=1)
     video.save()
 
-    quiz = Quiz(max_score = 1)
+    quiz = Quiz(max_score=1)
     quiz.save()
-    question = Question(question = 'Hvem er eldst?', quiz_id = 1)
+    question = Question(question='Hvem er eldst?', quiz_id=1)
     question.save()
-    a1 = Answer(content = 'Henke', question_id=1, correct = True)
-    a2 = Answer(content = 'Bugge', question_id=1, correct = False)
-    a3 = Answer(content = 'Feppe', question_id=1, correct = False)
+    a1 = Answer(content='Henke', question_id=1, correct=True)
+    a2 = Answer(content='Bugge', question_id=1, correct=False)
+    a3 = Answer(content='Feppe', question_id=1, correct=False)
 
     a1.save()
     a2.save()
