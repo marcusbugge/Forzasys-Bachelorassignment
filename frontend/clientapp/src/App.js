@@ -38,6 +38,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/profil" element={<Profilepage />} />
+
             {isLoggedIn ? (
               <Route path="/feed" element={<FeedPosts />} />
             ) : (

@@ -99,7 +99,7 @@ export default function MainStandPage() {
         </button>
         {true ? <div>sdfsdf</div> : ""}
       </div>
-      <div className="standings-header">
+      <div className="header">
         <h1>Standings</h1>
       </div>
 
