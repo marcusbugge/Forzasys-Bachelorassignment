@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./navbar.css";
 import { Link } from "react-router-dom";
 import Welcome from "../../pages/welcome/Welcome";
 import { useState } from "react";
 
 import { CgProfile } from "react-icons/cg";
+import axios from "axios";
 
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
@@ -15,15 +16,13 @@ export default function Navbar() {
     console.log("log out??");
   }
 
-  const style = { color: "white" };
-
   return (
     <div className="nav">
       <div className="nav-header"></div>
       {localStorage.getItem("loggedIn") ? (
         <div className="welcome-nav">
           {" "}
-          <h1>{localStorage.getItem("user")} usersen</h1>
+          <h1>{localStorage.getItem("user")}</h1>
           <button className="logout-btn" onClick={logout}>
             Log out
           </button>
@@ -62,6 +61,7 @@ export default function Navbar() {
             <Link to="/">Most popular clubsong</Link>
           </div>
         </div>
+
         <h1>PROFIL</h1>
         <div className="links">
           <div className="rank-nav-cnt">
