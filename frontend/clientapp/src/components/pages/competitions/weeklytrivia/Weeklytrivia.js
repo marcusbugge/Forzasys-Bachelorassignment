@@ -9,22 +9,22 @@ export default function Weeklytrivia() {
 
   const questionlist = [
     {
-      spørsmål1: "spørsmål",
+      spørsmål1: "Spørsmål",
       answers: ["henke", "brede", "bugge"],
       correct: "henke",
     },
     {
-      spørsmål1: "spørsmå2",
+      spørsmål1: "Spørsmå2",
       answers: ["hengyke", "bredfgfdhde", "budfggge"],
       correct: "bredfgfdhde",
     },
     {
-      spørsmål1: "spørsmå3",
+      spørsmål1: "Spørsmå3",
       answers: ["henke", "brdfggdfede", "bugge"],
       correct: "bugge",
     },
     {
-      spørsmål1: "spørsmå4",
+      spørsmål1: "Spørsmå4",
       answers: ["henke", "brdfgdgfdfdfgede", "bugge"],
       correct: "henke",
     },
@@ -45,7 +45,7 @@ export default function Weeklytrivia() {
           <div className="picture-trivia"></div>
         </div>
       </div>
-      <h1>Test tekst</h1>
+
       {bool ? (
         <div className="quizbox-cnt">
           <div className="quizheader">
@@ -59,6 +59,7 @@ export default function Weeklytrivia() {
                         key={answer}
                         onClick={() => questionHandler(answer, qObj.correct)}
                         className="answers-cnt"
+                        tabindex="0"
                       >
                         <h2>{answer}</h2>
                       </div>

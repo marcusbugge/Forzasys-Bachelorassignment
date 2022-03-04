@@ -48,5 +48,10 @@
 
  
 }
+.answers-cnt .answers:focus{
+  background: red;
+  outline: 2px black solid;
+}
+
 
 
