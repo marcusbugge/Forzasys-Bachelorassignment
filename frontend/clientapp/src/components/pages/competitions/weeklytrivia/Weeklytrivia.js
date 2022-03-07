@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import "./weeklytrivia.css";
 
 export default function Weeklytrivia() {
@@ -6,8 +7,22 @@ export default function Weeklytrivia() {
 
   /* hentet liksom fra API */
   const [bool, setBool] = useState(true);
+
   const [questions, setQuestions] = useState(5);
   const [answeredQ, setAnsweredQ] = useState(0);
+
+  const [triviaData, setTriviaData] = useState();
+
+  useEffect(() => {
+    getQuestions();
+  }, []);
+  async function getQuestions() {
+    const henticon = await axios.get("http://localhost:5000/api/trivia/data");
+    console.log("Req: ", henticon);
+    const data = henticon.data;
+    setTriviaData(data);
+    console.log("State: ", triviaData);
+  }
 
   const questionlist = [
     {
@@ -58,6 +73,13 @@ export default function Weeklytrivia() {
     console.log("submit");
   }
 
+  const [disabled, setDisabled] = useState(false);
+
+  function clickedAnswer(e) {
+    console.log(e);
+    e.target.className.disabled(true);
+  }
+
   return (
     <div className="quizpage">
       <div className="header">
@@ -99,11 +121,14 @@ export default function Weeklytrivia() {
                     {qObj.answers.map((answer, index) => (
                       <div
                         key={index}
-                        tabIndex="0"
-                        onClick={(e) => questionHandler(answer, qObj.correct)}
+                        disabled={disabled}
+                        onClick={(e) => {
+                          questionHandler(answer, qObj.correct);
+                          clickedAnswer(e);
+                        }}
                         className="answers-cnt"
                       >
-                        <p>{answer}</p>
+                        <p className="trivia-ans">{answer}</p>
                       </div>
                     ))}
                   </div>

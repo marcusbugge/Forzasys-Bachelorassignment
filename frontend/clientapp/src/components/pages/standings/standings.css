@@ -85,7 +85,6 @@
   color: var(--secondary);
   display: flex;
   background-color: var(--primary);
-  justify-content: space-between;
   padding: 0 50px;
 }
 
@@ -94,18 +93,61 @@
 .club,
 .points {
   padding: 10px 5px;
+  text-align: center;
+}
+
+.rank,
+.points {
+  width: 10%;
+}
+
+.name {
+  width: 40%;
+}
+
+.club {
+  width: 40%;
 }
 
 .table-content {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.img-club img {
+  width: 30px;
+  margin-right: 5px;
+}
+
+.img-club {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .table-element {
   padding: 15px 50px;
   display: flex;
-  justify-content: space-between;
+
   background-color: var(--lightgray);
   border-bottom: 1px solid lightgray;
+}
+
+.rank-table,
+.points-table {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.name-table,
+.img-club {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .prev-btn,
@@ -131,9 +173,17 @@
   background-color: var(--hover-blue);
 }
 
+.loading-standing {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 50px;
+  text-align: center;
+}
+
 /** FJERN DETTE **/
 
-div[disabled] {
-  pointer-events: none;
-  opacity: 0.7;
+h1[disabled] {
+  background-color: var(--hover-blue);
+  color: white;
 }
