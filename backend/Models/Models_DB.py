@@ -1,7 +1,5 @@
 from marshmallow import Schema, fields
 from xml.dom import ValidationErr
-from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy import PickleType
 from db import db
 
 earned_badges = db.Table('earned_badges',

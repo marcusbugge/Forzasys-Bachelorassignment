@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from flask_cors import CORS
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
@@ -6,6 +7,7 @@ from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSche
 from flask_cors import CORS
 
 CORS(app)
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -178,6 +180,8 @@ def delete_team(id):
     }), 204
 
 #user_id, name, club, points
+
+
 @app.route('/api/leaderboard/<int:start>/<int:end>')
 def get_leaderboard(start, end):
     users = User.get_all()
@@ -186,7 +190,8 @@ def get_leaderboard(start, end):
     i = start
     while i <= end:
         team = Team.get_by_id(users[i].team_id)
-        user = Leaderboard(user_id = users[i].id, rank = i+1, name = users[i].given_name + " " + users[i].family_name, club = team.name, points = users[i].total_points)
+        user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
+                           users[i].family_name, club=team.name, club_logo=team.logo, points=users[i].total_points)
         users_to_return.append(user)
         i += 1
     serializer = LeaderboardSchema(many=True)
@@ -438,15 +443,21 @@ def reply_a_comment(comment_id):
     result = serializer.dump(reply)
     return jsonify(result), 200
 
-"""
+
 # question, answers, correct
 @app.route('/api/trivia/data', methods=['GET'])
 def get_questions():
     questions = Question.get_all()
     answers = Answer.get_all()
+    quiz = []
+    for q in questions:
+        for answer in answers:
+            if answer.correct and answer.id in q.answers:
+                quiz.append(
+                    Trivia(question=q, answers=answers, correct=answer))
 
     serializer = TriviaSchema(many=True)
-    result = serializer.dump(questions)
+    result = serializer.dump(quiz)
 
     return jsonify(result), 200
 
@@ -458,7 +469,7 @@ def get_answers():
     result = serializer.dump(answers)
 
     return jsonify(result), 200
-"""
+
 
 @app.errorhandler(404)
 def not_found(error):
@@ -567,14 +578,19 @@ def db_data():
     a1 = Answer(content='Henke', question_id=1, correct=True)
     a2 = Answer(content='Bugge', question_id=1, correct=False)
     a3 = Answer(content='Feppe', question_id=1, correct=False)
-
     a1.save()
     a2.save()
     a3.save()
 
-    #question.add_answer(a1)
-    #question.add_answer(a2)
-    #question.add_answer(a3)
+    question = Question(
+        question='Hvor mange lag er det i allsvenskan?', points=20)
+    question.save()
+    a1 = Answer(content='14', question_id=2, correct=False)
+    a2 = Answer(content='15', question_id=2, correct=False)
+    a3 = Answer(content='16', question_id=2, correct=True)
+    a1.save()
+    a2.save()
+    a3.save()
 
     print('Added data to database')
 
