@@ -3,6 +3,7 @@ from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
 from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
 
+CORS(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
