@@ -1,7 +1,8 @@
 from flask import request, jsonify
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
-from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_DB import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema
 from flask_cors import CORS
 
 CORS(app)
@@ -175,6 +176,22 @@ def delete_team(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
+#user_id, name, club, points
+@app.route('/api/leaderboard/<int:start>/<int:end>')
+def get_leaderboard(start, end):
+    users = User.get_all()
+    users.sort(key=lambda x: x.total_points, reverse=True)
+    users_to_return = []
+    i = start
+    while i <= end:
+        team = Team.get_by_id(users[i].team_id)
+        user = Leaderboard(user_id = users[i].id, rank = i+1, name = users[i].given_name + " " + users[i].family_name, club = team.name, points = users[i].total_points)
+        users_to_return.append(user)
+        i += 1
+    serializer = LeaderboardSchema(many=True)
+    result = serializer.dump(users_to_return)
+    return jsonify(result), 200
 
 
 @app.route('/api/leaderboard/<int:team_id>', methods=['GET'])
@@ -421,12 +438,14 @@ def reply_a_comment(comment_id):
     result = serializer.dump(reply)
     return jsonify(result), 200
 
-
-
+"""
+# question, answers, correct
 @app.route('/api/trivia/data', methods=['GET'])
 def get_questions():
     questions = Question.get_all()
-    serializer = QuestionSchema(many=True)
+    answers = Answer.get_all()
+
+    serializer = TriviaSchema(many=True)
     result = serializer.dump(questions)
 
     return jsonify(result), 200
@@ -439,7 +458,7 @@ def get_answers():
     result = serializer.dump(answers)
 
     return jsonify(result), 200
-
+"""
 
 @app.errorhandler(404)
 def not_found(error):
