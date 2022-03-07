@@ -73,6 +73,13 @@ export default function Weeklytrivia() {
     console.log("submit");
   }
 
+  const [disabled, setDisabled] = useState(false);
+
+  function clickedAnswer(e) {
+    console.log(e);
+    e.target.className.disabled(true);
+  }
+
   return (
     <div className="quizpage">
       <div className="header">
@@ -114,11 +121,14 @@ export default function Weeklytrivia() {
                     {qObj.answers.map((answer, index) => (
                       <div
                         key={index}
-                        tabIndex="0"
-                        onClick={(e) => questionHandler(answer, qObj.correct)}
+                        disabled={disabled}
+                        onClick={(e) => {
+                          questionHandler(answer, qObj.correct);
+                          clickedAnswer(e);
+                        }}
                         className="answers-cnt"
                       >
-                        <p>{answer}</p>
+                        <p className="trivia-ans">{answer}</p>
                       </div>
                     ))}
                   </div>

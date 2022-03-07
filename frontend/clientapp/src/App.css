@@ -47,3 +47,11 @@ a:hover {
   height: 100vh;
   background-color: var(--primary);
 }
+
+.selectedLink {
+  background-color: #1b645d;
+}
+
+.selected {
+  color: #ff0000;
+}

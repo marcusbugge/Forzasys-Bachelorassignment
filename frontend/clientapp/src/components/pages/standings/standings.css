@@ -131,9 +131,17 @@
   background-color: var(--hover-blue);
 }
 
+.loading-standing {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 50px;
+  text-align: center;
+}
+
 /** FJERN DETTE **/
 
-div[disabled] {
-  pointer-events: none;
-  opacity: 0.7;
+h1[disabled] {
+  background-color: var(--hover-blue);
+  color: white;
 }

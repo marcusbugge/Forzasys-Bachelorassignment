@@ -48,17 +48,14 @@ export default function Navbar() {
         <h1>COMPETITIONS</h1>
         <div className="links">
           <div className="rank-nav-cnt">
-            <NavLink
-              activeStyle={{
-                color: "black",
-              }}
-              to="/goaloftheround"
-            >
+            <NavLink activeClassName="selected" to="/goaloftheround">
               Goal of the round
             </NavLink>
           </div>
           <div className="rank-nav-cnt">
-            <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
+            <NavLink activeClassName="selected" to="/weeklytrivia">
+              Weekly trivia
+            </NavLink>
           </div>
           <div className="rank-nav-cnt">
             <NavLink to="/">Most popular video</NavLink>
