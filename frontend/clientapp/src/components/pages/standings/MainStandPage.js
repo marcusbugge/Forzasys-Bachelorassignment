@@ -5,7 +5,7 @@ import axios from "axios";
 import Loading from "../../parts/Loading";
 
 export default function MainStandPage() {
-  const [standFilter, setStandFilter] = useState([0, 3]);
+  const [standFilter, setStandFilter] = useState([0, 1]);
   const [stand, setStand] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,7 +13,7 @@ export default function MainStandPage() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (e) => {
     axios
       .get(
         "http://localhost:5000/api/leaderboard/" +
@@ -24,63 +24,26 @@ export default function MainStandPage() {
       .then((response) => {
         setStand(response.data);
         setLoading(false);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("There was an error!", error);
       });
   };
 
-  async function updateStanding(lower, upper) {
+  async function updateStanding(lower, upper, e) {
     setStandFilter([lower, upper]);
-    setStand(userstats[lower]);
+    console.log(lower, upper);
+    window.location.reload();
+    console.log(standFilter);
+    fetchData(e);
   }
-
-  const userstats = [
-    {
-      name: "navn1",
-
-      club: "club1",
-      points: 100,
-      posted_videos: 1,
-    },
-    {
-      name: "navn2",
-      club: "club2",
-      points: 200,
-      posted_videos: 2,
-    },
-    {
-      name: "navn3",
-      club: "club3",
-      points: 300,
-      posted_videos: 3,
-    },
-
-    {
-      name: "navn4",
-      club: "club4",
-      points: 400,
-      posted_videos: 4,
-    },
-    {
-      name: "navn1",
-      club: "club1",
-      points: 100,
-      posted_videos: 1,
-    },
-    {
-      name: "navn2",
-      club: "club2",
-      points: 200,
-      posted_videos: 2,
-    },
-  ];
 
   function StepButtons({ updateStanding }) {
     return (
       <div className="step-buttons">
         <button className="prev-btn">Prev</button>
-        <button onClick={() => updateStanding(3, 5)} className="next-btn">
+        <button onClick={() => updateStanding(2, 3)} className="next-btn">
           Next
         </button>
       </div>
@@ -126,18 +89,18 @@ export default function MainStandPage() {
             <div className="table-content">
               {stand.map((post, index) => (
                 <div className="table-element" key={index}>
-                  <p>{post.rank}</p>
-                  <p>{post.name}</p>
+                  <p className="rank-table">{post.rank}</p>
+                  <p className="name-table">{post.name}</p>
                   <div className="img-club">
-                    {console.log(post.club_logo)}
                     <img
-                      src={require("../../../assets/teamLogos/AIK-Logo.png")}
+                      src={require("../../../assets/teamLogos/" +
+                        post.club_logo)}
                       alt="logo"
                     />
                     <p>{post.club}</p>
                   </div>
 
-                  <p>{post.points}</p>
+                  <p className="points-table">{post.points}</p>
                 </div>
               ))}
             </div>
