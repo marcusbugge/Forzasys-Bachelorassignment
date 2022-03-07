@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import "./weeklytrivia.css";
 
 export default function Weeklytrivia() {
@@ -6,8 +7,22 @@ export default function Weeklytrivia() {
 
   /* hentet liksom fra API */
   const [bool, setBool] = useState(true);
+
   const [questions, setQuestions] = useState(5);
   const [answeredQ, setAnsweredQ] = useState(0);
+
+  const [triviaData, setTriviaData] = useState();
+
+  useEffect(() => {
+    getQuestions();
+  }, []);
+  async function getQuestions() {
+    const henticon = await axios.get("http://localhost:5000/api/trivia/data");
+    console.log("Req: ", henticon);
+    const data = henticon.data;
+    setTriviaData(data);
+    console.log("State: ", triviaData);
+  }
 
   const questionlist = [
     {
