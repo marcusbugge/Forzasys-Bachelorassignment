@@ -49,7 +49,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  margin: 20px 20px;
+  margin: 20px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,18 +67,26 @@
 .badge-info-cnt-displayed {
   position: absolute;
   width: 200px;
-  height: 100px;
-  background-color: #acb5bd;
+  margin: 30px 20px;
+  background-color: var(--lightgray);
   left: center;
   top: 21rem;
   z-index: 1;
-  justify-content: center;
-  align-items: center;
-  display: flex;
   border-radius: 5px;
   flex-direction: column;
-  font-size:larger;
   color: black;
+}
+
+.badge-info-cnt-displayed:after {
+  /** https://codepen.io/lideo/pen/KKGeQG **/
+  content: " ";
+  position: absolute;
+  right: 85px;
+  top: -15px;
+  border-top: none;
+  border-right: 15px solid transparent;
+  border-left: 15px solid transparent;
+  border-bottom: 15px solid var(--primary);
 }
 
 .badge-info-cnt-displayed p {
@@ -87,6 +95,31 @@
 
 .badge-info-cnt-notdisplayed {
   display: none;
+}
+
+.badge-title {
+  background-color: var(--primary);
+  justify-content: center;
+  display: flex;
+  color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.badge-description {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.badge-desc-cnt {
+  padding: 30px 10px;
+}
+
+.badge-points {
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 /** CLIPS **/
@@ -122,4 +155,7 @@
   min-width: 50%;
 
   background-color: rgb(235, 235, 235);
+}
+
+.profile-edit-cnt {
 }
