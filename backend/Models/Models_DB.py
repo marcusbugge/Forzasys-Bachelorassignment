@@ -32,9 +32,9 @@ class User(db.Model):
     given_name = db.Column(db.String(50), nullable=False)
     family_name = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    email = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
     total_points = db.Column(db.Integer, nullable=False)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    club_id = db.Column(db.Integer, db.ForeignKey('club.id'), nullable=False)
 
     #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
     followed = db.relationship(
@@ -49,7 +49,7 @@ class User(db.Model):
         'Badge', secondary=earned_badges, backref='database', lazy='select')
 
     def __repr__(self):
-        return f'{self.id}'
+        return f'id={self.id}, score={self.total_points}'
 
     @classmethod
     def get_all(cls):
@@ -98,14 +98,14 @@ class UserSchema(Schema):
     family_name = fields.String()
     age = fields.Integer()
     email = fields.String()
-    team_id = fields.Integer()
+    club_id = fields.Integer()
     total_points = fields.Integer()
     followed = fields.List(fields.String())
     videos = fields.List(fields.String())
     badges = fields.List(fields.String())
 
 
-class Team(db.Model):
+class Club(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
     nationality = db.Column(db.String(25), nullable=False)
@@ -114,7 +114,7 @@ class Team(db.Model):
         'database', lazy='joined'), lazy='select')
 
     def __repr__(self):
-        return f'Team(name={self.name}, nationality={self.nationality} logo={self.logo})'
+        return f'Club(name={self.name}, nationality={self.nationality} logo={self.logo})'
 
     @classmethod
     def get_all(cls):
@@ -133,7 +133,7 @@ class Team(db.Model):
         db.session.commit()
 
 
-class TeamSchema(Schema):
+class ClubSchema(Schema):
     id = fields.Integer()
     name = fields.String()
     nationality = fields.String()
@@ -368,7 +368,7 @@ class Answer(db.Model):
     correct = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return f'{self.id}'
+        return f'{self.content}'
     
     @classmethod
     def get_all(cls):

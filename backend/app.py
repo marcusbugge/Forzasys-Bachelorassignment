@@ -1,9 +1,10 @@
 from flask import request, jsonify
 from flask_cors import CORS
-from args import user_put_args, video_put_args, badge_put_args, team_put_args
+from itsdangerous import Serializer
+from args import user_put_args, video_put_args, badge_put_args, club_put_args
 from db import db, app
-from Models.Models_DB import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema
+from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
 from flask_cors import CORS
 
 CORS(app)
@@ -11,18 +12,33 @@ CORS(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.json
+    data = request.args
     email = data['email']
     password = data['password']
     users = User.get_all()
     for user in users:
         if user.is_authenticated(email, password):
-            return jsonify({
-                'message': 'Logging in...'
-            }), 200
+            return get_idividual_score(user, users)
     return jsonify({
         'error': 'Wrong email and/ or password'
     }), 404
+
+
+def get_idividual_score(loggedin_user, users):
+    club = Club.get_by_id(loggedin_user.club_id)
+    club_supporters = club.supporters
+    club_supporters.sort(key=lambda x: x.total_points, reverse=True)
+    users.sort(key=lambda x: x.total_points, reverse=True)
+    user = PersonalScore(id = loggedin_user.id, 
+                        name = loggedin_user.given_name + " " + loggedin_user.family_name,
+                        overall_score = users.index(loggedin_user) + 1, 
+                        club_name = club.name, 
+                        club_logo = club.logo,
+                        club_score = club_supporters.index(loggedin_user) + 1
+                        )
+    serializer = PersonalScoreSchema()
+    result = serializer.dump(user)
+    return jsonify(result), 200
 
 
 @app.route('/api/users', methods=['GET'])
@@ -43,7 +59,7 @@ def create_user():
         total_points=0,
         age=data['age'],
         email=data['email'],
-        team_id=data['team_id']
+        club_id=data['club_id']
     )
 
     newUser.save()
@@ -75,8 +91,8 @@ def update_user(id):
         user_to_uptdate.name = data['family_name']
     if data['age']:
         user_to_uptdate.age = data['age']
-    if data['team_id']:
-        user_to_uptdate.team_id = data['team_id']
+    if data['club_id']:
+        user_to_uptdate.club_id = data['club_id']
     if data['email']:
         user_to_uptdate.email = data['email']
 
@@ -121,59 +137,59 @@ def follow_table(id):
     return jsonify(result), 200
 
 
-@app.route('/api/teams', methods=['GET'])
-def get_all_teams():
-    teams = Team.get_all()
-    serializer = TeamSchema(many=True)
-    result = serializer.dump(teams)
+@app.route('/api/clubs', methods=['GET'])
+def get_all_clubs():
+    clubs = Club.get_all()
+    serializer = ClubSchema(many=True)
+    result = serializer.dump(clubs)
     return jsonify(result), 200
 
 
-@app.route('/api/team', methods=['POST'])
-def create_team():
+@app.route('/api/club', methods=['POST'])
+def create_club():
     data = request.json
-    newTeam = Team(
+    newClub = Club(
         name=data['name'],
         nationality=data['nationality'],
         logo=data['logo']
     )
-    newTeam.save()
-    serializer = TeamSchema()
-    result = serializer.dump(newTeam)
+    newClub.save()
+    serializer = ClubSchema()
+    result = serializer.dump(newClub)
     return jsonify(result), 201
 
 
-@app.route('/api/team/<int:id>', methods=['GET'])
-def get_one_team(id):
-    team = Team.get_by_id(id)
-    serializer = TeamSchema()
-    result = serializer.dump(team)
+@app.route('/api/club/<int:id>', methods=['GET'])
+def get_one_club(id):
+    club = Club.get_by_id(id)
+    serializer = ClubSchema()
+    result = serializer.dump(club)
     return jsonify(result), 200
 
 
-@app.route('/api/team/<int:id>', methods=['PUT'])
-def update_team(id):
-    team_to_uptdate = Team.get_by_id(id)
-    data = team_put_args.parse_args()
+@app.route('/api/club/<int:id>', methods=['PUT'])
+def update_club(id):
+    club_to_uptdate = Club.get_by_id(id)
+    data = club_put_args.parse_args()
 
     if data['name']:
-        team_to_uptdate.name = data['name']
+        club_to_uptdate.name = data['name']
     if data['nationality']:
-        team_to_uptdate.nationality = data['nationality']
+        club_to_uptdate.nationality = data['nationality']
     if data['logo']:
-        team_to_uptdate.logo = data['logo']
+        club_to_uptdate.logo = data['logo']
 
     db.session.commit()
 
-    serializer = TeamSchema()
-    result = serializer.dump(team_to_uptdate)
+    serializer = ClubSchema()
+    result = serializer.dump(club_to_uptdate)
     return jsonify(result), 200
 
 
-@app.route('/api/team/<int:id>', methods=['DELETE'])
-def delete_team(id):
-    team_to_delete = Team.get_by_id(id)
-    team_to_delete.delete()
+@app.route('/api/club/<int:id>', methods=['DELETE'])
+def delete_club(id):
+    club_to_delete = Club.get_by_id(id)
+    club_to_delete.delete()
 
     return jsonify({
         'message': 'deleted'
@@ -189,9 +205,9 @@ def get_leaderboard(start, end):
     users_to_return = []
     i = start
     while i <= end:
-        team = Team.get_by_id(users[i].team_id)
+        club = Club.get_by_id(users[i].club_id)
         user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
-                           users[i].family_name, club=team.name, club_logo=team.logo, points=users[i].total_points)
+                           users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
         users_to_return.append(user)
         i += 1
     serializer = LeaderboardSchema(many=True)
@@ -199,12 +215,12 @@ def get_leaderboard(start, end):
     return jsonify(result), 200
 
 
-@app.route('/api/leaderboard/<int:team_id>', methods=['GET'])
-def supporter_leaderboard(team_id):
+@app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
+def supporter_leaderboard(club_id):
     users = User.get_all()
     users_to_return = []
     for user in users:
-        if user.team_id == team_id:
+        if user.club_id == club_id:
             users_to_return.append(user)
     if len(users_to_return) > 0:
         users_to_return.sort(key=lambda x: x.total_points, reverse=True)
@@ -212,7 +228,7 @@ def supporter_leaderboard(team_id):
         result = serializer.dump(users_to_return)
         return jsonify(result), 200
     else:
-        return jsonify({'message': 'The team with id ' + team_id + 'has no supporters'}), 404
+        return jsonify({'message': 'The club with id ' + club_id + 'has no supporters'}), 404
 
 
 @app.route('/api/videos', methods=['GET'])
@@ -444,32 +460,22 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-# question, answers, correct
 @app.route('/api/trivia/data', methods=['GET'])
 def get_questions():
     questions = Question.get_all()
-    answers = Answer.get_all()
     quiz = []
     for q in questions:
-        for answer in answers:
-            if answer.correct and answer.id in q.answers:
-                quiz.append(
-                    Trivia(question=q, answers=answers, correct=answer))
+        for answer in q.answers:
+            if answer.correct:
+                trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+        quiz.append(trivia)
 
     serializer = TriviaSchema(many=True)
     result = serializer.dump(quiz)
 
     return jsonify(result), 200
 
-
-@app.route('/api/answers', methods=['GET'])
-def get_answers():
-    answers = Answer.get_all()
-    serializer = AnswerSchema(many=True)
-    result = serializer.dump(answers)
-
-    return jsonify(result), 200
-
+@app.route('/api/')
 
 @app.errorhandler(404)
 def not_found(error):
@@ -485,53 +491,53 @@ def internal_server(error):
 def db_data():
     db.drop_all()
     db.create_all()
-    team1 = Team(name='AIK Fotboll', nationality='Sweden', logo="AIK-Logo.png")
-    team2 = Team(name='BK Häcken', nationality='Sweden',
+    club1 = Club(name='AIK Fotboll', nationality='Sweden', logo="AIK-Logo.png")
+    club2 = Club(name='BK Häcken', nationality='Sweden',
                  logo="Hacken-Logo.png")
-    team3 = Team(name='Degerfors IF', nationality='Sweden',
+    club3 = Club(name='Degerfors IF', nationality='Sweden',
                  logo="Degerfors-Logo.png")
-    team4 = Team(name='Djurgårdens IF Fotboll',
+    club4 = Club(name='Djurgårdens IF Fotboll',
                  nationality='Sweden', logo="Djurgardens-Logo.png")
-    team5 = Team(name='GIF Sundsvall', nationality='Sweden',
+    club5 = Club(name='GIF Sundsvall', nationality='Sweden',
                  logo="Sundsvall-Logo.png")
-    team6 = Team(name='Hammarby IF', nationality='Sweden',
+    club6 = Club(name='Hammarby IF', nationality='Sweden',
                  logo="Hammarby-Logo.png")
-    team7 = Team(name='Helsingborgs IF', nationality='Sweden',
+    club7 = Club(name='Helsingborgs IF', nationality='Sweden',
                  logo="Helsingborgs-Logo.png")
-    team8 = Team(name='IF Elfsborg', nationality='Sweden',
+    club8 = Club(name='IF Elfsborg', nationality='Sweden',
                  logo="Elfsborg-Logo.png")
-    team9 = Team(name='IFK Göteborg', nationality='Sweden',
+    club9 = Club(name='IFK Göteborg', nationality='Sweden',
                  logo="Goteborg-Logo.png")
-    team10 = Team(name='IFK Norrköping', nationality='Sweden',
+    club10 = Club(name='IFK Norrköping', nationality='Sweden',
                   logo="Norrkoping-Logo.png")
-    team11 = Team(name='IFK Värnamo', nationality='Sweden',
+    club11 = Club(name='IFK Värnamo', nationality='Sweden',
                   logo="Varnamo-Logo.png")
-    team12 = Team(name='IK Sirius', nationality='Sweden',
+    club12 = Club(name='IK Sirius', nationality='Sweden',
                   logo="Sirius-Logo.png")
-    team13 = Team(name='Kalmar FF', nationality='Sweden',
+    club13 = Club(name='Kalmar FF', nationality='Sweden',
                   logo="Kalmar-Logo.png")
-    team14 = Team(name='Malmö FF', nationality='Sweden', logo="Malmo-Logo.png")
-    team15 = Team(name='Mjällby AIF', nationality='Sweden',
+    club14 = Club(name='Malmö FF', nationality='Sweden', logo="Malmo-Logo.png")
+    club15 = Club(name='Mjällby AIF', nationality='Sweden',
                   logo="Mjallby-Logo.png")
-    team16 = Team(name='Varbergs BoIS', nationality='Sweden',
+    club16 = Club(name='Varbergs BoIS', nationality='Sweden',
                   logo="Varbergs-Logo.png")
 
-    team1.save()
-    team2.save()
-    team3.save()
-    team4.save()
-    team5.save()
-    team6.save()
-    team7.save()
-    team8.save()
-    team9.save()
-    team10.save()
-    team11.save()
-    team12.save()
-    team13.save()
-    team14.save()
-    team15.save()
-    team16.save()
+    club1.save()
+    club2.save()
+    club3.save()
+    club4.save()
+    club5.save()
+    club6.save()
+    club7.save()
+    club8.save()
+    club9.save()
+    club10.save()
+    club11.save()
+    club12.save()
+    club13.save()
+    club14.save()
+    club15.save()
+    club16.save()
 
     badge1 = Badge(name='Created account', description='Create an account', level='Normal',
                    picture='Setup.png', category='null', points_needed='0')
@@ -554,17 +560,20 @@ def db_data():
     badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=0)
+                 family_name='User1', age=25, email='test1@forzasys.no', club_id=16, total_points=0)
     user2 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=1)
+                 family_name='User2', age=25, email='test2@forzasys.no', club_id=16, total_points=1)
     user3 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=2)
+                 family_name='User3', age=25, email='test3@forzasys.no', club_id=16, total_points=2)
     user4 = User(password='TestP', given_name='Forzasys',
-                 family_name='Test', age=25, email='test@forzasys.no', team_id=16, total_points=3)
+                 family_name='User4', age=25, email='test4@forzasys.no', club_id=16, total_points=3)
+    user5 = User(password='TestP', given_name='Forzasys',
+                 family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=6)
     user1.save()
     user2.save()
     user3.save()
     user4.save()
+    user5.save()
     user1.add_badge(badge1)
     user1.add_badge(badge6)
     
