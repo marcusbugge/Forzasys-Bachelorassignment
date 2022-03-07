@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./navbar.css";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Welcome from "../../pages/welcome/Welcome";
 import { useState } from "react";
 
@@ -48,27 +48,27 @@ export default function Navbar() {
         <h1>COMPETITIONS</h1>
         <div className="links">
           <div className="rank-nav-cnt">
-            <Link to="/goaloftheround">Goal of the round</Link>
+            <NavLink to="/goaloftheround">Goal of the round</NavLink>
           </div>
           <div className="rank-nav-cnt">
-            <Link to="/weeklytrivia">Weekly trivia</Link>
+            <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
           </div>
           <div className="rank-nav-cnt">
-            <Link to="/">Most popular video</Link>
+            <NavLink to="/">Most popular video</NavLink>
           </div>
 
           <div className="rank-nav-cnt">
-            <Link to="/">Most popular clubsong</Link>
+            <NavLink to="/">Most popular clubsong</NavLink>
           </div>
         </div>
 
         <h1>PROFIL</h1>
         <div className="links">
           <div className="rank-nav-cnt">
-            <Link to="/profil">Profil</Link>
+            <NavLink to="/profil">Profil</NavLink>
           </div>
           <div className="rank-nav-cnt">
-            <Link to="/feed">Feed</Link>
+            <NavLink to="/feed">Feed</NavLink>
           </div>
         </div>
         <div className="a"></div>
