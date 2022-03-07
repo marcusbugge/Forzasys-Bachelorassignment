@@ -1,7 +1,12 @@
 from flask import request, jsonify
+from flask_cors import CORS
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
-from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Quiz, QuizSchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_DB import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema
+from flask_cors import CORS
+
+CORS(app)
 
 
 @app.route('/api/login', methods=['POST'])
@@ -173,6 +178,25 @@ def delete_team(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
+#user_id, name, club, points
+
+
+@app.route('/api/leaderboard/<int:start>/<int:end>')
+def get_leaderboard(start, end):
+    users = User.get_all()
+    users.sort(key=lambda x: x.total_points, reverse=True)
+    users_to_return = []
+    i = start
+    while i <= end:
+        team = Team.get_by_id(users[i].team_id)
+        user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
+                           users[i].family_name, club=team.name, club_logo=team.logo, points=users[i].total_points)
+        users_to_return.append(user)
+        i += 1
+    serializer = LeaderboardSchema(many=True)
+    result = serializer.dump(users_to_return)
+    return jsonify(result), 200
 
 
 @app.route('/api/leaderboard/<int:team_id>', methods=['GET'])
@@ -420,11 +444,30 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-@app.route('/api/quizzes', methods=['GET'])
-def get_all_quizzes():
-    quizzes = Quiz.get_all()
-    serializer = QuizSchema(many=True)
-    result = serializer.dump(quizzes)
+# question, answers, correct
+@app.route('/api/trivia/data', methods=['GET'])
+def get_questions():
+    questions = Question.get_all()
+    answers = Answer.get_all()
+    quiz = []
+    for q in questions:
+        for answer in answers:
+            if answer.correct and answer.id in q.answers:
+                quiz.append(
+                    Trivia(question=q, answers=answers, correct=answer))
+
+    serializer = TriviaSchema(many=True)
+    result = serializer.dump(quiz)
+
+    return jsonify(result), 200
+
+
+@app.route('/api/answers', methods=['GET'])
+def get_answers():
+    answers = Answer.get_all()
+    serializer = AnswerSchema(many=True)
+    result = serializer.dump(answers)
+
     return jsonify(result), 200
 
 
@@ -528,21 +571,24 @@ def db_data():
                   video='Random Video', user_id=1)
     video.save()
 
-    quiz = Quiz(max_score=1)
-    quiz.save()
-    question = Question(question='Hvem er eldst?', quiz_id=1)
+    question = Question(question='Hvem er eldst?', points=50)
     question.save()
     a1 = Answer(content='Henke', question_id=1, correct=True)
     a2 = Answer(content='Bugge', question_id=1, correct=False)
     a3 = Answer(content='Feppe', question_id=1, correct=False)
-
     a1.save()
     a2.save()
     a3.save()
 
-    question.answers.append(a1)
-    question.answers.append(a2)
-    question.answers.append(a3)
+    question = Question(
+        question='Hvor mange lag er det i allsvenskan?', points=20)
+    question.save()
+    a1 = Answer(content='14', question_id=2, correct=False)
+    a2 = Answer(content='15', question_id=2, correct=False)
+    a3 = Answer(content='16', question_id=2, correct=True)
+    a1.save()
+    a2.save()
+    a3.save()
 
     print('Added data to database')
 

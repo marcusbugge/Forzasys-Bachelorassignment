@@ -66,6 +66,11 @@
   margin: 20px 0px;
 }
 
+.answers-cnt[disabled] {
+  background-color: var(--secondary);
+  color: white;
+}
+
 .answers-cnt {
   background-color: var(--lightgray);
   margin: 10px 0px;

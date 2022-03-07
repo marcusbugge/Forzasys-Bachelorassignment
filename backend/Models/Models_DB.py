@@ -1,7 +1,5 @@
 from marshmallow import Schema, fields
 from xml.dom import ValidationErr
-from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy import PickleType
 from db import db
 
 earned_badges = db.Table('earned_badges',
@@ -141,7 +139,6 @@ class TeamSchema(Schema):
     nationality = fields.String()
     logo = fields.String()
     supporters = fields.List(fields.String())
-
 
 
 class Video(db.Model):
@@ -324,61 +321,15 @@ class ReplySchema(Schema):
     downvotes = fields.Integer()
 
 
-class Quiz(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    questions = db.relationship('Question', backref=db.backref(
-        'database', lazy='joined'), lazy='select')
-    max_score = db.Column(db.Integer, nullable=False)
-    scores = db.Column(MutableList.as_mutable(PickleType),
-                                    default=[])
-    avg_score = db.Column(db.Integer)
-
-    @classmethod
-    def get_all(cls):
-        return cls.query.all()
-
-    @classmethod
-    def get_by_id(cls, id):
-        return cls.query.get_or_404(id)
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def add_question(self, question):
-        self.questions.append(question)
-        db.session.commit()
-
-    def delete_question(self, question):
-        self.questions.remove(question)
-        db.session.commit()
-
-    def set_avg_score(self):
-        total_score = 0
-        for score in self.scores:
-            total_score += score
-        self.avg_score = total_score/len(self.scores)
-        db.session.commit()
-
-
-class QuizSchema(Schema):
-    id = fields.Integer()
-    question = fields.List(fields.String())
-    max_score = fields.Integer()
-    scores = fields.List(fields.Integer())
-    avg_score = fields.Integer()
-    
-
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
     question = db.Column(db.String(150), unique=True, nullable=False)
     answers = db.relationship('Answer', backref=db.backref(
         'database', lazy='joined'), lazy='select')
+    points = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'Question=(id = {self.id}, question={self.question}, answers={self.answers})'
 
     @classmethod
     def get_all(cls):
@@ -408,12 +359,16 @@ class QuestionSchema(Schema):
     id = fields.Integer()
     question = fields.String()
     answers = fields.List(fields.String())
+    points = fields.Integer()
 
 class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     content = db.Column(db.String, nullable=False)
     correct = db.Column(db.Boolean, nullable=False)
+
+    def __repr__(self):
+        return f'{self.id}'
     
     @classmethod
     def get_all(cls):
@@ -434,4 +389,5 @@ class Answer(db.Model):
 class AnswerSchema(Schema):
     id = fields.Integer()
     question_id = fields.Integer()
+    content = fields.String()
     correct = fields.Boolean()
