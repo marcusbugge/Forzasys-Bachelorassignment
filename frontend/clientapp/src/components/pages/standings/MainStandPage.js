@@ -6,7 +6,7 @@ import Loading from "../../parts/Loading";
 
 export default function MainStandPage() {
   const [standFilter, setStandFilter] = useState([0, 3]);
-  const [stand, setStand] = useState();
+  const [stand, setStand] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
