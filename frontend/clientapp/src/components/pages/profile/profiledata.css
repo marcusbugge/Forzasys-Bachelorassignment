@@ -33,6 +33,13 @@
   background-color: var(--primary);
 }
 
+.profile-edit-cnt {
+  background-color: var(--lightgray);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
 /** BAGDES **/
 
 .badges-cnt {
@@ -67,7 +74,7 @@
 .badge-info-cnt-displayed {
   position: absolute;
   width: 200px;
-  margin: 30px 20px;
+  margin: 40px 20px;
   background-color: var(--lightgray);
   left: center;
   top: 21rem;
@@ -155,7 +162,4 @@
   min-width: 50%;
 
   background-color: rgb(235, 235, 235);
-}
-
-.profile-edit-cnt {
 }

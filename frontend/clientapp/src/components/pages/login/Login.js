@@ -40,7 +40,8 @@ export default function Login() {
         console.log(response.data);
         localStorage.setItem("loggedIn", true);
         localStorage.setItem("user", e.target.email.value);
-        console.log("logged in!");
+        localStorage.setItem("test", JSON.stringify(response.data));
+        console.log(localStorage.getItem("test"));
         setUser(response.data);
       })
       .catch((e) => console.log("something went wrong :(", e));

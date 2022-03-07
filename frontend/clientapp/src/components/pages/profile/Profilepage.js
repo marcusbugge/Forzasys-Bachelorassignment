@@ -56,7 +56,9 @@ export default function Profilepage() {
           </div>
         </IconContext.Provider>
 
-        <h1>Navn Navnesen</h1>
+        <h1>
+          <localStorage.getItem /> Navnesen
+        </h1>
       </div>
 
       <div className="badges-cnt">
