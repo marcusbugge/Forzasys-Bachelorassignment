@@ -1,8 +1,7 @@
 from flask import request, jsonify
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
-from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Quiz, QuizSchema, Question, QuestionSchema, Answer, AnswerSchema
-from flask_cors import CORS
+from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
 
 CORS(app)
 
@@ -422,11 +421,22 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-@app.route('/api/quizzes', methods=['GET'])
-def get_all_quizzes():
-    quizzes = Quiz.get_all()
-    serializer = QuizSchema(many=True)
-    result = serializer.dump(quizzes)
+
+@app.route('/api/trivia/data', methods=['GET'])
+def get_questions():
+    questions = Question.get_all()
+    serializer = QuestionSchema(many=True)
+    result = serializer.dump(questions)
+
+    return jsonify(result), 200
+
+
+@app.route('/api/answers', methods=['GET'])
+def get_answers():
+    answers = Answer.get_all()
+    serializer = AnswerSchema(many=True)
+    result = serializer.dump(answers)
+
     return jsonify(result), 200
 
 
@@ -530,9 +540,7 @@ def db_data():
                   video='Random Video', user_id=1)
     video.save()
 
-    quiz = Quiz(max_score=1)
-    quiz.save()
-    question = Question(question='Hvem er eldst?', quiz_id=1)
+    question = Question(question='Hvem er eldst?', points=50)
     question.save()
     a1 = Answer(content='Henke', question_id=1, correct=True)
     a2 = Answer(content='Bugge', question_id=1, correct=False)
@@ -542,9 +550,9 @@ def db_data():
     a2.save()
     a3.save()
 
-    question.answers.append(a1)
-    question.answers.append(a2)
-    question.answers.append(a3)
+    #question.add_answer(a1)
+    #question.add_answer(a2)
+    #question.add_answer(a3)
 
     print('Added data to database')
 
