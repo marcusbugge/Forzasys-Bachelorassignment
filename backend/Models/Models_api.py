@@ -1,11 +1,12 @@
 from marshmallow import Schema, fields
 
-class Leaderboard():
-    def __init__(self, user_id, rank, name, club, points):
+class Leaderboard(object):
+    def __init__(self, user_id, rank, name, club, club_logo, points):
         self.user_id = user_id
         self.rank = rank
         self.name = name
         self.club = club
+        self.club_logo = club_logo
         self.points = points
 
 class LeaderboardSchema(Schema):
@@ -13,10 +14,11 @@ class LeaderboardSchema(Schema):
     rank = fields.Integer()
     name = fields.String()
     club = fields.String()
+    club_logo = fields.String()
     points = fields.Integer()
 
 
-class Trivia():
+class Trivia(object):
     def __init__(self, question, answers, correct):
         self.question = question
         self.answers = answers
