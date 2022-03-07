@@ -1,9 +1,11 @@
 from flask import request, jsonify
+from flask_cors import CORS
 from args import user_put_args, video_put_args, badge_put_args, team_put_args
 from db import db, app
 from Models.Models import FollowerSchema, User, UserSchema, Team, TeamSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
 
 CORS(app)
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -421,7 +423,6 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-
 @app.route('/api/trivia/data', methods=['GET'])
 def get_questions():
     questions = Question.get_all()
@@ -550,9 +551,9 @@ def db_data():
     a2.save()
     a3.save()
 
-    #question.add_answer(a1)
-    #question.add_answer(a2)
-    #question.add_answer(a3)
+    # question.add_answer(a1)
+    # question.add_answer(a2)
+    # question.add_answer(a3)
 
     print('Added data to database')
 
