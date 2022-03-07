@@ -124,12 +124,19 @@ export default function MainStandPage() {
         ) : (
           <div>
             <div className="table-content">
-              {userstats.map((post, index) => (
+              {stand.map((post, index) => (
                 <div className="table-element" key={index}>
-                  <p>{post.club}</p>
+                  <p>{post.rank}</p>
                   <p>{post.name}</p>
+                  <div className="img-club">
+                    <img
+                      src={require("../../../assets/teamLogos/AIK-Logo.png")}
+                      alt="logo"
+                    />
+                    <p>{post.club}</p>
+                  </div>
+
                   <p>{post.points}</p>
-                  <p>{post.posted_videos}</p>
                 </div>
               ))}
             </div>
