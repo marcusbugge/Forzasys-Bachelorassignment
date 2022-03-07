@@ -177,7 +177,6 @@ def delete_team(id):
         'message': 'deleted'
     }), 204
 
-#user_id, name, club, points
 @app.route('/api/leaderboard/<int:start>/<int:end>')
 def get_leaderboard(start, end):
     users = User.get_all()
@@ -439,16 +438,15 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-# question, answers, correct
 @app.route('/api/trivia/data', methods=['GET'])
 def get_questions():
     questions = Question.get_all()
-    answers = Answer.get_all()
     quiz = []
     for q in questions:
-        for answer in answers:
-            if answer.correct and answer.id in q.answers:
-                quiz.append(Trivia(question=q, answers=answers, correct=answer))
+        for answer in q.answers:
+            if answer.correct:
+                trivia = Trivia(question=q, answers=q.answers, correct=answer, points=25)
+        quiz.append(trivia)
 
     serializer = TriviaSchema(many=True)
     result = serializer.dump(quiz)
