@@ -3,11 +3,23 @@ import "./profiledata.css";
 import usericon from "../../../assets/icons/usericon.png";
 import FeedPosts from "../feed/FeedPosts";
 import axios from "axios";
+import HoverImage from "react-hover-image";
   
 export default function Profilepage() {
   const [user, setUser] = useState();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState();
+  const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
+
+  const showBadge = e => {
+    e.preventDefault();
+    setDisplay("badge-info-cnt-displayed");
+  }
+
+  const hideBadge = e => {
+    e.preventDefault();
+    setDisplay("badge-info-cnt-notdisplayed");
+  }
 
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");
@@ -34,30 +46,35 @@ export default function Profilepage() {
       <div className="profiledata">
         <div className="picture-icon-cnt">
           <img src={usericon} alt="profilepicture" />
-          <img
-            src={require("../../../assets/icons/usericon.png")}
-            alt="profilepicture"
-          />
         </div>
         <h1>Navn Navnesen</h1>
       </div>
-
+      
       <div className="badges-cnt">
       {badges.map((icon) => (
-          <div className="team">
-            <div className="team-img-cnt">
+          <div className="badge">
+         
+            <div className="badge-img-cnt"
+                     onMouseEnter={e => {
+                      showBadge(e)
+                    }}
+                    onMouseLeave={e => {
+                      hideBadge(e)
+                    }}
+            >
+            
               <img src={icon.picture} alt="" />
               <img src={require("../../../assets/badgeIcons/" +icon.picture)} alt="badgeicon"/>
+          
             </div>
-            </div>
-            
+            {display && <div className={display}>{icon.name}
+              <p>Description: {icon.description}</p>
+              <p>Points needed: {icon.points_needed}</p>
+              </div>} 
+          </div>
             ))}
-        <div className="badge">1</div>
-        <div className="badge">2</div>
-        <div className="badge">3</div>
-        <div className="badge">4</div>
-        <div className="badge">5</div>
-        <div className="badge">5</div>
+
+          
       </div>
 
       <div className="most-popularclips-cnt">

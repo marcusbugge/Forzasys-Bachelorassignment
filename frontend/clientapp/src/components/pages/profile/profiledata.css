@@ -56,6 +56,39 @@
   color: white;
 }
 
+.badge img {
+  width: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.badge-info-cnt-displayed {
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  background-color: #acb5bd;
+  left: center;
+  top: 21rem;
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 5px;
+  flex-direction: column;
+  font-size:larger;
+  color: black;
+}
+
+.badge-info-cnt-displayed p {
+  font-size: small;
+}
+
+.badge-info-cnt-notdisplayed {
+  display: none;
+}
+
 /** CLIPS **/
 
 .most-popularclips-cnt {
