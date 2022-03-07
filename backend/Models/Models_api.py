@@ -19,12 +19,32 @@ class LeaderboardSchema(Schema):
 
 
 class Trivia(object):
-    def __init__(self, question, answers, correct):
+    def __init__(self, question, answers, correct, points):
         self.question = question
         self.answers = answers
         self.correct = correct
+        self.points = points
 
 class TriviaSchema(Schema):
     question = fields.String()
     answers = fields.List(fields.String())
     correct = fields.String()
+    points = fields.Integer()
+
+
+class PersonalScore(object):
+    def __init__(self, id, name, overall_score, club_name, club_logo, club_score):
+        self.id = id
+        self.name = name
+        self.overall_score = overall_score
+        self.club_name = club_name
+        self.club_logo = club_logo
+        self.club_score = club_score
+
+class PersonalScoreSchema(Schema):
+    id = fields.Integer()
+    name = fields.String()
+    overall_score = fields.Integer()
+    club_name = fields.String()
+    club_logo = fields.String()
+    club_score = fields.String()

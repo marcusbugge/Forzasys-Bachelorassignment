@@ -6,14 +6,14 @@ user_post_args.add_argument('given_name', type=str, help='Name of the user is re
 user_post_args.add_argument('family_name', type=str, help='Name of the user is required', required=True)
 user_post_args.add_argument('email', type=str, help='Email of the user is required', required=True)
 user_post_args.add_argument('age', type=int, help='Age of the user is required', required=True)
-user_post_args.add_argument('team_id', type=int, help='Team of the user is required', required=True)
+user_post_args.add_argument('club_id', type=int, help='Club of the user is required', required=True)
 
 user_put_args = reqparse.RequestParser()
 user_put_args.add_argument('given_name', type=str, help='Name of the user is required')
 user_put_args.add_argument('family_name', type=str, help='Name of the user is required')
 user_put_args.add_argument('email', type=str, help='Email of the user is required')
 user_put_args.add_argument('age', type=int, help='Age of the user is required')
-user_put_args.add_argument('team_id', type=int, help='Team of the user is required')
+user_put_args.add_argument('club_id', type=int, help='Club of the user is required')
 
 resource_fields_user = {
     'id' : fields.Integer,
@@ -21,7 +21,7 @@ resource_fields_user = {
     'family_name' : fields.String,
     'email' : fields.String,
     'age' : fields.Integer,
-    'team_id' : fields.Integer,
+    'club_id' : fields.Integer,
     'videos' : fields.String,
     'badges' : fields.String
 }
@@ -76,19 +76,19 @@ resource_fields_badge = {
 }
 
 
-team_post_args = reqparse.RequestParser()
-team_post_args.add_argument('name', type=str, help='Name of the team is required', required=True)
-team_post_args.add_argument('nickname', type=str, help='Nickname of the team is required', required=True)
-team_post_args.add_argument('nationality', type=str, help='Nationality of the team is required', required=True)
-team_post_args.add_argument('logo', type=str, help='Logo of the team is required', required=True)
+club_post_args = reqparse.RequestParser()
+club_post_args.add_argument('name', type=str, help='Name of the club is required', required=True)
+club_post_args.add_argument('nickname', type=str, help='Nickname of the club is required', required=True)
+club_post_args.add_argument('nationality', type=str, help='Nationality of the club is required', required=True)
+club_post_args.add_argument('logo', type=str, help='Logo of the club is required', required=True)
 
-team_put_args = reqparse.RequestParser()
-team_put_args.add_argument('name', type=str, help='Name of the team is required')
-team_put_args.add_argument('nickname', type=int, help='Nickname of the team is required')
-team_put_args.add_argument('nationality', type=str, help='Nationality of the team is required')
-team_put_args.add_argument('logo', type=str, help='Logo of the team is required')
+club_put_args = reqparse.RequestParser()
+club_put_args.add_argument('name', type=str, help='Name of the club is required')
+club_put_args.add_argument('nickname', type=int, help='Nickname of the club is required')
+club_put_args.add_argument('nationality', type=str, help='Nationality of the club is required')
+club_put_args.add_argument('logo', type=str, help='Logo of the club is required')
 
-resource_fields_team = {
+resource_fielclub = {
     'id' : fields.Integer,
     'name' : fields.String,
     'nickname' : fields.String,
