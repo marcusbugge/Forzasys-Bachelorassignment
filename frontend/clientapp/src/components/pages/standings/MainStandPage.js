@@ -129,6 +129,7 @@ export default function MainStandPage() {
                   <p>{post.rank}</p>
                   <p>{post.name}</p>
                   <div className="img-club">
+                    {console.log(post.club_logo)}
                     <img
                       src={require("../../../assets/teamLogos/AIK-Logo.png")}
                       alt="logo"
