@@ -4,26 +4,26 @@ import usericon from "../../../assets/icons/usericon.png";
 import axios from "axios";
 
 export default function MainStandPage() {
-  const [standFilter, setStandFilter] = useState([1, 10]);
-  const [stand, setStand] = useState();
+  const [standFilter, setStandFilter] = useState([0, 3]);
+  const [stand, setStand] = useState([]);
 
   useEffect(() => {
-    updateStanding();
+    fetchData();
   }, []);
 
-  /* const fetchData = async () => {
+   const fetchData = async () => {
     axios
       .get(
-        "http://localhost:5000/api/standings/" +
+        "http://localhost:5000/api/leaderboard/" +
           standFilter[0] +
-          "-" +
+          "/" +
           standFilter[1]
       )
       .then((response) => setStand(response.data))
       .catch((error) => {
         console.error("There was an error!", error);
       });
-  }; */
+  }; 
 
   async function updateStanding(lower, upper) {
     setStandFilter([lower, upper]);
@@ -119,12 +119,12 @@ export default function MainStandPage() {
           <div className="points">Points</div>
         </div>
         <div className="table-content">
-          {userstats.map((post, index) => (
+          {stand.map((post, index) => (
             <div className="table-element" key={index}>
-              <p>{post.club}</p>
+              <p>{post.rank}</p>
               <p>{post.name}</p>
+              <p>{post.club}</p>
               <p>{post.points}</p>
-              <p>{post.posted_videos}</p>
             </div>
           ))}
         </div>

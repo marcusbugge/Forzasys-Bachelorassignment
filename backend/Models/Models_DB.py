@@ -143,7 +143,6 @@ class TeamSchema(Schema):
     supporters = fields.List(fields.String())
 
 
-
 class Video(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
