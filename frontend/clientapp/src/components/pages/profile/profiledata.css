@@ -40,6 +40,60 @@
   height: 30px;
 }
 
+.profile-info-cnt {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.profile-club-cnt {
+  width: 36%;
+}
+
+.profile-club-cnt-club {
+  width: 95%;
+  height: 190px;
+  margin: 10px;
+  background-color: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.profile-club-cnt-points {
+  width: 95%;
+  height: 120px;
+  margin: 10px;
+  margin-top: 20px;
+  background-color: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.profile-points-cnt {
+  width: 33.5%;
+  height: 310px;
+  padding: 10px;
+  margin: 10px;
+  background-color: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.profile-points-cnt p {
+  font-size: 5em;
+}
+
 /** BAGDES **/
 
 .badges-cnt {
@@ -49,6 +103,8 @@
   background-color: var(--lightgray);
   margin: auto;
   width: 70%;
+  border-radius: 10px;
+  flex-direction: column;
 }
 
 .badge {
@@ -71,13 +127,18 @@
   align-items: center;
 }
 
+.badges-cnt-badges {
+  display: flex;
+  flex-direction: row;
+}
+
 .badge-info-cnt-displayed {
   position: absolute;
   width: 200px;
   margin: 40px 20px;
   background-color: var(--lightgray);
   left: center;
-  top: 21rem;
+  top: 24rem;
   z-index: 1;
   border-radius: 5px;
   flex-direction: column;

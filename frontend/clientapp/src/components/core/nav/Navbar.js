@@ -10,6 +10,8 @@ import axios from "axios";
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
 
+  const usertest = JSON.parse(localStorage.getItem("user"));
+
   function logout(e) {
     localStorage.removeItem("loggedIn");
     setRefresh(true);
@@ -22,7 +24,7 @@ export default function Navbar() {
       {localStorage.getItem("loggedIn") ? (
         <div className="welcome-nav">
           {" "}
-          <h1>{localStorage.getItem("user")}</h1>
+          <h1>{usertest.name}</h1>
           <button className="logout-btn" onClick={logout}>
             Log out
           </button>

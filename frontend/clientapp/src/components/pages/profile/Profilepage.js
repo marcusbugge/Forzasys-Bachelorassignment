@@ -14,6 +14,8 @@ export default function Profilepage() {
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
 
+  const usertest = JSON.parse(localStorage.getItem("user"));
+
   const showBadge = (index) => {
     setHoveredBadge(index);
     setDisplay("badge-info-cnt-displayed");
@@ -32,6 +34,7 @@ export default function Profilepage() {
     console.log("State: ", user);
   }
   useEffect(() => {
+    console.log(usertest);
     getBadges();
   }, []);
   async function getBadges() {
@@ -56,48 +59,70 @@ export default function Profilepage() {
           </div>
         </IconContext.Provider>
 
-        <h1>
-          <localStorage.getItem /> Navnesen
-        </h1>
+        <h1>{usertest.name}</h1>
       </div>
 
       <div className="badges-cnt">
-        {badges.map((icon, index) => (
-          <div key={index} className="badge">
-            <div
-              className="badge-img-cnt"
-              onMouseEnter={() => {
-                showBadge(index);
-              }}
-              onMouseLeave={(e) => {
-                hideBadge(e);
-              }}
-            >
-              <img src={icon.picture} alt="" />
-              <img
-                src={require("../../../assets/badgeIcons/" + icon.picture)}
-                alt="badgeicon"
-              />
-            </div>
-            {hoveredBadge === index ? (
-              <div key={index} className={display}>
-                <div className="badge-title">
-                  <h3>{icon.name}</h3>
-                </div>
-                <div className="badge-desc-cnt">
-                  <div className="badge-description">
-                    <p>Description: {icon.description}</p>
-                  </div>
-                  <div className="badge-points">
-                    <p>Points needed: {icon.points_needed}</p>
-                  </div>
-                </div>
+        <div className="badges-cnt-title">
+          <h1>Dine Badges</h1>
+        </div>
+        <div className="badges-cnt-badges">
+          {badges.map((icon, index) => (
+            <div key={index} className="badge">
+              <div
+                className="badge-img-cnt"
+                onMouseEnter={() => {
+                  showBadge(index);
+                }}
+                onMouseLeave={(e) => {
+                  hideBadge(e);
+                }}
+              >
+                <img src={icon.picture} alt="" />
+                <img
+                  src={require("../../../assets/badgeIcons/" + icon.picture)}
+                  alt="badgeicon"
+                />
               </div>
-            ) : (
-              ""
-            )}
+              {hoveredBadge === index ? (
+                <div key={index} className={display}>
+                  <div className="badge-title">
+                    <h3>{icon.name}</h3>
+                  </div>
+                  <div className="badge-desc-cnt">
+                    <div className="badge-description">
+                      <p>Description: {icon.description}</p>
+                    </div>
+                    <div className="badge-points">
+                      <p>Points needed: {icon.points_needed}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="profile-info-cnt">
+        <div className="profile-club-cnt">
+          <div className="profile-club-cnt-club">
+            <h1>Klubb</h1>
+            <p>{usertest.club_name}</p>
+            <img
+              src={require("../../../assets/teamLogos/" + usertest.club_logo)}
+            />
           </div>
-        ))}
+          <div className="profile-club-cnt-points">
+            <h2>Klubb-score: </h2>
+            <p>{usertest.club_score}</p>
+          </div>
+        </div>
+        <div className="profile-points-cnt">
+          <h1>Dine poeng</h1>
+          <p>{usertest.overall_score}</p>
+        </div>
       </div>
       <div className="most-popularclips-cnt">
         <div className="stroke-blue"></div>
