@@ -1,7 +1,6 @@
 from flask import request, jsonify
 from flask_cors import CORS
 from itsdangerous import Serializer
-from args import user_put_args, video_put_args, badge_put_args, club_put_args
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
@@ -12,7 +11,7 @@ CORS(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.args
+    data = request.json
     email = data['email']
     password = data['password']
     users = User.get_all()
@@ -82,13 +81,19 @@ def get_user(id):
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
     user_to_uptdate = User.get_by_id(id)
-    data = user_put_args.parse_args()
+    data = request.json
+    name = data['name']
+    words = name.split()
     if data['password']:
         user_to_uptdate.password = data['password']
-    if data['given_name']:
-        user_to_uptdate.given_name = data['given_name']
-    if data['family_name']:
-        user_to_uptdate.name = data['family_name']
+    if len(words) == 2:
+        user_to_uptdate.given_name = words[0]
+        user_to_uptdate.family_name = words[1]
+    else:
+        user_to_uptdate.given_name = ""
+        for i in range(len(words) - 1):
+            user_to_uptdate.given_name += words[i]
+        user_to_uptdate.family_name = words[len(words) - 1]
     if data['age']:
         user_to_uptdate.age = data['age']
     if data['club_id']:
@@ -170,7 +175,7 @@ def get_one_club(id):
 @app.route('/api/club/<int:id>', methods=['PUT'])
 def update_club(id):
     club_to_uptdate = Club.get_by_id(id)
-    data = club_put_args.parse_args()
+    data = request.json
 
     if data['name']:
         club_to_uptdate.name = data['name']
@@ -267,7 +272,7 @@ def get_video(id):
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
     video_to_uptdate = Video.get_by_id(id)
-    data = video_put_args.parse_args()
+    data = request.json
 
     if data['user_id']:
         video_to_uptdate.user_id = data['user_id']
@@ -374,7 +379,7 @@ def get_users_badges(id):
 @app.route('/api/badge/<int:id>', methods=['PUT'])
 def update_badge(id):
     badge_to_uptdate = Badge.get_by_id(id)
-    data = badge_put_args.parse_args()
+    data = request.json
 
     if data['name']:
         badge_to_uptdate.name = data['name']
