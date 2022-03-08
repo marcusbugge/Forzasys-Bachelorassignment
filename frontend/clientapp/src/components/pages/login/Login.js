@@ -13,6 +13,8 @@ export default function Login() {
   let username;
   let password;
 
+  const usertest = localStorage.getItem("user");
+
   const headers = { "header-name": "value" };
 
   async function handleLogin(e) {
@@ -31,10 +33,10 @@ export default function Login() {
       .post("http://127.0.0.1:5000/api/login", user)
       .then((response) => {
         console.log(response.status);
-        console.log(response.data);
+        console.log("test response", response.data);
         localStorage.setItem("loggedIn", true);
-        localStorage.setItem("user", e.target.email.value);
-        console.log("logged in!");
+        localStorage.setItem("user", JSON.stringify(response.data));
+        console.log("henkeBredeUser", localStorage.getItem("user"));
         setUser(response.data);
       })
       .catch((e) => console.log("something went wrong :(", e));
@@ -42,7 +44,7 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      {localStorage.getItem("loggedIn") ? <Loginconfirmation /> : ""}
+      {localStorage.getItem("user") ? <Loginconfirmation /> : ""}
       <div className="login-cnt">
         <div className="loginform">
           <div className="loginheader-cnt">
