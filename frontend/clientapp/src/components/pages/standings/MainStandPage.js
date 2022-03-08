@@ -5,58 +5,37 @@ import axios from "axios";
 import Loading from "../../parts/Loading";
 
 export default function MainStandPage() {
-  const [standFilter, setStandFilter] = useState([0, 1]);
+  const [filter, setFilter] = useState([0, 1]);
   const [stand, setStand] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  let url = "http://localhost:5000/api/leaderboard/";
 
-  const fetchData = async (e) => {
-    axios
-      .get(
-        "http://localhost:5000/api/leaderboard/" +
-          standFilter[0] +
-          "/" +
-          standFilter[1]
-      )
-      .then((response) => {
-        setStand(response.data);
-        setLoading(false);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
+  useEffect(() => {
+    sortByPlayers();
+  }, [filter]);
+
+  function requestAPI(url) {
+    axios.get(url).then((response) => {
+      setStand(response.data);
+      setLoading(false);
+    });
+  }
+
+  const sortByPlayers = async () => {
+    requestAPI(url + filter[0] + "/" + filter[1]);
   };
 
-  async function updateStanding(lower, upper, e) {
-    setStandFilter([lower, upper]);
-    console.log(lower, upper);
-    window.location.reload();
-    console.log(standFilter);
-    fetchData(e);
+  function sortByClub() {
+    requestAPI(url + "sortbyclub/" + filter[0] + "/" + filter[1]);
   }
 
-  function StepButtons({ updateStanding }) {
-    return (
-      <div className="step-buttons">
-        <button className="prev-btn">Prev</button>
-        <button onClick={() => updateStanding(2, 3)} className="next-btn">
-          Next
-        </button>
-      </div>
-    );
+  function sortByYourClub() {
+    requestAPI(url + "sortbyyourclub" + localStorage.getItem);
   }
 
-  /* FILTER REQUESTS */
-
-  const [disabled, setDisabled] = useState(false);
-
-  function kyse(hey) {
-    console.log(hey);
-    setDisabled(true);
+  async function nextAndPrevPage(lower, upper) {
+    setFilter([lower, upper]);
   }
 
   return (
@@ -69,9 +48,9 @@ export default function MainStandPage() {
         <div className="filtering">
           <h1>Sort by</h1>
           <div className="sort-buttons">
-            <button>Total points</button>
-            <button>Total points by club</button>
-            <button>Your club</button>
+            <button onClick={() => sortByPlayers}>Total points</button>
+            <button onClick={() => sortByClub}>Total points by club</button>
+            <button onClick={() => sortByYourClub}>Your club</button>
           </div>
         </div>
         <div className="table-header">
@@ -104,7 +83,30 @@ export default function MainStandPage() {
                 </div>
               ))}
             </div>
-            <StepButtons updateStanding={updateStanding} />
+
+            <div className="step-buttons">
+              {filter[0] >= 2 ? (
+                <button
+                  onClick={() => {
+                    nextAndPrevPage(filter[0] - 2, filter[1] - 2);
+                  }}
+                  className="prev-btn"
+                >
+                  Prev
+                </button>
+              ) : (
+                ""
+              )}
+
+              <button
+                onClick={() => {
+                  nextAndPrevPage(filter[0] + 2, filter[1] + 2);
+                }}
+                className="next-btn"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

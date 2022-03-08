@@ -14,12 +14,6 @@ export default function Login() {
   let password;
 
   const headers = { "header-name": "value" };
-  const config = { headers };
-
-  async function login(e) {
-    if (e.target.email.value === "user" && e.target.password.value === "1234") {
-    }
-  }
 
   async function handleLogin(e) {
     e.preventDefault();
