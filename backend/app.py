@@ -236,13 +236,19 @@ def get_leaderboard(start, end):
 @app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
 def supporter_leaderboard(club_id):
     users = User.get_all()
+    users.sort(key=lambda x: x.total_points, reverse=True)
+    club = Club.get_by_id(club_id)
     users_to_return = []
+    i=1
     for user in users:
         if user.club_id == club_id:
-            users_to_return.append(user)
+            leaderboard_user = Leaderboard(user_id=user.id, rank=i, name=user.given_name + " " + user.family_name, 
+                                            club = club.name, club_logo=club.logo, points=user.total_points)
+            users_to_return.append(leaderboard_user)
+            i += 1
     if len(users_to_return) > 0:
-        users_to_return.sort(key=lambda x: x.total_points, reverse=True)
-        serializer = UserSchema(many=True)
+        users_to_return.sort(key=lambda x: x.points, reverse=True)
+        serializer = LeaderboardSchema(many=True)
         result = serializer.dump(users_to_return)
         return jsonify(result), 200
     else:
