@@ -5,9 +5,10 @@ import axios from "axios";
 import Loading from "../../parts/Loading";
 
 export default function MainStandPage() {
-  const [filter, setFilter] = useState([0, 1]);
+  const [filter, setFilter] = useState([0, 9]);
   const [stand, setStand] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [disabled, setDisabled] = useState(false);
 
   let url = "http://localhost:5000/api/leaderboard/";
 
@@ -16,10 +17,23 @@ export default function MainStandPage() {
   }, [filter]);
 
   function requestAPI(url) {
-    axios.get(url).then((response) => {
-      setStand(response.data);
-      setLoading(false);
-    });
+    axios
+      .get(url)
+      .then((response) => {
+        setStand(response.data);
+        setLoading(false);
+        countUsers(response.data);
+      })
+      .catch((response) => {
+        setDisabled(false);
+      });
+  }
+
+  function countUsers(list) {
+    if (list.size() > 10) {
+      console.log("heheheheh");
+    }
+    console.log("list", list);
   }
 
   const sortByPlayers = async () => {
@@ -48,7 +62,9 @@ export default function MainStandPage() {
         <div className="filtering">
           <h1>Sort by</h1>
           <div className="sort-buttons">
-            <button onClick={() => sortByPlayers}>Total points</button>
+            <button onClick={() => sortByPlayers}>
+              Total points by players
+            </button>
             <button onClick={() => sortByClub}>Total points by club</button>
             <button onClick={() => sortByYourClub}>Your club</button>
           </div>
@@ -88,7 +104,7 @@ export default function MainStandPage() {
               {filter[0] >= 2 ? (
                 <button
                   onClick={() => {
-                    nextAndPrevPage(filter[0] - 2, filter[1] - 2);
+                    nextAndPrevPage(filter[0] - 10, filter[1] - 10);
                   }}
                   className="prev-btn"
                 >
@@ -99,8 +115,9 @@ export default function MainStandPage() {
               )}
 
               <button
+                disabled={disabled}
                 onClick={() => {
-                  nextAndPrevPage(filter[0] + 2, filter[1] + 2);
+                  nextAndPrevPage(filter[0] + 10, filter[1] + 10);
                 }}
                 className="next-btn"
               >

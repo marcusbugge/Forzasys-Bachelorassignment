@@ -6,7 +6,8 @@ import Loginconfirmation from "./LoginConfirmation";
 
 export default function Login() {
   const logout = () => {
-    localStorage.getItem("loggedIn", false);
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("user");
   };
 
   let username;

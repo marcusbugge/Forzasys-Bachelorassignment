@@ -181,9 +181,6 @@
   text-align: center;
 }
 
-/** FJERN DETTE **/
-
-h1[disabled] {
-  background-color: var(--hover-blue);
-  color: white;
+button[disabled] {
+  opacity: 0.2;
 }
