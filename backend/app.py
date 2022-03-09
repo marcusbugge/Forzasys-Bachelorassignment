@@ -28,13 +28,13 @@ def get_idividual_score(loggedin_user, users):
     club_supporters = club.supporters
     club_supporters.sort(key=lambda x: x.total_points, reverse=True)
     users.sort(key=lambda x: x.total_points, reverse=True)
-    user = PersonalScore(id = loggedin_user.id, 
-                        name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        overall_score = users.index(loggedin_user) + 1, 
-                        club_name = club.name, 
-                        club_logo = club.logo,
-                        club_score = club_supporters.index(loggedin_user) + 1
-                        )
+    user = PersonalScore(id=loggedin_user.id,
+                         name=loggedin_user.given_name + " " + loggedin_user.family_name,
+                         overall_score=users.index(loggedin_user) + 1,
+                         club_name=club.name,
+                         club_logo=club.logo,
+                         club_score=club_supporters.index(loggedin_user) + 1
+                         )
     serializer = PersonalScoreSchema()
     result = serializer.dump(user)
     return jsonify(result), 200
@@ -468,7 +468,7 @@ def reply_a_comment(comment_id):
 @app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
 def get_questions(user_id):
     try:
-        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
+        submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
         time_now = datetime.now() - timedelta(days=7)
         if not submitted.submitted and time_now < submitted.submitted_time:
             questions = Question.get_all()
@@ -476,12 +476,13 @@ def get_questions(user_id):
             for q in questions:
                 for answer in q.answers:
                     if answer.correct:
-                        trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+                        trivia = Trivia(
+                            question=q.question, answers=q.answers, correct=answer, points=25)
                 quiz.append(trivia)
 
             serializer = TriviaSchema(many=True)
             result = serializer.dump(quiz)
-    
+
             return jsonify(result), 200
         return False
     except:
@@ -490,7 +491,8 @@ def get_questions(user_id):
         for q in questions:
             for answer in q.answers:
                 if answer.correct:
-                    trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+                    trivia = Trivia(question=q.question,
+                                    answers=q.answers, correct=answer, points=25)
             quiz.append(trivia)
 
         serializer = TriviaSchema(many=True)
@@ -502,15 +504,17 @@ def get_questions(user_id):
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
     try:
-        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
+        submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
         submitted.delete()
     except:
         ""
-    quiz = SubmittedQuiz(user_id = user_id, submitted = True, submitted_time = datetime.datetime.now())
+    quiz = SubmittedQuiz(user_id=user_id, submitted=True,
+                         submitted_time=datetime.datetime.now())
     quiz.save()
-    return jsonify({'message' : 'Quiz submitted'}), 200
+    return jsonify({'message': 'Quiz submitted'}), 200
 
 
+@app.route('/api/')
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Resource not found'}), 404
@@ -610,7 +614,6 @@ def db_data():
     user5.save()
     user1.add_badge(badge1)
     user1.add_badge(badge6)
-    
 
     video = Video(caption='Funny video', likes=0, views=0,
                   video='Random Video', user_id=1)
