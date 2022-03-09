@@ -9,6 +9,7 @@ export default function Weeklytrivia() {
   const [bool, setBool] = useState(localStorage.getItem("sendtInn"));
 
   useEffect(() => {
+    
     setBool(localStorage.getItem("sendtInn"))
     console.log(localStorage.getItem("sendtInn"))
     console.log(bool)

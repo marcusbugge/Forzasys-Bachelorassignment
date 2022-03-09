@@ -10,13 +10,19 @@ import axios from "axios";
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
 
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
+  localStorage.setItem("user", { hei: "" });
+  const loggedUser = "";
 
-  console.log(loggedUser);
+  try {
+    loggedUser = JSON.parse(localStorage.getItem("user"));
+  } catch {}
+
+  //const usertest = JSON.parse(localStorage.getItem("user"));
 
   function logout(e) {
     localStorage.removeItem("loggedIn");
     setRefresh(true);
+    console.log("log out??");
   }
 
   return (
@@ -40,16 +46,14 @@ export default function Navbar() {
         <div className="links">
           <div className="rank-nav-cnt">
             <Link to="/">Allsvenskan</Link>
-            {localStorage.getItem("loggedIn") ? (
-              <div className="currentrank">#{loggedUser.overall_score}</div>
-            ) : (
-              ""
-            )}
+
+            <div className="currentrank">#{loggedUser.overall_score}</div>
           </div>
 
           <div className="rank-nav-cnt">
             <Link to="/">{loggedUser.club_name}</Link>
             <div className="currentrank">#{loggedUser.club_score}</div>
+            
           </div>
         </div>
         <h1>COMPETITIONS</h1>
