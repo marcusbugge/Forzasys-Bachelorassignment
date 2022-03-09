@@ -1,9 +1,8 @@
+from datetime import datetime, timedelta
 from flask import request, jsonify
 from flask_cors import CORS
-from itsdangerous import Serializer
-from args import user_put_args, video_put_args, badge_put_args, club_put_args
 from db import db, app
-from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, Answer, SubmittedQuiz, SubmittedQuizSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
 from flask_cors import CORS
 
@@ -82,13 +81,19 @@ def get_user(id):
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
     user_to_uptdate = User.get_by_id(id)
-    data = user_put_args.parse_args()
+    data = request.json
+    name = data['name']
+    words = name.split()
     if data['password']:
         user_to_uptdate.password = data['password']
-    if data['given_name']:
-        user_to_uptdate.given_name = data['given_name']
-    if data['family_name']:
-        user_to_uptdate.name = data['family_name']
+    if len(words) == 2:
+        user_to_uptdate.given_name = words[0]
+        user_to_uptdate.family_name = words[1]
+    else:
+        user_to_uptdate.given_name = ""
+        for i in range(len(words) - 1):
+            user_to_uptdate.given_name += words[i]
+        user_to_uptdate.family_name = words[len(words) - 1]
     if data['age']:
         user_to_uptdate.age = data['age']
     if data['club_id']:
@@ -170,7 +175,7 @@ def get_one_club(id):
 @app.route('/api/club/<int:id>', methods=['PUT'])
 def update_club(id):
     club_to_uptdate = Club.get_by_id(id)
-    data = club_put_args.parse_args()
+    data = request.json
 
     if data['name']:
         club_to_uptdate.name = data['name']
@@ -267,7 +272,7 @@ def get_video(id):
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
     video_to_uptdate = Video.get_by_id(id)
-    data = video_put_args.parse_args()
+    data = request.json
 
     if data['user_id']:
         video_to_uptdate.user_id = data['user_id']
@@ -374,7 +379,7 @@ def get_users_badges(id):
 @app.route('/api/badge/<int:id>', methods=['PUT'])
 def update_badge(id):
     badge_to_uptdate = Badge.get_by_id(id)
-    data = badge_put_args.parse_args()
+    data = request.json
 
     if data['name']:
         badge_to_uptdate.name = data['name']
@@ -460,21 +465,53 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-@app.route('/api/trivia/data', methods=['GET'])
-def get_questions():
-    questions = Question.get_all()
-    quiz = []
-    for q in questions:
-        for answer in q.answers:
-            if answer.correct:
-                trivia = Trivia(question=q.question,
-                                answers=q.answers, correct=answer, points=25)
-        quiz.append(trivia)
+@app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
+def get_questions(user_id):
+    try:
+        submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
+        time_now = datetime.now() - timedelta(days=7)
+        if not submitted.submitted and time_now < submitted.submitted_time:
+            questions = Question.get_all()
+            quiz = []
+            for q in questions:
+                for answer in q.answers:
+                    if answer.correct:
+                        trivia = Trivia(
+                            question=q.question, answers=q.answers, correct=answer, points=25)
+                quiz.append(trivia)
 
-    serializer = TriviaSchema(many=True)
-    result = serializer.dump(quiz)
+            serializer = TriviaSchema(many=True)
+            result = serializer.dump(quiz)
 
-    return jsonify(result), 200
+            return jsonify(result), 200
+        return False
+    except:
+        questions = Question.get_all()
+        quiz = []
+        for q in questions:
+            for answer in q.answers:
+                if answer.correct:
+                    trivia = Trivia(question=q.question,
+                                    answers=q.answers, correct=answer, points=25)
+            quiz.append(trivia)
+
+        serializer = TriviaSchema(many=True)
+        result = serializer.dump(quiz)
+
+        return jsonify(result), 200
+
+
+@app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
+def submit_quiz(user_id):
+    try:
+        submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
+        submitted.delete()
+    except:
+        ""
+    quiz = SubmittedQuiz(user_id=user_id, submitted=True,
+                         submitted_time=datetime.datetime.now())
+    quiz.save()
+    return jsonify({'message': 'Quiz submitted'}), 200
 
 
 @app.route('/api/')
