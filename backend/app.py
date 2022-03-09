@@ -496,26 +496,32 @@ def get_questions(user_id):
     
         return jsonify(result), 200
     else:
-        return False
+        return jsonify({'message' : 'Quiz this week is already submitted'}), 400
 
 def user_already_submitted_quiz(user_id):
-    try:
-        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
-        time_now = datetime.now() - timedelta(days=7)
-        if time_now < submitted.submitted_time:
-            return True
-    except:
+    submitted = SubmittedQuiz.get_all()
+    submitted_by_user = []
+    for quiz in submitted:
+        if quiz.user_id == user_id:
+            submitted_by_user.append(quiz)
+    if len(submitted_by_user) == 0:
+        return True
+    elif get_last_friday() > submitted_by_user[len(submitted_by_user) - 1].submitted_time:
+        return True
+    else:
         return False
-    return False
+
+#https://stackoverflow.com/questions/12686991/how-to-get-last-friday
+def get_last_friday():
+    now = datetime.now()
+    closest_friday = now + timedelta(days=(4 - now.weekday()))
+    return (closest_friday if closest_friday < now
+            else closest_friday - timedelta(days=7))
 
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
-    data = request.json
-    try:
-        submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
-        submitted.delete()
-    except:
-        ""
+    data = request.args
+
     quiz = SubmittedQuiz(user_id=user_id, submitted=True,
                          submitted_time=data['time'])
     quiz.save()

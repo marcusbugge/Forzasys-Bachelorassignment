@@ -413,6 +413,11 @@ class SubmittedQuiz(db.Model):
     submitted = db.Column(db.Boolean, nullable=False)
     submitted_time = db.Column(db.DateTime)
 
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+
     def save(self):
         db.session.add(self)
         db.session.commit()
