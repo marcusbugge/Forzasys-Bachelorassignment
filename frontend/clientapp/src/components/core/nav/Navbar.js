@@ -16,6 +16,7 @@ export default function Navbar() {
 
   function logout(e) {
     localStorage.removeItem("loggedIn");
+    localStorage.removeItem("user");
     setRefresh(true);
   }
 
@@ -36,22 +37,25 @@ export default function Navbar() {
         </Link>
       )}
       <div className="links-cnt">
-        <h1>LEADERBOARD</h1>
-        <div className="links">
-          <div className="rank-nav-cnt">
-            <Link to="/">Allsvenskan</Link>
-            {localStorage.getItem("loggedIn") ? (
-              <div className="currentrank">#{loggedUser.overall_score}</div>
-            ) : (
-              ""
-            )}
-          </div>
+        {localStorage.getItem("loggedIn") ? (
+          <div>
+            <h1>LEADERBOARD</h1>
+            <div className="links">
+              <div className="rank-nav-cnt">
+                <Link to="/">Allsvenskan</Link>
+                <div className="currentrank">#{loggedUser.overall_score}</div>
+              </div>
 
-          <div className="rank-nav-cnt">
-            <Link to="/">{loggedUser.club_name}</Link>
-            <div className="currentrank">#{loggedUser.club_score}</div>
+              <div className="rank-nav-cnt">
+                <Link to="/">{loggedUser.club_name}</Link>
+                <div className="currentrank">#{loggedUser.club_score}</div>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          ""
+        )}
+
         <h1>COMPETITIONS</h1>
         <div className="links">
           <div className="rank-nav-cnt">
