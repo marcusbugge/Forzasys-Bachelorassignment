@@ -12,7 +12,7 @@ CORS(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.args
+    data = request.json
     email = data['email']
     password = data['password']
     users = User.get_all()
@@ -29,13 +29,13 @@ def get_idividual_score(loggedin_user, users):
     club_supporters = club.supporters
     club_supporters.sort(key=lambda x: x.total_points, reverse=True)
     users.sort(key=lambda x: x.total_points, reverse=True)
-    user = PersonalScore(id = loggedin_user.id, 
-                        name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        overall_score = users.index(loggedin_user) + 1, 
-                        club_name = club.name, 
-                        club_logo = club.logo,
-                        club_score = club_supporters.index(loggedin_user) + 1
-                        )
+    user = PersonalScore(id=loggedin_user.id,
+                         name=loggedin_user.given_name + " " + loggedin_user.family_name,
+                         overall_score=users.index(loggedin_user) + 1,
+                         club_name=club.name,
+                         club_logo=club.logo,
+                         club_score=club_supporters.index(loggedin_user) + 1
+                         )
     serializer = PersonalScoreSchema()
     result = serializer.dump(user)
     return jsonify(result), 200
@@ -467,7 +467,8 @@ def get_questions():
     for q in questions:
         for answer in q.answers:
             if answer.correct:
-                trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+                trivia = Trivia(question=q.question,
+                                answers=q.answers, correct=answer, points=25)
         quiz.append(trivia)
 
     serializer = TriviaSchema(many=True)
@@ -475,8 +476,8 @@ def get_questions():
 
     return jsonify(result), 200
 
-@app.route('/api/')
 
+@app.route('/api/')
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Resource not found'}), 404
@@ -576,7 +577,6 @@ def db_data():
     user5.save()
     user1.add_badge(badge1)
     user1.add_badge(badge6)
-    
 
     video = Video(caption='Funny video', likes=0, views=0,
                   video='Random Video', user_id=1)
