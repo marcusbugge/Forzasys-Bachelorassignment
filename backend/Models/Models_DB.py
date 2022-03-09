@@ -391,3 +391,24 @@ class AnswerSchema(Schema):
     question_id = fields.Integer()
     content = fields.String()
     correct = fields.Boolean()
+
+
+class SubmittedQuiz(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('club.id'), nullable=False)
+    submitted = db.Column(db.Boolean, nullable=False)
+    submitted_time = db.Column(db.DateTime)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class SubmittedQuizSchema(db.Model):
+    id = fields.Integer()
+    user_id = fields.Integer()
+    submitted = fields.Boolean()
+    submitted_time = fields.Date()

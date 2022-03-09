@@ -3,11 +3,28 @@ import "./profiledata.css";
 import usericon from "../../../assets/icons/usericon.png";
 import FeedPosts from "../feed/FeedPosts";
 import axios from "axios";
-  
+import HoverImage from "react-hover-image";
+import { BiCog } from "react-icons/bi";
+import { IconContext } from "react-icons";
+
 export default function Profilepage() {
   const [user, setUser] = useState();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState();
+  const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
+  const [hoveredBadge, setHoveredBadge] = useState(-1);
+
+  const usertest = JSON.parse(localStorage.getItem("user"));
+
+  const showBadge = (index) => {
+    setHoveredBadge(index);
+    setDisplay("badge-info-cnt-displayed");
+  };
+
+  const hideBadge = () => {
+    setHoveredBadge(-1);
+    setDisplay("badge-info-cnt-notdisplayed");
+  };
 
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");
@@ -17,9 +34,10 @@ export default function Profilepage() {
     console.log("State: ", user);
   }
   useEffect(() => {
+    console.log(usertest);
     getBadges();
   }, []);
-  async function getBadges(){
+  async function getBadges() {
     const henticon = await axios.get("http://localhost:5000/api/badges/user/1");
     console.log("Req: ", henticon);
     const data = henticon.data;
@@ -34,36 +52,81 @@ export default function Profilepage() {
       <div className="profiledata">
         <div className="picture-icon-cnt">
           <img src={usericon} alt="profilepicture" />
-          <img
-            src={require("../../../assets/icons/usericon.png")}
-            alt="profilepicture"
-          />
         </div>
-        <h1>Navn Navnesen</h1>
+        <IconContext.Provider value={{ size: "30px" }}>
+          <div className="profile-edit-cnt">
+            <BiCog />
+          </div>
+        </IconContext.Provider>
+
+        <h1>{usertest.name}</h1>
       </div>
 
       <div className="badges-cnt">
-      {badges.map((icon) => (
-          <div className="team">
-            <div className="team-img-cnt">
-              <img src={icon.picture} alt="" />
-              <img src={require("../../../assets/badgeIcons/" +icon.picture)} alt="badgeicon"/>
+        <div className="badges-cnt-title">
+          <h1>Dine Badges</h1>
+        </div>
+        <div className="badges-cnt-badges">
+          {badges.map((icon, index) => (
+            <div key={index} className="badge">
+              <div
+                className="badge-img-cnt"
+                onMouseEnter={() => {
+                  showBadge(index);
+                }}
+                onMouseLeave={(e) => {
+                  hideBadge(e);
+                }}
+              >
+                <img src={icon.picture} alt="" />
+                <img
+                  src={require("../../../assets/badgeIcons/" + icon.picture)}
+                  alt="badgeicon"
+                />
+              </div>
+              {hoveredBadge === index ? (
+                <div key={index} className={display}>
+                  <div className="badge-title">
+                    <h3>{icon.name}</h3>
+                  </div>
+                  <div className="badge-desc-cnt">
+                    <div className="badge-description">
+                      <p>Description: {icon.description}</p>
+                    </div>
+                    <div className="badge-points">
+                      <p>Points needed: {icon.points_needed}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
-            </div>
-            
-            ))}
-        <div className="badge">1</div>
-        <div className="badge">2</div>
-        <div className="badge">3</div>
-        <div className="badge">4</div>
-        <div className="badge">5</div>
-        <div className="badge">5</div>
+          ))}
+        </div>
       </div>
-
+      <div className="profile-info-cnt">
+        <div className="profile-club-cnt">
+          <div className="profile-club-cnt-club">
+            <h1>Klubb</h1>
+            <p>{usertest.club_name}</p>
+            <img
+              src={require("../../../assets/teamLogos/" + usertest.club_logo)}
+            />
+          </div>
+          <div className="profile-club-cnt-points">
+            <h2>Klubb-score: </h2>
+            <p>{usertest.club_score}</p>
+          </div>
+        </div>
+        <div className="profile-points-cnt">
+          <h1>Dine poeng</h1>
+          <p>{usertest.overall_score}</p>
+        </div>
+      </div>
       <div className="most-popularclips-cnt">
         <div className="stroke-blue"></div>
-        <div className="posts">
-        </div>
+        <div className="posts"></div>
       </div>
     </div>
   );
