@@ -30,10 +30,11 @@ def get_idividual_score(loggedin_user, users):
     users.sort(key=lambda x: x.total_points, reverse=True)
     user = PersonalScore(id = loggedin_user.id, 
                         name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        overall_score = users.index(loggedin_user) + 1, 
+                        overall_rank = users.index(loggedin_user) + 1, 
                         club_name = club.name, 
                         club_logo = club.logo,
-                        club_score = club_supporters.index(loggedin_user) + 1
+                        club_rank = club_supporters.index(loggedin_user) + 1,
+                        total_points = users[users.index(loggedin_user)].total_points
                         )
     serializer = PersonalScoreSchema()
     result = serializer.dump(user)
@@ -121,7 +122,7 @@ def delete_user(id):
 @app.route('/api/user/follow/<int:id>', methods=['PUT'])
 def follow_user(id):
     user_to_follow = User.get_by_id(id)
-    data = request.args
+    data = request.json
     user_following = User.get_by_id(data['user_id'])
     user_following.follow(user_to_follow)
     return jsonify({
@@ -414,7 +415,7 @@ def delete_badge(id):
 @app.route('/api/badge/collect/<int:id>', methods=['PUT'])
 def user_badge(id):
     user = User.get_by_id(id)
-    data = request.args
+    data = request.json
     badge = Badge.get_by_id(data['id'])
     user.badges.append(badge)
     db.session.commit()
@@ -434,7 +435,7 @@ def get_all_comments():
 
 @app.route('/api/comment/<int:video_id>', methods=['POST'])
 def comment_a_video(video_id):
-    data = request.args
+    data = request.json
     comment = Comment(
         user_id=data['user_id'],
         video_id=video_id,
@@ -467,24 +468,7 @@ def reply_a_comment(comment_id):
 
 @app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
 def get_questions(user_id):
-    try:
-        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
-        time_now = datetime.now() - timedelta(days=7)
-        if not submitted.submitted and time_now < submitted.submitted_time:
-            questions = Question.get_all()
-            quiz = []
-            for q in questions:
-                for answer in q.answers:
-                    if answer.correct:
-                        trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
-                quiz.append(trivia)
-
-            serializer = TriviaSchema(many=True)
-            result = serializer.dump(quiz)
-    
-            return jsonify(result), 200
-        return False
-    except:
+    if user_already_submitted_quiz:
         questions = Question.get_all()
         quiz = []
         for q in questions:
@@ -495,9 +479,20 @@ def get_questions(user_id):
 
         serializer = TriviaSchema(many=True)
         result = serializer.dump(quiz)
-
+    
         return jsonify(result), 200
+    else:
+        return False
 
+def user_already_submitted_quiz(user_id):
+    try:
+        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
+        time_now = datetime.now() - timedelta(days=7)
+        if not submitted.submitted and time_now < submitted.submitted_time:
+            return True
+    except:
+        return False
+    return False
 
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
@@ -603,11 +598,14 @@ def db_data():
                  family_name='User4', age=25, email='test4@forzasys.no', club_id=16, total_points=3)
     user5 = User(password='TestP', given_name='Forzasys',
                  family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=6)
+    user6 = User(password='TestP', given_name='piss',
+                 family_name='bruker', age=25, email='piss.bruker@mail.com', club_id=16, total_points=0)
     user1.save()
     user2.save()
     user3.save()
     user4.save()
     user5.save()
+    user6.save()
     user1.add_badge(badge1)
     user1.add_badge(badge6)
     
