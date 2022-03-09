@@ -1,8 +1,8 @@
+from datetime import datetime, timedelta
 from flask import request, jsonify
 from flask_cors import CORS
-from itsdangerous import Serializer
 from db import db, app
-from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, Answer, SubmittedQuiz, SubmittedQuizSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
 from flask_cors import CORS
 
@@ -465,22 +465,51 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-@app.route('/api/trivia/data', methods=['GET'])
-def get_questions():
-    questions = Question.get_all()
-    quiz = []
-    for q in questions:
-        for answer in q.answers:
-            if answer.correct:
-                trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
-        quiz.append(trivia)
+@app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
+def get_questions(user_id):
+    try:
+        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
+        time_now = datetime.now() - timedelta(days=7)
+        if not submitted.submitted and time_now < submitted.submitted_time:
+            questions = Question.get_all()
+            quiz = []
+            for q in questions:
+                for answer in q.answers:
+                    if answer.correct:
+                        trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+                quiz.append(trivia)
 
-    serializer = TriviaSchema(many=True)
-    result = serializer.dump(quiz)
+            serializer = TriviaSchema(many=True)
+            result = serializer.dump(quiz)
+    
+            return jsonify(result), 200
+        return False
+    except:
+        questions = Question.get_all()
+        quiz = []
+        for q in questions:
+            for answer in q.answers:
+                if answer.correct:
+                    trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+            quiz.append(trivia)
 
-    return jsonify(result), 200
+        serializer = TriviaSchema(many=True)
+        result = serializer.dump(quiz)
 
-@app.route('/api/')
+        return jsonify(result), 200
+
+
+@app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
+def submit_quiz(user_id):
+    try:
+        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
+        submitted.delete()
+    except:
+        ""
+    quiz = SubmittedQuiz(user_id = user_id, submitted = True, submitted_time = datetime.datetime.now())
+    quiz.save()
+    return jsonify({'message' : 'Quiz submitted'}), 200
+
 
 @app.errorhandler(404)
 def not_found(error):
