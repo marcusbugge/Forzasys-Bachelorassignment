@@ -33,6 +33,67 @@
   background-color: var(--primary);
 }
 
+.profile-edit-cnt {
+  background-color: var(--lightgray);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.profile-info-cnt {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.profile-club-cnt {
+  width: 36%;
+}
+
+.profile-club-cnt-club {
+  width: 95%;
+  height: 190px;
+  margin: 10px;
+  background-color: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.profile-club-cnt-points {
+  width: 95%;
+  height: 120px;
+  margin: 10px;
+  margin-top: 20px;
+  background-color: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.profile-points-cnt {
+  width: 33.5%;
+  height: 310px;
+  padding: 10px;
+  margin: 10px;
+  background-color: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.profile-points-cnt p {
+  font-size: 5em;
+}
+
 /** BAGDES **/
 
 .badges-cnt {
@@ -42,6 +103,8 @@
   background-color: var(--lightgray);
   margin: auto;
   width: 70%;
+  border-radius: 10px;
+  flex-direction: column;
 }
 
 .badge {
@@ -49,11 +112,82 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  margin: 20px 20px;
+  margin: 20px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
+}
+
+.badge img {
+  width: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.badges-cnt-badges {
+  display: flex;
+  flex-direction: row;
+}
+
+.badge-info-cnt-displayed {
+  position: absolute;
+  width: 200px;
+  margin: 40px 20px;
+  background-color: var(--lightgray);
+  left: center;
+  top: 24rem;
+  z-index: 1;
+  border-radius: 5px;
+  flex-direction: column;
+  color: black;
+}
+
+.badge-info-cnt-displayed:after {
+  /** https://codepen.io/lideo/pen/KKGeQG **/
+  content: " ";
+  position: absolute;
+  right: 85px;
+  top: -15px;
+  border-top: none;
+  border-right: 15px solid transparent;
+  border-left: 15px solid transparent;
+  border-bottom: 15px solid var(--primary);
+}
+
+.badge-info-cnt-displayed p {
+  font-size: small;
+}
+
+.badge-info-cnt-notdisplayed {
+  display: none;
+}
+
+.badge-title {
+  background-color: var(--primary);
+  justify-content: center;
+  display: flex;
+  color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.badge-description {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.badge-desc-cnt {
+  padding: 30px 10px;
+}
+
+.badge-points {
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 /** CLIPS **/

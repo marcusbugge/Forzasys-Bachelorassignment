@@ -609,6 +609,8 @@ def db_data():
     user4.save()
     user5.save()
     user1.add_badge(badge1)
+    user1.add_badge(badge6)
+    
 
     video = Video(caption='Funny video', likes=0, views=0,
                   video='Random Video', user_id=1)
