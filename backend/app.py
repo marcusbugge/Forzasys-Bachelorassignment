@@ -474,7 +474,8 @@ def get_questions(user_id):
         for q in questions:
             for answer in q.answers:
                 if answer.correct:
-                    trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
+                    trivia = Trivia(question=q.question,
+                                    answers=q.answers, correct=answer, points=25)
             quiz.append(trivia)
 
         serializer = TriviaSchema(many=True)
@@ -497,15 +498,17 @@ def user_already_submitted_quiz(user_id):
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
     try:
-        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
+        submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
         submitted.delete()
     except:
         ""
-    quiz = SubmittedQuiz(user_id = user_id, submitted = True, submitted_time = datetime.datetime.now())
+    quiz = SubmittedQuiz(user_id=user_id, submitted=True,
+                         submitted_time=datetime.datetime.now())
     quiz.save()
-    return jsonify({'message' : 'Quiz submitted'}), 200
+    return jsonify({'message': 'Quiz submitted'}), 200
 
 
+@app.route('/api/')
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Resource not found'}), 404
@@ -608,7 +611,6 @@ def db_data():
     user6.save()
     user1.add_badge(badge1)
     user1.add_badge(badge6)
-    
 
     video = Video(caption='Funny video', likes=0, views=0,
                   video='Random Video', user_id=1)
