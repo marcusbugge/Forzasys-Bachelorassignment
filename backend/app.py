@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import re
 from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
@@ -210,15 +211,26 @@ def get_leaderboard(start, end):
     users.sort(key=lambda x: x.total_points, reverse=True)
     users_to_return = []
     i = start
-    while i <= end:
-        club = Club.get_by_id(users[i].club_id)
-        user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
-                           users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
-        users_to_return.append(user)
-        i += 1
-    serializer = LeaderboardSchema(many=True)
-    result = serializer.dump(users_to_return)
-    return jsonify(result), 200
+    if(end < len(users)):
+        while i <= end:
+            club = Club.get_by_id(users[i].club_id)
+            user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
+                               users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
+            users_to_return.append(user)
+            i += 1
+    else:
+        while i < len(users):
+            club = Club.get_by_id(users[i].club_id)
+            user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
+                               users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
+            users_to_return.append(user)
+            i += 1
+    if len(users_to_return) != 0:
+        serializer = LeaderboardSchema(many=True)
+        result = serializer.dump(users_to_return)
+        return jsonify(result), 200
+    else:
+        return jsonify({'message' : 'Users do not exist'}), 404
 
 
 @app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
@@ -303,11 +315,12 @@ def view_a_video(id):
     return jsonify(result), 200
 
 
-@app.route('/api/video/like/<int:id>', methods=['PUT'])
-def like_a_video(id):
-    video_to_uptdate = Video.get_by_id(id)
+@app.route('/api/video/like/<int:user_id>/<int:video_id>', methods=['PUT'])
+def like_a_video(user_id, video_id):
+    video_to_uptdate = Video.get_by_id(video_id)
     video_to_uptdate.likes += 1
-
+    user = User.get_by_id(user_id)
+    user.like_video(video_to_uptdate)
     db.session.commit()
 
     serializer = VideoSchema()
@@ -468,7 +481,7 @@ def reply_a_comment(comment_id):
 
 @app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
 def get_questions(user_id):
-    if user_already_submitted_quiz:
+    if user_already_submitted_quiz(user_id):
         questions = Question.get_all()
         quiz = []
         for q in questions:
@@ -489,7 +502,7 @@ def user_already_submitted_quiz(user_id):
     try:
         submitted = SubmittedQuiz.query.filter_by(user_id = user_id).first()
         time_now = datetime.now() - timedelta(days=7)
-        if not submitted.submitted and time_now < submitted.submitted_time:
+        if time_now < submitted.submitted_time:
             return True
     except:
         return False
@@ -497,13 +510,14 @@ def user_already_submitted_quiz(user_id):
 
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
+    data = request.json
     try:
         submitted = SubmittedQuiz.query.filter_by(user_id=user_id).first()
         submitted.delete()
     except:
         ""
     quiz = SubmittedQuiz(user_id=user_id, submitted=True,
-                         submitted_time=datetime.datetime.now())
+                         submitted_time=data['time'])
     quiz.save()
     return jsonify({'message': 'Quiz submitted'}), 200
 

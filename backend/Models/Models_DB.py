@@ -21,6 +21,13 @@ question_answer = db.Table('question_answer',
                                 db.ForeignKey('answer.id'))
                          )
 
+videos_liked = db.Table('videos_liked',
+                         db.Column('user_id', db.Integer,
+                                db.ForeignKey('user.id')),
+                         db.Column('video_id', db.Integer, 
+                                db.ForeignKey('video.id'))
+                         )
+
 
 class FollowerSchema(Schema):
     id = fields.Integer()
@@ -45,6 +52,8 @@ class User(db.Model):
 
     videos = db.relationship('Video', backref=db.backref(
         'user', lazy='joined'), lazy='select')
+    liked_videos = db.relationship(
+        'Video', secondary=videos_liked, backref='database', lazy='select')
     badges = db.relationship(
         'Badge', secondary=earned_badges, backref='database', lazy='select')
 
@@ -81,6 +90,10 @@ class User(db.Model):
         self.badges.append(badge)
         db.session.commit()
 
+    def like_video(self, video):
+        self.liked_videos.append(video)
+        db.session.commit()
+
     def is_following(self, user):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
@@ -103,6 +116,7 @@ class UserSchema(Schema):
     followed = fields.List(fields.String())
     videos = fields.List(fields.String())
     badges = fields.List(fields.String())
+    liked_videos = fields.List(fields.String())
 
 
 class Club(db.Model):
