@@ -13,7 +13,9 @@ export default function Navbar() {
   const usertest = JSON.parse(localStorage.getItem("user"));
 
   function logout(e) {
+    e.preventDefault();
     localStorage.removeItem("loggedIn");
+    localStorage.removeItem("user");
     setRefresh(true);
     console.log("log out??");
   }

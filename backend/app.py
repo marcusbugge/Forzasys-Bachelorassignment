@@ -12,7 +12,7 @@ CORS(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.args
+    data = request.json
     email = data['email']
     password = data['password']
     users = User.get_all()
@@ -575,6 +575,10 @@ def db_data():
     user4.save()
     user5.save()
     user1.add_badge(badge1)
+    user1.add_badge(badge2)
+    user1.add_badge(badge3)
+    user1.add_badge(badge4)
+    user1.add_badge(badge5)
     user1.add_badge(badge6)
     
 
