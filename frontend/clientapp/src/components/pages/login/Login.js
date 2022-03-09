@@ -6,22 +6,12 @@ import Loginconfirmation from "./LoginConfirmation";
 
 export default function Login() {
   const logout = () => {
-    localStorage.getItem("loggedIn", false);
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("user");
   };
 
-  const [user, setUser] = useState();
   let username;
   let password;
-
-  const usertest = localStorage.getItem("user");
-
-  const headers = { "header-name": "value" };
-  const config = { headers };
-
-  async function login(e) {
-    if (e.target.email.value === "user" && e.target.password.value === "1234") {
-    }
-  }
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -36,21 +26,19 @@ export default function Login() {
     console.log(user);
 
     axios
-      .post("http://127.0.0.1:5000/api/login", user)
+      .post("http://localhost:5000/api/login", user)
       .then((response) => {
         console.log(response.status);
         console.log("test response", response.data);
         localStorage.setItem("loggedIn", true);
         localStorage.setItem("user", JSON.stringify(response.data));
-        console.log("henkeBredeUser", localStorage.getItem("user"));
-        setUser(response.data);
+        console.log("localstorage", localStorage.getItem("user"));
       })
       .catch((e) => console.log("something went wrong :(", e));
   }
 
   return (
     <div className="login-page">
-      {localStorage.getItem("user") ? <Loginconfirmation /> : ""}
       <div className="login-cnt">
         <div className="loginform">
           <div className="loginheader-cnt">

@@ -21,6 +21,13 @@ question_answer = db.Table('question_answer',
                                 db.ForeignKey('answer.id'))
                          )
 
+videos_liked = db.Table('videos_liked',
+                         db.Column('user_id', db.Integer,
+                                db.ForeignKey('user.id')),
+                         db.Column('video_id', db.Integer, 
+                                db.ForeignKey('video.id'))
+                         )
+
 
 class FollowerSchema(Schema):
     id = fields.Integer()
@@ -45,6 +52,8 @@ class User(db.Model):
 
     videos = db.relationship('Video', backref=db.backref(
         'user', lazy='joined'), lazy='select')
+    liked_videos = db.relationship(
+        'Video', secondary=videos_liked, backref='database', lazy='select')
     badges = db.relationship(
         'Badge', secondary=earned_badges, backref='database', lazy='select')
 
@@ -81,6 +90,10 @@ class User(db.Model):
         self.badges.append(badge)
         db.session.commit()
 
+    def like_video(self, video):
+        self.liked_videos.append(video)
+        db.session.commit()
+
     def is_following(self, user):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
@@ -103,6 +116,7 @@ class UserSchema(Schema):
     followed = fields.List(fields.String())
     videos = fields.List(fields.String())
     badges = fields.List(fields.String())
+    liked_videos = fields.List(fields.String())
 
 
 class Club(db.Model):
@@ -391,3 +405,29 @@ class AnswerSchema(Schema):
     question_id = fields.Integer()
     content = fields.String()
     correct = fields.Boolean()
+
+
+class SubmittedQuiz(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    submitted = db.Column(db.Boolean, nullable=False)
+    submitted_time = db.Column(db.DateTime)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+class SubmittedQuizSchema(Schema):
+    id = fields.Integer()
+    user_id = fields.Integer()
+    submitted = fields.Boolean()
+    submitted_time = fields.Date()

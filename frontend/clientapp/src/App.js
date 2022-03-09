@@ -40,12 +40,13 @@ function App() {
             <Route path="/profil" element={<Profilepage />} />
 
             {isLoggedIn ? (
-              <Route path="/feed" element={<FeedPosts />} />
+              <Route path="/highlights" element={<FeedPosts />} />
             ) : (
               <Route path="/signup" element={<CreateUser />} />
             )}
 
             <Route path="/signup" element={<CreateUser />} />
+            <Route path="/following" element={<CreateUser />} />
 
             <Route path="/weeklytrivia" element={<Weeklytrivia />} />
             <Route path="/" element={<MainStandPage />} />
