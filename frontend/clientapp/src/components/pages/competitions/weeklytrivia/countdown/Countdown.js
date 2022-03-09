@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./countdown.css";
 
 function Countdown() {
-  const [quizTime, setQuizTime] = useState(false);
   const [days, setdays] = useState();
   const [houers, sethouers] = useState();
   const [minutes, setminutes] = useState();
@@ -10,13 +9,13 @@ function Countdown() {
   let index = 0;
 
   const datoListe = [
-     new Date("03/07/2022 18:28:00"),
-     new Date("03/07/2022 18:28:05"),
-     new Date("03/07/2022 18:28:10")
+     new Date("03/08/2022 14:35:10"),
+     new Date("03/08/2022 14:35:20"),
+     new Date("03/08/2022 14:35:30")
   ];
 
   useEffect(() => {
-    let targetTime = new Date("03/07/2022 18:27:50");
+    let targetTime = new Date("03/08/2022 15:07:50");
     const interval = setInterval(() => {
       const now = new Date();
       const difference = targetTime.getTime() - now.getTime();
@@ -36,8 +35,9 @@ function Countdown() {
 
       if (d <= 0 && h <= 0 && m <= 0 && s <= 0) {
         //setQuizTime(true);
-        targetTime = datoListe[index];
-        index++;
+        //targetTime = datoListe[index];
+        //index++;
+        localStorage.setItem("sendtInn", false)
       }
     }, 1000);
 
@@ -45,9 +45,7 @@ function Countdown() {
   }, []);
   return (
     <div>
-      {quizTime ? (
-        <h1>Ny quiz</h1>
-      ) : (
+        <div className="header">Thank you for submitting the quiz!</div>
         <div className="Clock">
           <div className="Clock-inner">
             <div className="Clock-display">
@@ -64,7 +62,6 @@ function Countdown() {
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 }
