@@ -53,6 +53,26 @@
   flex-direction: column;
 }
 
+.active-cnt {
+  display: flex;
+  flex-direction: column;
+}
+
+.active-cnt-elem {
+  display: flex;
+  padding: 4px 0px;
+}
+
+.like a {
+  text-decoration: none;
+  color: white;
+}
+
+.star-icon {
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+}
 .standings {
   margin-top: 30px;
   display: flex;

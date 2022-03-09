@@ -1,9 +1,9 @@
+from datetime import datetime, timedelta
+import re
 from flask import request, jsonify
 from flask_cors import CORS
-from itsdangerous import Serializer
-from args import user_put_args, video_put_args, badge_put_args, club_put_args
 from db import db, app
-from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, Answer, SubmittedQuiz, SubmittedQuizSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
 from flask_cors import CORS
 
@@ -31,10 +31,11 @@ def get_idividual_score(loggedin_user, users):
     users.sort(key=lambda x: x.total_points, reverse=True)
     user = PersonalScore(id = loggedin_user.id, 
                         name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        overall_score = users.index(loggedin_user) + 1, 
+                        overall_rank = users.index(loggedin_user) + 1, 
                         club_name = club.name, 
                         club_logo = club.logo,
-                        club_score = club_supporters.index(loggedin_user) + 1
+                        club_rank = club_supporters.index(loggedin_user) + 1,
+                        total_points = users[users.index(loggedin_user)].total_points
                         )
     serializer = PersonalScoreSchema()
     result = serializer.dump(user)
@@ -82,13 +83,19 @@ def get_user(id):
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
     user_to_uptdate = User.get_by_id(id)
-    data = user_put_args.parse_args()
+    data = request.json
+    name = data['name']
+    words = name.split()
     if data['password']:
         user_to_uptdate.password = data['password']
-    if data['given_name']:
-        user_to_uptdate.given_name = data['given_name']
-    if data['family_name']:
-        user_to_uptdate.name = data['family_name']
+    if len(words) == 2:
+        user_to_uptdate.given_name = words[0]
+        user_to_uptdate.family_name = words[1]
+    else:
+        user_to_uptdate.given_name = ""
+        for i in range(len(words) - 1):
+            user_to_uptdate.given_name += words[i]
+        user_to_uptdate.family_name = words[len(words) - 1]
     if data['age']:
         user_to_uptdate.age = data['age']
     if data['club_id']:
@@ -116,7 +123,7 @@ def delete_user(id):
 @app.route('/api/user/follow/<int:id>', methods=['PUT'])
 def follow_user(id):
     user_to_follow = User.get_by_id(id)
-    data = request.args
+    data = request.json
     user_following = User.get_by_id(data['user_id'])
     user_following.follow(user_to_follow)
     return jsonify({
@@ -170,7 +177,7 @@ def get_one_club(id):
 @app.route('/api/club/<int:id>', methods=['PUT'])
 def update_club(id):
     club_to_uptdate = Club.get_by_id(id)
-    data = club_put_args.parse_args()
+    data = request.json
 
     if data['name']:
         club_to_uptdate.name = data['name']
@@ -204,15 +211,26 @@ def get_leaderboard(start, end):
     users.sort(key=lambda x: x.total_points, reverse=True)
     users_to_return = []
     i = start
-    while i <= end:
-        club = Club.get_by_id(users[i].club_id)
-        user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
-                           users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
-        users_to_return.append(user)
-        i += 1
-    serializer = LeaderboardSchema(many=True)
-    result = serializer.dump(users_to_return)
-    return jsonify(result), 200
+    if(end < len(users)):
+        while i <= end:
+            club = Club.get_by_id(users[i].club_id)
+            user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
+                               users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
+            users_to_return.append(user)
+            i += 1
+    else:
+        while i < len(users):
+            club = Club.get_by_id(users[i].club_id)
+            user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
+                               users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points)
+            users_to_return.append(user)
+            i += 1
+    if len(users_to_return) != 0:
+        serializer = LeaderboardSchema(many=True)
+        result = serializer.dump(users_to_return)
+        return jsonify(result), 200
+    else:
+        return jsonify({'message' : 'Users do not exist'}), 404
 
 
 @app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
@@ -267,7 +285,7 @@ def get_video(id):
 @app.route('/api/video/<int:id>', methods=['PUT'])
 def update_video(id):
     video_to_uptdate = Video.get_by_id(id)
-    data = video_put_args.parse_args()
+    data = request.json
 
     if data['user_id']:
         video_to_uptdate.user_id = data['user_id']
@@ -297,11 +315,12 @@ def view_a_video(id):
     return jsonify(result), 200
 
 
-@app.route('/api/video/like/<int:id>', methods=['PUT'])
-def like_a_video(id):
-    video_to_uptdate = Video.get_by_id(id)
+@app.route('/api/video/like/<int:user_id>/<int:video_id>', methods=['PUT'])
+def like_a_video(user_id, video_id):
+    video_to_uptdate = Video.get_by_id(video_id)
     video_to_uptdate.likes += 1
-
+    user = User.get_by_id(user_id)
+    user.like_video(video_to_uptdate)
     db.session.commit()
 
     serializer = VideoSchema()
@@ -374,7 +393,7 @@ def get_users_badges(id):
 @app.route('/api/badge/<int:id>', methods=['PUT'])
 def update_badge(id):
     badge_to_uptdate = Badge.get_by_id(id)
-    data = badge_put_args.parse_args()
+    data = request.json
 
     if data['name']:
         badge_to_uptdate.name = data['name']
@@ -409,7 +428,7 @@ def delete_badge(id):
 @app.route('/api/badge/collect/<int:id>', methods=['PUT'])
 def user_badge(id):
     user = User.get_by_id(id)
-    data = request.args
+    data = request.json
     badge = Badge.get_by_id(data['id'])
     user.badges.append(badge)
     db.session.commit()
@@ -429,7 +448,7 @@ def get_all_comments():
 
 @app.route('/api/comment/<int:video_id>', methods=['POST'])
 def comment_a_video(video_id):
-    data = request.args
+    data = request.json
     comment = Comment(
         user_id=data['user_id'],
         video_id=video_id,
@@ -460,23 +479,56 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
-@app.route('/api/trivia/data', methods=['GET'])
-def get_questions():
-    questions = Question.get_all()
-    quiz = []
-    for q in questions:
-        for answer in q.answers:
-            if answer.correct:
-                trivia = Trivia(question=q.question, answers=q.answers, correct=answer, points=25)
-        quiz.append(trivia)
+@app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
+def get_questions(user_id):
+    if user_already_submitted_quiz(user_id):
+        questions = Question.get_all()
+        quiz = []
+        for q in questions:
+            for answer in q.answers:
+                if answer.correct:
+                    trivia = Trivia(question=q.question,
+                                    answers=q.answers, correct=answer, points=25)
+            quiz.append(trivia)
 
-    serializer = TriviaSchema(many=True)
-    result = serializer.dump(quiz)
+        serializer = TriviaSchema(many=True)
+        result = serializer.dump(quiz)
+    
+        return jsonify(result), 200
+    else:
+        return jsonify({'message' : 'Quiz this week is already submitted'}), 400
 
-    return jsonify(result), 200
+def user_already_submitted_quiz(user_id):
+    submitted = SubmittedQuiz.get_all()
+    submitted_by_user = []
+    for quiz in submitted:
+        if quiz.user_id == user_id:
+            submitted_by_user.append(quiz)
+    if len(submitted_by_user) == 0:
+        return True
+    elif get_last_friday() > submitted_by_user[len(submitted_by_user) - 1].submitted_time:
+        return True
+    else:
+        return False
+
+#https://stackoverflow.com/questions/12686991/how-to-get-last-friday
+def get_last_friday():
+    now = datetime.now()
+    closest_friday = now + timedelta(days=(4 - now.weekday()))
+    return (closest_friday if closest_friday < now
+            else closest_friday - timedelta(days=7))
+
+@app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
+def submit_quiz(user_id):
+    data = request.args
+
+    quiz = SubmittedQuiz(user_id=user_id, submitted=True,
+                         submitted_time=data['time'])
+    quiz.save()
+    return jsonify({'message': 'Quiz submitted'}), 200
+
 
 @app.route('/api/')
-
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Resource not found'}), 404
@@ -560,27 +612,79 @@ def db_data():
     badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys',
-                 family_name='User1', age=25, email='test1@forzasys.no', club_id=16, total_points=0)
+                 family_name='User1', age=25, email='test1@forzasys.no', club_id=16, total_points=14)
     user2 = User(password='TestP', given_name='Forzasys',
-                 family_name='User2', age=25, email='test2@forzasys.no', club_id=16, total_points=1)
+                 family_name='User2', age=25, email='test2@forzasys.no', club_id=13, total_points=11)
     user3 = User(password='TestP', given_name='Forzasys',
-                 family_name='User3', age=25, email='test3@forzasys.no', club_id=16, total_points=2)
+                 family_name='User3', age=25, email='test3@forzasys.no', club_id=1, total_points=25)
     user4 = User(password='TestP', given_name='Forzasys',
-                 family_name='User4', age=25, email='test4@forzasys.no', club_id=16, total_points=3)
+                 family_name='User4', age=25, email='test4@forzasys.no', club_id=9, total_points=37)
     user5 = User(password='TestP', given_name='Forzasys',
-                 family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=6)
+                 family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=69)
+    user6 = User(password='TestP', given_name='Harry',
+                 family_name='Potter', age=20, email='harry.potter@trollmann.com', club_id=14, total_points=40)
+    user8 = User(password='TestP', given_name='Ronny',
+                 family_name='Wiltersen', age=20, email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13)
+    user7 = User(password='TestP', given_name='Nilus',
+                 family_name='Langballe', age=20, email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
+    user9 = User(password='TestP', given_name='Frodo',
+                 family_name='Baggins', age=20, email='frodo.baggins@LOTR.com', club_id=7, total_points=100)
+    user10 = User(password='TestP', given_name='Bilbo',
+                 family_name='Baggins', age=20, email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
+    user11 = User(password='TestP', given_name='Tony',
+                 family_name='Stark', age=20, email='iron.man@marvel.com', club_id=2, total_points=400)
+    user12 = User(password='TestP', given_name='Jon',
+                 family_name='Snow', age=20, email='jon.snow@bastard.com', club_id=3, total_points=0)
+    user13 = User(password='TestP', given_name='Ned',
+                 family_name='Stark', age=20, email='ned.stark@winterfell.com', club_id=8, total_points=70)
+    user14 = User(password='TestP', given_name='Henke',
+                 family_name='Madsen', age=20, email='henkem@DNB.no', club_id=12, total_points=65)
+    user15 = User(password='TestP', given_name='Peter',
+                 family_name='Parker', age=20, email='peter.parker@spiderman.com', club_id=15, total_points=14)
+    user16 = User(password='TestP', given_name='Cristiano',
+                 family_name='Ronaldo', age=37, email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50)
+    user17 = User(password='TestP', given_name='Lionel',
+                 family_name='Messi', age=36, email='messi10@PSG.com', club_id=6, total_points=51)
+    user18 = User(password='TestP', given_name='Marcus',
+                 family_name='Bugge', age=22, email='buggemann@TAE.no', club_id=4, total_points=47)
+    user19 = User(password='TestP', given_name='Fredrik',
+                 family_name='Brinch', age=18, email='feppe@TAE.no', club_id=11, total_points=49)
+    user19 = User(password='TestP', given_name='Neymar',
+                 family_name='Jr', age=28, email='jr.Neymar@PSG.com', club_id=7, total_points=32)
+    user20 = User(password='TestP', given_name='Vladimir',
+                 family_name='Putin', age=68, email='putin@crazy.com', club_id=8, total_points=1000)
+    user21 = User(password='TestP', given_name='Joe',
+                 family_name='Biden', age=103, email='biden@whitehouse.com', club_id=3, total_points=1)
+    user22 = User(password='TestP', given_name='Bat',
+                 family_name='Man', age=20, email='batman@penger.no', club_id=11, total_points=12)
     user1.save()
     user2.save()
     user3.save()
     user4.save()
     user5.save()
+    user6.save()
+    user21.save()
+    user7.save()
+    user8.save()
+    user9.save()
+    user10.save()
+    user11.save()
+    user12.save()
+    user13.save()
+    user14.save()
+    user15.save()
+    user16.save()
+    user18.save()
+    user17.save()
+    user19.save()
+    user20.save()
+    user22.save()
     user1.add_badge(badge1)
     user1.add_badge(badge2)
     user1.add_badge(badge3)
     user1.add_badge(badge4)
     user1.add_badge(badge5)
     user1.add_badge(badge6)
-    
 
     video = Video(caption='Funny video', likes=0, views=0,
                   video='Random Video', user_id=1)

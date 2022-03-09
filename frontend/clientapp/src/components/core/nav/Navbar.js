@@ -1,3 +1,4 @@
+import { FollowLiked } from "./FollowLiked";
 import React, { useEffect } from "react";
 import "./navbar.css";
 import { Link, NavLink } from "react-router-dom";
@@ -10,14 +11,15 @@ import axios from "axios";
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
 
-  const usertest = JSON.parse(localStorage.getItem("user"));
+  const loggedUser = JSON.parse(localStorage.getItem("user"));
+
+  console.log(loggedUser);
 
   function logout(e) {
     e.preventDefault();
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
     setRefresh(true);
-    console.log("log out??");
   }
 
   return (
@@ -26,7 +28,7 @@ export default function Navbar() {
       {localStorage.getItem("loggedIn") ? (
         <div className="welcome-nav">
           {" "}
-          <h1>{usertest.name}</h1>
+          <h1>{loggedUser.name}</h1>
           <button className="logout-btn" onClick={logout}>
             Log out
           </button>
@@ -36,19 +38,28 @@ export default function Navbar() {
           <button className="loginbtn-nav">Login</button>
         </Link>
       )}
-      <div className="links-cnt">
-        <h1>LEADERBOARD</h1>
-        <div className="links">
-          <div className="rank-nav-cnt">
-            <Link to="/">Allsvenskan</Link>
-            <div className="currentrank">#2</div>
-          </div>
 
-          <div className="rank-nav-cnt">
-            <Link to="/">Sweden</Link>
-            <div className="currentrank">#90</div>
+      <div className="links-cnt">
+        {localStorage.getItem("loggedIn") ? (
+          <div>
+            <FollowLiked />
+            <h1>LEADERBOARD</h1>
+            <div className="links">
+              <div className="rank-nav-cnt">
+                <Link to="/">Allsvenskan</Link>
+                <div className="currentrank">#{loggedUser.overall_rank}</div>
+              </div>
+
+              <div className="rank-nav-cnt">
+                <Link to="/">{loggedUser.club_name}</Link>
+                <div className="currentrank">#{loggedUser.club_rank}</div>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          ""
+        )}
+
         <h1>COMPETITIONS</h1>
         <div className="links">
           <div className="rank-nav-cnt">
@@ -66,16 +77,16 @@ export default function Navbar() {
           </div>
         </div>
 
-        <h1>PROFIL</h1>
-        <div className="links">
-          <div className="rank-nav-cnt">
-            <NavLink to="/profil">Profil</NavLink>
+        {localStorage.getItem("loggedIn") ? (
+          <div>
+            <h1>PROFIL</h1>
+            <div className="links">
+              <div className="rank-nav-cnt">
+                <NavLink to="/profil">Profil</NavLink>
+              </div>
+            </div>
           </div>
-          <div className="rank-nav-cnt">
-            <NavLink to="/feed">Feed</NavLink>
-          </div>
-        </div>
-        <div className="a"></div>
+        ) : null}
       </div>
     </div>
   );
