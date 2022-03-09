@@ -592,23 +592,73 @@ def db_data():
     badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys',
-                 family_name='User1', age=25, email='test1@forzasys.no', club_id=16, total_points=0)
+                 family_name='User1', age=25, email='test1@forzasys.no', club_id=16, total_points=14)
     user2 = User(password='TestP', given_name='Forzasys',
-                 family_name='User2', age=25, email='test2@forzasys.no', club_id=16, total_points=1)
+                 family_name='User2', age=25, email='test2@forzasys.no', club_id=13, total_points=11)
     user3 = User(password='TestP', given_name='Forzasys',
-                 family_name='User3', age=25, email='test3@forzasys.no', club_id=16, total_points=2)
+                 family_name='User3', age=25, email='test3@forzasys.no', club_id=1, total_points=25)
     user4 = User(password='TestP', given_name='Forzasys',
-                 family_name='User4', age=25, email='test4@forzasys.no', club_id=16, total_points=3)
+                 family_name='User4', age=25, email='test4@forzasys.no', club_id=9, total_points=37)
     user5 = User(password='TestP', given_name='Forzasys',
-                 family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=6)
-    user6 = User(password='TestP', given_name='piss',
-                 family_name='bruker', age=25, email='piss.bruker@mail.com', club_id=16, total_points=0)
+                 family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=69)
+    user6 = User(password='TestP', given_name='Harry',
+                 family_name='Potter', age=20, email='harry.potter@trollmann.com', club_id=14, total_points=40)
+    user8 = User(password='TestP', given_name='Ronny',
+                 family_name='Wiltersen', age=20, email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13)
+    user7 = User(password='TestP', given_name='Nilus',
+                 family_name='Langballe', age=20, email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
+    user9 = User(password='TestP', given_name='Frodo',
+                 family_name='Baggins', age=20, email='frodo.baggins@LOTR.com', club_id=7, total_points=100)
+    user10 = User(password='TestP', given_name='Bilbo',
+                 family_name='Baggins', age=20, email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
+    user11 = User(password='TestP', given_name='Tony',
+                 family_name='Stark', age=20, email='iron.man@marvel.com', club_id=2, total_points=400)
+    user12 = User(password='TestP', given_name='Jon',
+                 family_name='Snow', age=20, email='jon.snow@bastard.com', club_id=3, total_points=0)
+    user13 = User(password='TestP', given_name='Ned',
+                 family_name='Stark', age=20, email='ned.stark@winterfell.com', club_id=8, total_points=70)
+    user14 = User(password='TestP', given_name='Henke',
+                 family_name='Madsen', age=20, email='henkem@DNB.no', club_id=12, total_points=65)
+    user15 = User(password='TestP', given_name='Peter',
+                 family_name='Parker', age=20, email='peter.parker@spiderman.com', club_id=15, total_points=14)
+    user16 = User(password='TestP', given_name='Cristiano',
+                 family_name='Ronaldo', age=37, email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50)
+    user17 = User(password='TestP', given_name='Lionel',
+                 family_name='Messi', age=36, email='messi10@PSG.com', club_id=6, total_points=51)
+    user18 = User(password='TestP', given_name='Marcus',
+                 family_name='Bugge', age=22, email='buggemann@TAE.no', club_id=4, total_points=47)
+    user19 = User(password='TestP', given_name='Fredrik',
+                 family_name='Brinch', age=18, email='feppe@TAE.no', club_id=11, total_points=49)
+    user19 = User(password='TestP', given_name='Neymar',
+                 family_name='Jr', age=28, email='jr.Neymar@PSG.com', club_id=7, total_points=32)
+    user20 = User(password='TestP', given_name='Vladimir',
+                 family_name='Putin', age=68, email='putin@crazy.com', club_id=8, total_points=1000)
+    user21 = User(password='TestP', given_name='Joe',
+                 family_name='Biden', age=103, email='biden@whitehouse.com', club_id=3, total_points=1)
+    user22 = User(password='TestP', given_name='Bat',
+                 family_name='Man', age=20, email='batman@penger.no', club_id=11, total_points=12)
     user1.save()
     user2.save()
     user3.save()
     user4.save()
     user5.save()
     user6.save()
+    user21.save()
+    user7.save()
+    user8.save()
+    user9.save()
+    user10.save()
+    user11.save()
+    user12.save()
+    user13.save()
+    user14.save()
+    user15.save()
+    user16.save()
+    user18.save()
+    user17.save()
+    user19.save()
+    user20.save()
+    user22.save()
     user1.add_badge(badge1)
     user1.add_badge(badge6)
 
