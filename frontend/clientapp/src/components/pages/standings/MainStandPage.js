@@ -8,7 +8,7 @@ export default function MainStandPage() {
   const [filter, setFilter] = useState([0, 9]);
   const [stand, setStand] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
 
   let url = "http://localhost:5000/api/leaderboard/";
 
@@ -22,8 +22,18 @@ export default function MainStandPage() {
       .then((response) => {
         setStand(response.data);
         setLoading(false);
+        countUsers(response.data);
       })
-      .catch(setDisabled[true]);
+      .catch((response) => {
+        setDisabled(false);
+      });
+  }
+
+  function countUsers(list) {
+    if (list.size() > 10) {
+      console.log("heheheheh");
+    }
+    console.log("list", list);
   }
 
   const sortByPlayers = async () => {
@@ -94,7 +104,7 @@ export default function MainStandPage() {
               {filter[0] >= 2 ? (
                 <button
                   onClick={() => {
-                    nextAndPrevPage(filter[0] - 9, filter[1] - 9);
+                    nextAndPrevPage(filter[0] - 10, filter[1] - 10);
                   }}
                   className="prev-btn"
                 >
@@ -107,7 +117,7 @@ export default function MainStandPage() {
               <button
                 disabled={disabled}
                 onClick={() => {
-                  nextAndPrevPage(filter[0] + 9, filter[1] + 9);
+                  nextAndPrevPage(filter[0] + 10, filter[1] + 10);
                 }}
                 className="next-btn"
               >

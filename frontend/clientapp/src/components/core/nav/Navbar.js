@@ -1,3 +1,4 @@
+import { FollowLiked } from "./FollowLiked";
 import React, { useEffect } from "react";
 import "./navbar.css";
 import { Link, NavLink } from "react-router-dom";
@@ -37,10 +38,10 @@ export default function Navbar() {
         </Link>
       )}
 
-      <div className=""></div>
       <div className="links-cnt">
         {localStorage.getItem("loggedIn") ? (
           <div>
+            <FollowLiked />
             <h1>LEADERBOARD</h1>
             <div className="links">
               <div className="rank-nav-cnt">
@@ -75,16 +76,16 @@ export default function Navbar() {
           </div>
         </div>
 
-        <h1>PROFIL</h1>
-        <div className="links">
-          <div className="rank-nav-cnt">
-            <NavLink to="/profil">Profil</NavLink>
+        {localStorage.getItem("loggedIn") ? (
+          <div>
+            <h1>PROFIL</h1>
+            <div className="links">
+              <div className="rank-nav-cnt">
+                <NavLink to="/profil">Profil</NavLink>
+              </div>
+            </div>
           </div>
-          <div className="rank-nav-cnt">
-            <NavLink to="/feed">Feed</NavLink>
-          </div>
-        </div>
-        <div className="a"></div>
+        ) : null}
       </div>
     </div>
   );

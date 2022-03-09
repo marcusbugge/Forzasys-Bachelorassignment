@@ -181,8 +181,6 @@
   text-align: center;
 }
 
-/** FJERN DETTE **/
-
 button[disabled] {
   opacity: 0.2;
 }
