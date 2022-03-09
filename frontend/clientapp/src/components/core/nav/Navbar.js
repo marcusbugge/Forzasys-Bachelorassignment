@@ -36,6 +36,8 @@ export default function Navbar() {
           <button className="loginbtn-nav">Login</button>
         </Link>
       )}
+
+      <div className=""></div>
       <div className="links-cnt">
         {localStorage.getItem("loggedIn") ? (
           <div>
@@ -43,12 +45,12 @@ export default function Navbar() {
             <div className="links">
               <div className="rank-nav-cnt">
                 <Link to="/">Allsvenskan</Link>
-                <div className="currentrank">#{loggedUser.overall_score}</div>
+                <div className="currentrank">#{loggedUser.overall_rank}</div>
               </div>
 
               <div className="rank-nav-cnt">
                 <Link to="/">{loggedUser.club_name}</Link>
-                <div className="currentrank">#{loggedUser.club_score}</div>
+                <div className="currentrank">#{loggedUser.club_rank}</div>
               </div>
             </div>
           </div>
