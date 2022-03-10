@@ -30,7 +30,8 @@ videos_liked = db.Table('videos_liked',
 
 
 class FollowerSchema(Schema):
-    id = fields.Integer()
+    follower_id = fields.Integer()
+    followed_id = fields.Integer()
 
 
 class User(db.Model):
@@ -42,6 +43,7 @@ class User(db.Model):
     email = db.Column(db.String(50), unique=True, nullable=False)
     total_points = db.Column(db.Integer, nullable=False)
     club_id = db.Column(db.Integer, db.ForeignKey('club.id'), nullable=False)
+    profile_pic = db.Column(db.String(30), nullable=False, default='default-profilepic.png')
 
     #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
     followed = db.relationship(
@@ -69,6 +71,7 @@ class User(db.Model):
         return cls.query.get_or_404(id)
 
     def save(self):
+        self.badges.append(Badge.get_by_id(1))
         db.session.add(self)
         db.session.commit()
 
@@ -109,6 +112,7 @@ class UserSchema(Schema):
     password = fields.String()
     given_name = fields.String()
     family_name = fields.String()
+    profile_pic = fields.String()
     age = fields.Integer()
     email = fields.String()
     club_id = fields.Integer()
