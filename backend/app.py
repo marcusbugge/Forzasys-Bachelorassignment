@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, Answer, SubmittedQuiz, SubmittedQuizSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema
 from flask_cors import CORS
 
 CORS(app)
@@ -23,6 +23,15 @@ def login():
         'error': 'Wrong email and/ or password'
     }), 404
 
+def get_rank_total(user):
+    users = User.get_all()
+    users.sort(key=lambda x: x.total_points, reverse=True)
+    return users.index(user) +1
+
+def get_rank_club(user, club):
+    supporters = club.supporters
+    supporters.sort(key=lambda x: x.total_points, reverse=True)
+    return supporters.index(user) + 1
 
 def get_idividual_score(loggedin_user, users):
     club = Club.get_by_id(loggedin_user.club_id)
@@ -31,7 +40,9 @@ def get_idividual_score(loggedin_user, users):
     users.sort(key=lambda x: x.total_points, reverse=True)
     user = PersonalScore(id = loggedin_user.id, 
                         name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        overall_rank = users.index(loggedin_user) + 1, 
+                        profile_pic = loggedin_user.profile_pic,
+                        overall_rank = users.index(loggedin_user) + 1,
+                        club_id = club.id,
                         club_name = club.name, 
                         club_logo = club.logo,
                         club_rank = club_supporters.index(loggedin_user) + 1,
@@ -94,7 +105,7 @@ def update_user(id):
     else:
         user_to_uptdate.given_name = ""
         for i in range(len(words) - 1):
-            user_to_uptdate.given_name += words[i]
+            user_to_uptdate.given_name += words[i] + " "
         user_to_uptdate.family_name = words[len(words) - 1]
     if data['age']:
         user_to_uptdate.age = data['age']
@@ -110,7 +121,7 @@ def update_user(id):
     return jsonify(result), 200
 
 
-@app.route('/api/user/<int:id>', methods=['DELETE'])
+@app.route('/api/user<int:id>', methods=['DELETE'])
 def delete_user(id):
     user_to_delete = User.get_by_id(id)
     user_to_delete.delete()
@@ -135,12 +146,16 @@ def follow_user(id):
 def follow_table(id):
     users = User.get_all()
     user_with_followers = User.get_by_id(id)
-    data = []
+    followers = []
     for user in users:
         if user.is_following(user_with_followers):
-            data.append(user)
-    serializer = FollowerSchema(many=True)
-    result = serializer.dump(data)
+            club = Club.get_by_id(user.club_id)
+            followers.append(Followlist(id = user.id, name = user.given_name + " " + user.family_name,
+                                        total_points = user.total_points, overall_rank = get_rank_total(user),
+                                        club_rank = get_rank_club(user, club), club_logo = club.logo, club_id = club.id, 
+                                        club_name = club.name, badges = user.badges, badge_count = len(user.badges)))
+    serializer = FollowlistSchema(many=True)
+    result = serializer.dump(followers)
     return jsonify(result), 200
 
 
@@ -202,8 +217,6 @@ def delete_club(id):
         'message': 'deleted'
     }), 204
 
-#user_id, name, club, points
-
 
 @app.route('/api/leaderboard/<int:start>/<int:end>')
 def get_leaderboard(start, end):
@@ -236,17 +249,75 @@ def get_leaderboard(start, end):
 @app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
 def supporter_leaderboard(club_id):
     users = User.get_all()
+    users.sort(key=lambda x: x.total_points, reverse=True)
+    club = Club.get_by_id(club_id)
     users_to_return = []
+    i=1
     for user in users:
         if user.club_id == club_id:
-            users_to_return.append(user)
+            leaderboard_user = Leaderboard(user_id=user.id, rank=i, name=user.given_name + " " + user.family_name, 
+                                            club = club.name, club_logo=club.logo, points=user.total_points)
+            users_to_return.append(leaderboard_user)
+            i += 1
     if len(users_to_return) > 0:
-        users_to_return.sort(key=lambda x: x.total_points, reverse=True)
-        serializer = UserSchema(many=True)
+        users_to_return.sort(key=lambda x: x.points, reverse=True)
+        serializer = LeaderboardSchema(many=True)
         result = serializer.dump(users_to_return)
         return jsonify(result), 200
     else:
         return jsonify({'message': 'The club with id ' + club_id + 'has no supporters'}), 404
+
+
+@app.route('/api/leaderboard/sortbyclub/<int:start>/<int:end>', methods=['GET'])
+def leaderboard_clubs(start, end):
+    clubs = Club.get_all()
+    clubs_sorted_by_points = []
+    for club in clubs:
+        clubs_sorted_by_points.append(LeaderboardClub(club_id=club.id,club_name=club.name,club_logo=club.logo,
+                            club_points=total_points_club(club.id),club_rank=None,top_supporter_name=top_supporter(club.id)))
+    clubs_sorted_by_points.sort(key=lambda x: x.club_points, reverse=True)
+    i = 1
+    for club in clubs_sorted_by_points:
+        club.club_rank = i
+        i += 1
+    clubs_to_return = []
+    i = start
+    if end < len(clubs_sorted_by_points):
+        while i <= end:
+            clubs_to_return.append(clubs_sorted_by_points[i])
+            i += 1
+    else:
+        while i < len(clubs_sorted_by_points):
+            clubs_to_return.append(clubs_sorted_by_points[i])
+            i += 1
+
+    serializer = LeaderboardClubSchema(many=True)
+    result = serializer.dump(clubs_to_return)
+    if len(result) != 0:
+        return jsonify(result), 200
+    else:
+        return jsonify({'message' : 'There is no more teams'}), 200
+
+
+def total_points_club(club_id):
+    club = Club.get_by_id(club_id)
+    total_points = 0
+    for supporter in club.supporters:
+        total_points += supporter.total_points
+    return total_points
+
+def top_supporter(club_id):
+    club = Club.get_by_id(club_id)
+    if len(club.supporters) > 0:
+        top_supporter_name = club.supporters[0].given_name + " " + club.supporters[0].family_name
+        i = 1
+        while i < len(club.supporters):
+            if club.supporters[i - 1].total_points < club.supporters[i].total_points:
+                top_supporter_name =  club.supporters[i].given_name + " " + club.supporters[i].family_name
+            i += 1
+        return top_supporter_name
+    else:
+        return None
 
 
 @app.route('/api/videos', methods=['GET'])
@@ -520,7 +591,7 @@ def get_last_friday():
 
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
-    data = request.args
+    data = request.json
 
     quiz = SubmittedQuiz(user_id=user_id, submitted=True,
                          submitted_time=data['time'])
@@ -611,52 +682,53 @@ def db_data():
     badge5.save()
     badge6.save()
 
-    user1 = User(password='TestP', given_name='Forzasys',
-                 family_name='User1', age=25, email='test1@forzasys.no', club_id=16, total_points=14)
-    user2 = User(password='TestP', given_name='Forzasys',
-                 family_name='User2', age=25, email='test2@forzasys.no', club_id=13, total_points=11)
-    user3 = User(password='TestP', given_name='Forzasys',
-                 family_name='User3', age=25, email='test3@forzasys.no', club_id=1, total_points=25)
-    user4 = User(password='TestP', given_name='Forzasys',
-                 family_name='User4', age=25, email='test4@forzasys.no', club_id=9, total_points=37)
-    user5 = User(password='TestP', given_name='Forzasys',
-                 family_name='User5', age=25, email='test5@forzasys.no', club_id=2, total_points=69)
-    user6 = User(password='TestP', given_name='Harry',
-                 family_name='Potter', age=20, email='harry.potter@trollmann.com', club_id=14, total_points=40)
-    user8 = User(password='TestP', given_name='Ronny',
-                 family_name='Wiltersen', age=20, email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13)
-    user7 = User(password='TestP', given_name='Nilus',
-                 family_name='Langballe', age=20, email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
-    user9 = User(password='TestP', given_name='Frodo',
-                 family_name='Baggins', age=20, email='frodo.baggins@LOTR.com', club_id=7, total_points=100)
-    user10 = User(password='TestP', given_name='Bilbo',
-                 family_name='Baggins', age=20, email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
-    user11 = User(password='TestP', given_name='Tony',
-                 family_name='Stark', age=20, email='iron.man@marvel.com', club_id=2, total_points=400)
-    user12 = User(password='TestP', given_name='Jon',
-                 family_name='Snow', age=20, email='jon.snow@bastard.com', club_id=3, total_points=0)
-    user13 = User(password='TestP', given_name='Ned',
-                 family_name='Stark', age=20, email='ned.stark@winterfell.com', club_id=8, total_points=70)
-    user14 = User(password='TestP', given_name='Henke',
-                 family_name='Madsen', age=20, email='henkem@DNB.no', club_id=12, total_points=65)
-    user15 = User(password='TestP', given_name='Peter',
-                 family_name='Parker', age=20, email='peter.parker@spiderman.com', club_id=15, total_points=14)
-    user16 = User(password='TestP', given_name='Cristiano',
-                 family_name='Ronaldo', age=37, email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50)
-    user17 = User(password='TestP', given_name='Lionel',
-                 family_name='Messi', age=36, email='messi10@PSG.com', club_id=6, total_points=51)
-    user18 = User(password='TestP', given_name='Marcus',
-                 family_name='Bugge', age=22, email='buggemann@TAE.no', club_id=4, total_points=47)
-    user19 = User(password='TestP', given_name='Fredrik',
-                 family_name='Brinch', age=18, email='feppe@TAE.no', club_id=11, total_points=49)
-    user19 = User(password='TestP', given_name='Neymar',
-                 family_name='Jr', age=28, email='jr.Neymar@PSG.com', club_id=7, total_points=32)
-    user20 = User(password='TestP', given_name='Vladimir',
-                 family_name='Putin', age=68, email='putin@crazy.com', club_id=8, total_points=1000)
-    user21 = User(password='TestP', given_name='Joe',
-                 family_name='Biden', age=103, email='biden@whitehouse.com', club_id=3, total_points=1)
-    user22 = User(password='TestP', given_name='Bat',
-                 family_name='Man', age=20, email='batman@penger.no', club_id=11, total_points=12)
+    user1 = User(password='TestP', given_name='Forzasys', family_name='User1', age=25, 
+                email='test1@forzasys.no', club_id=16, total_points=14)
+    user2 = User(password='TestP', given_name='Forzasys', family_name='User2', age=25, 
+                email='test2@forzasys.no', club_id=13, total_points=11)
+    user3 = User(password='TestP', given_name='Forzasys', family_name='User3', age=25, 
+                email='test3@forzasys.no', club_id=1, total_points=25)
+    user4 = User(password='TestP', given_name='Forzasys', family_name='User4', age=25, 
+                email='test4@forzasys.no', club_id=9, total_points=37)
+    user5 = User(password='TestP', given_name='Forzasys', family_name='User5', age=25, 
+                email='test5@forzasys.no', club_id=2, total_points=69)
+    user6 = User(password='TestP', given_name='Harry', family_name='Potter', age=20, 
+                email='harry.potter@trollmann.com', club_id=14, total_points=40)
+    user8 = User(password='TestP', given_name='Ronny', family_name='Wiltersen', age=20, 
+                email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13)
+    user7 = User(password='TestP', given_name='Nilus', family_name='Langballe', age=20, 
+                email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
+    user9 = User(password='TestP', given_name='Frodo', family_name='Baggins', age=20, 
+                email='frodo.baggins@LOTR.com', club_id=7, total_points=100)
+    user10 = User(password='TestP', given_name='Bilbo', family_name='Baggins', age=20, 
+                email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
+    user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=20, 
+                email='iron.man@marvel.com', club_id=2, total_points=400)
+    user12 = User(password='TestP', given_name='Jon', family_name='Snow', age=20, 
+                email='jon.snow@bastard.com', club_id=3, total_points=0)
+    user13 = User(password='TestP', given_name='Ned', family_name='Stark', age=20, 
+                email='ned.stark@winterfell.com', club_id=8, total_points=70)
+    user14 = User(password='TestP', given_name='Henke', family_name='Madsen', age=20, 
+                email='henkem@DNB.no', club_id=12, total_points=65)
+    user15 = User(password='TestP', given_name='Peter', family_name='Parker', age=20, 
+                email='peter.parker@spiderman.com', club_id=15, total_points=14)
+    user16 = User(password='TestP', given_name='Cristiano', family_name='Ronaldo', age=37, 
+                email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50)
+    user17 = User(password='TestP', given_name='Lionel', family_name='Messi', age=36, 
+                email='messi10@PSG.com', club_id=6, total_points=51)
+    user18 = User(password='TestP', given_name='Marcus', family_name='Bugge', age=22, 
+                email='buggemann@TAE.no', club_id=4, total_points=47)
+    user19 = User(password='TestP', given_name='Fredrik', family_name='Brinch', age=18, 
+                email='feppe@TAE.no', club_id=11, total_points=49)
+    user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=28, 
+                email='jr.Neymar@PSG.com', club_id=7, total_points=32)
+    user20 = User(password='TestP', given_name='Vladimir', family_name='Putin', age=68, 
+                email='putin@crazy.com', club_id=8, total_points=1000, profile_pic='putin-pic.png')
+    user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
+                email='biden@whitehouse.com', club_id=3, total_points=1)
+    user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
+                email='batman@penger.no', club_id=11, total_points=12)
+
     user1.save()
     user2.save()
     user3.save()
@@ -685,6 +757,10 @@ def db_data():
     user1.add_badge(badge4)
     user1.add_badge(badge5)
     user1.add_badge(badge6)
+    user2.follow(user1)
+    user3.follow(user1)
+    user4.follow(user1)
+    user5.follow(user1)
 
     video = Video(caption='Funny video', likes=0, views=0,
                   video='Random Video', user_id=1)

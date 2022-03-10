@@ -7,6 +7,7 @@ import HoverImage from "react-hover-image";
 import { BiCog } from "react-icons/bi";
 import { AiOutlineEdit } from "react-icons/ai";
 import { IconContext } from "react-icons";
+import { useParams } from "react-router";
 
 export default function Profilepage() {
   const [user, setUser] = useState();
@@ -24,6 +25,10 @@ export default function Profilepage() {
     club_id: 1,
     email: "test1@forzasys.no",
   });
+
+  const { username } = useParams();
+
+  console.log("test", { username });
 
   const showBadge = (index) => {
     setHoveredBadge(index);
@@ -54,6 +59,7 @@ export default function Profilepage() {
     console.log(loggedUser);
     getBadges();
   }, []);
+
   async function getBadges() {
     const henticon = await axios.get("http://localhost:5000/api/badges/user/1");
     console.log("Req: ", henticon);
@@ -61,8 +67,6 @@ export default function Profilepage() {
     setBadges(data);
     console.log("State: ", badges);
   }
-
-  const [video, setVideo] = useState(null);
 
   return (
     <div className="profile-cnt">
@@ -136,6 +140,7 @@ export default function Profilepage() {
             <h1>Klubb</h1>
             <p>{loggedUser.club_name}</p>
             <img
+              alt={loggedUser.club_logo}
               src={require("../../../assets/teamLogos/" + loggedUser.club_logo)}
             />
           </div>
