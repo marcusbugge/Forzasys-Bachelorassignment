@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, Answer, SubmittedQuiz, SubmittedQuizSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema
 from flask_cors import CORS
 
 CORS(app)
@@ -31,7 +31,8 @@ def get_idividual_score(loggedin_user, users):
     users.sort(key=lambda x: x.total_points, reverse=True)
     user = PersonalScore(id = loggedin_user.id, 
                         name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        overall_rank = users.index(loggedin_user) + 1, 
+                        overall_rank = users.index(loggedin_user) + 1,
+                        club_id = club.id,
                         club_name = club.name, 
                         club_logo = club.logo,
                         club_rank = club_supporters.index(loggedin_user) + 1,
@@ -94,7 +95,7 @@ def update_user(id):
     else:
         user_to_uptdate.given_name = ""
         for i in range(len(words) - 1):
-            user_to_uptdate.given_name += words[i]
+            user_to_uptdate.given_name += words[i] + " "
         user_to_uptdate.family_name = words[len(words) - 1]
     if data['age']:
         user_to_uptdate.age = data['age']
@@ -110,7 +111,7 @@ def update_user(id):
     return jsonify(result), 200
 
 
-@app.route('/api/user/<int:id>', methods=['DELETE'])
+@app.route('//api/user<int:id>', methods=['DELETE'])
 def delete_user(id):
     user_to_delete = User.get_by_id(id)
     user_to_delete.delete()
@@ -135,12 +136,12 @@ def follow_user(id):
 def follow_table(id):
     users = User.get_all()
     user_with_followers = User.get_by_id(id)
-    data = []
+    followers = []
     for user in users:
         if user.is_following(user_with_followers):
-            data.append(user)
+            followers.append(user)
     serializer = FollowerSchema(many=True)
-    result = serializer.dump(data)
+    result = serializer.dump(followers)
     return jsonify(result), 200
 
 
@@ -253,6 +254,64 @@ def supporter_leaderboard(club_id):
         return jsonify(result), 200
     else:
         return jsonify({'message': 'The club with id ' + club_id + 'has no supporters'}), 404
+
+
+@app.route('/api/leaderboard/sortbyclub/<int:start>/<int:end>', methods=['GET'])
+def leaderboard_clubs(start, end):
+    clubs = Club.get_all()
+    clubs_sorted_by_points = []
+    for club in clubs:
+        clubs_sorted_by_points.append(LeaderboardClub(club_id=club.id,club_name=club.name,club_logo=club.logo,
+                            club_points=total_points_club(club.id),club_rank=None,top_supporter_name=top_supporter(club.id)))
+    clubs_sorted_by_points.sort(key=lambda x: x.club_points, reverse=True)
+    i = 1
+    for club in clubs_sorted_by_points:
+        club.club_rank = i
+        i += 1
+    clubs_to_return = []
+    i = start
+    if end < len(clubs_sorted_by_points):
+        while i <= end:
+            clubs_to_return.append(clubs_sorted_by_points[i])
+            i += 1
+    else:
+        while i < len(clubs_sorted_by_points):
+            clubs_to_return.append(clubs_sorted_by_points[i])
+            i += 1
+
+    serializer = LeaderboardClubSchema(many=True)
+    result = serializer.dump(clubs_to_return)
+    if len(result) != 0:
+        return jsonify(result), 200
+    else:
+        return jsonify({'message' : 'There is no more teams'}), 200
+
+
+def total_points_club(club_id):
+    club = Club.get_by_id(club_id)
+    total_points = 0
+    for supporter in club.supporters:
+        total_points += supporter.total_points
+    return total_points
+
+def top_supporter(club_id):
+    club = Club.get_by_id(club_id)
+    if len(club.supporters) > 0:
+        top_supporter_name = club.supporters[0].given_name + " " + club.supporters[0].family_name
+        i = 1
+        while i < len(club.supporters):
+            if club.supporters[i - 1].total_points < club.supporters[i].total_points:
+                top_supporter_name =  club.supporters[i].given_name + " " + club.supporters[i].family_name
+            i += 1
+        return top_supporter_name
+    else:
+        return None
+
+
+
+    
+
+
 
 
 @app.route('/api/videos', methods=['GET'])
