@@ -694,39 +694,39 @@ def db_data():
     user5 = User(password='TestP', given_name='Forzasys', family_name='User5', age=25, 
                 email='test5@forzasys.no', club_id=2, total_points=69)
     user6 = User(password='TestP', given_name='Harry', family_name='Potter', age=20, 
-                email='harry.potter@trollmann.com', club_id=14, total_points=40)
+                email='harry.potter@trollmann.com', club_id=14, total_points=40, profile_pic='potter-pic.png')
     user8 = User(password='TestP', given_name='Ronny', family_name='Wiltersen', age=20, 
-                email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13)
+                email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13, profile_pic='ronny-pic.png')
     user7 = User(password='TestP', given_name='Nilus', family_name='Langballe', age=20, 
-                email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
+                email='nilus.langballe@trollmann.com', club_id=7, total_points=6, profile_pic='langballe-pic.png')
     user9 = User(password='TestP', given_name='Frodo', family_name='Baggins', age=20, 
                 email='frodo.baggins@LOTR.com', club_id=7, total_points=100, profile_pic='frodo-pic.png')
     user10 = User(password='TestP', given_name='Bilbo', family_name='Baggins', age=20, 
-                email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
+                email='bilbo.baggins@LOTR.com', club_id=11, total_points=1, profile_pic='bilbo-pic.png')
     user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=20, 
-                email='iron.man@marvel.com', club_id=2, total_points=400)
+                email='iron.man@marvel.com', club_id=2, total_points=400, profile_pic='ironman-pic.png')
     user12 = User(password='TestP', given_name='Jon', family_name='Snow', age=20, 
-                email='jon.snow@bastard.com', club_id=3, total_points=0)
+                email='jon.snow@bastard.com', club_id=3, total_points=0, profile_pic='snow-pic.png')
     user13 = User(password='TestP', given_name='Ned', family_name='Stark', age=20, 
-                email='ned.stark@winterfell.com', club_id=8, total_points=70)
+                email='ned.stark@winterfell.com', club_id=8, total_points=70, profile_pic='nedstark-pic.png')
     user14 = User(password='TestP', given_name='Henke', family_name='Madsen', age=20, 
                 email='henkem@DNB.no', club_id=12, total_points=65)
     user15 = User(password='TestP', given_name='Peter', family_name='Parker', age=20, 
-                email='peter.parker@spiderman.com', club_id=15, total_points=14)
+                email='peter.parker@spiderman.com', club_id=15, total_points=14, profile_pic='peterparker-pic.png')
     user16 = User(password='TestP', given_name='Cristiano', family_name='Ronaldo', age=37, 
-                email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50)
+                email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50, profile_pic='cr7-pic.png')
     user17 = User(password='TestP', given_name='Lionel', family_name='Messi', age=36, 
-                email='messi10@PSG.com', club_id=6, total_points=51)
+                email='messi10@PSG.com', club_id=6, total_points=51, profile_pic='messi-pic.png')
     user18 = User(password='TestP', given_name='Marcus', family_name='Bugge', age=22, 
                 email='buggemann@TAE.no', club_id=4, total_points=47)
     user19 = User(password='TestP', given_name='Fredrik', family_name='Brinch', age=18, 
                 email='feppe@TAE.no', club_id=11, total_points=49)
     user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=28, 
-                email='jr.Neymar@PSG.com', club_id=7, total_points=32)
+                email='jr.Neymar@PSG.com', club_id=7, total_points=32, profile_pic='neymar-pic.png')
     user20 = User(password='TestP', given_name='Vladimir', family_name='Putin', age=68, 
                 email='putin@crazy.com', club_id=8, total_points=1000, profile_pic='putin-pic.png')
     user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
-                email='biden@whitehouse.com', club_id=3, total_points=1)
+                email='biden@whitehouse.com', club_id=3, total_points=1, profile_pic='biden-pic.png')
     user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
                 email='batman@penger.no', club_id=11, total_points=12, profile_pic='batman-pic.png')
 
