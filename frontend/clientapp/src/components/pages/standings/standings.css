@@ -48,6 +48,10 @@
   justify-content: flex-end;
 }
 
+.sort-buttons {
+  display: flex;
+}
+
 .filtering button {
   background-color: var(--secondary);
   color: var(--black);
@@ -68,6 +72,17 @@
 .filtering button:hover {
   background-color: rgba(255, 0, 0, 0);
   border: 2px var(--secondary) solid;
+}
+
+.filterbyclub {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.filterbyclub img {
+  width: 20px;
+  margin-right: 5px;
 }
 
 /** TABLE **/

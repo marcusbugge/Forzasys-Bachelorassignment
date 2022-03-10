@@ -3,8 +3,11 @@ import axios from "axios";
 import "./login.css";
 import { Link } from "react-router-dom";
 import Loginconfirmation from "./LoginConfirmation";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  let navigate = useNavigate();
+
   const logout = () => {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
@@ -28,11 +31,10 @@ export default function Login() {
     axios
       .post("http://localhost:5000/api/login", user)
       .then((response) => {
-        console.log(response.status);
-        console.log("test response", response.data);
         localStorage.setItem("loggedIn", true);
         localStorage.setItem("user", JSON.stringify(response.data));
-        console.log("localstorage", localStorage.getItem("user"));
+        window.location.reload();
+        navigate("/");
       })
       .catch((e) => console.log("something went wrong :(", e));
   }

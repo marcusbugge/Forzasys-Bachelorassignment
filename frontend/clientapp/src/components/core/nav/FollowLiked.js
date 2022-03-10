@@ -6,7 +6,7 @@ import { BiFootball } from "react-icons/bi";
 import { MdLeaderboard, MdOutlineLeaderboard } from "react-icons/md";
 
 import { Link } from "react-router-dom";
-export function FollowLiked({}) {
+export function FollowLiked() {
   return (
     <div className="active-cnt">
       <div className="active-cnt-elem">
