@@ -6,6 +6,7 @@ import axios from "axios";
 import HoverImage from "react-hover-image";
 import { BiCog } from "react-icons/bi";
 import { IconContext } from "react-icons";
+import { useParams } from "react-router";
 
 export default function Profilepage() {
   const [user, setUser] = useState();
@@ -15,6 +16,10 @@ export default function Profilepage() {
   const [hoveredBadge, setHoveredBadge] = useState(-1);
 
   const usertest = JSON.parse(localStorage.getItem("user"));
+
+  const { username } = useParams();
+
+  console.log("test", { username });
 
   const showBadge = (index) => {
     setHoveredBadge(index);
@@ -26,17 +31,11 @@ export default function Profilepage() {
     setDisplay("badge-info-cnt-notdisplayed");
   };
 
-  async function getUsers() {
-    const test = await axios.get("http://localhost:5000/api/user");
-    console.log("Req: ", test);
-    const data = test.data;
-    setUser(data);
-    console.log("State: ", user);
-  }
   useEffect(() => {
     console.log(usertest);
     getBadges();
   }, []);
+
   async function getBadges() {
     const henticon = await axios.get("http://localhost:5000/api/badges/user/1");
     console.log("Req: ", henticon);
@@ -44,8 +43,6 @@ export default function Profilepage() {
     setBadges(data);
     console.log("State: ", badges);
   }
-
-  const [video, setVideo] = useState(null);
 
   return (
     <div className="profile-cnt">
@@ -59,7 +56,7 @@ export default function Profilepage() {
           </div>
         </IconContext.Provider>
 
-        <h1>{usertest.name}</h1>
+        <h1>{username}</h1>
       </div>
 
       <div className="badges-cnt">
@@ -111,6 +108,7 @@ export default function Profilepage() {
             <h1>Klubb</h1>
             <p>{usertest.club_name}</p>
             <img
+              alt={usertest.club_logo}
               src={require("../../../assets/teamLogos/" + usertest.club_logo)}
             />
           </div>

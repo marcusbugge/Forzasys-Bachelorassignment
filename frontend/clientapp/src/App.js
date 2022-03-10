@@ -7,10 +7,11 @@ import Login from "./components/pages/login/Login.js";
 import Profilepage from "./components/pages/profile/Profilepage";
 import FeedPosts from "./components/pages/feed/FeedPosts";
 import MainStandPage from "./components/pages/standings/MainStandPage";
-
+import { Navigate } from "react-router-dom";
 import CreateUser from "./components/pages/login/CreateUser";
 import { useEffect, useState } from "react";
 import Weeklytrivia from "./components/pages/competitions/weeklytrivia/Weeklytrivia";
+import ScrollToTop from "./ScrollToTop";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,31 +30,28 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="application">
-        <div className="nav">
-          <Navbar />
-        </div>
+      <ScrollToTop>
+        <div className="application">
+          <div className="nav">
+            <Navbar />
+          </div>
 
-        <div className="content">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/profil" element={<Profilepage />} />
-
-            {isLoggedIn ? (
+          <div className="content">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/profil" element={<Profilepage />} />
+              <Route path="/profil/:username" element={<Profilepage />} />
               <Route path="/highlights" element={<FeedPosts />} />
-            ) : (
               <Route path="/signup" element={<CreateUser />} />
-            )}
-
-            <Route path="/signup" element={<CreateUser />} />
-            <Route path="/following" element={<CreateUser />} />
-
-            <Route path="/weeklytrivia" element={<Weeklytrivia />} />
-            <Route path="/" element={<MainStandPage />} />
-          </Routes>
-          <Footer />
+              <Route path="/following" element={<CreateUser />} />
+              <Route path="/weeklytrivia" element={<Weeklytrivia />} />
+              <Route path="/" element={<MainStandPage />} />
+              {/* <Route path="/*" element={<Navigate replace to="/" />} /> */}
+            </Routes>
+            <Footer />
+          </div>
         </div>
-      </div>
+      </ScrollToTop>
     </BrowserRouter>
   );
 }
