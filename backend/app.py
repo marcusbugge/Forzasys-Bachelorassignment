@@ -95,23 +95,24 @@ def get_user(id):
 def update_user(id):
     user_to_uptdate = User.get_by_id(id)
     data = request.json
-    name = data['name']
-    words = name.split()
-    if data['password']:
+    if 'name' in data:
+        name = data['name']
+        words = name.split()
+        if len(words) == 2:
+            user_to_uptdate.given_name = words[0]
+            user_to_uptdate.family_name = words[1]
+        else:
+            user_to_uptdate.given_name = ""
+            for i in range(len(words) - 1):
+                user_to_uptdate.given_name += words[i] + " "
+                user_to_uptdate.family_name = words[len(words) - 1]
+    if 'password' in data:
         user_to_uptdate.password = data['password']
-    if len(words) == 2:
-        user_to_uptdate.given_name = words[0]
-        user_to_uptdate.family_name = words[1]
-    else:
-        user_to_uptdate.given_name = ""
-        for i in range(len(words) - 1):
-            user_to_uptdate.given_name += words[i] + " "
-        user_to_uptdate.family_name = words[len(words) - 1]
-    if data['age']:
+    if 'age' in data:
         user_to_uptdate.age = data['age']
-    if data['club_id']:
+    if 'club_id' in data:
         user_to_uptdate.club_id = data['club_id']
-    if data['email']:
+    if 'email' in data:
         user_to_uptdate.email = data['email']
 
     db.session.commit()

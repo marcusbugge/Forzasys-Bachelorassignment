@@ -19,11 +19,7 @@ export default function Profilepage() {
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
   const [putRequestName, setPutRequestName] = useState({
-    password: "TestP",
-    age: 20,
-    name: "Endret navn",
-    club_id: 1,
-    email: "test1@forzasys.no",
+    age: 25,
   });
 
   const { username } = useParams();
