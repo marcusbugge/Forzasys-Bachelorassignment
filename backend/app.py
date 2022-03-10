@@ -700,7 +700,7 @@ def db_data():
     user7 = User(password='TestP', given_name='Nilus', family_name='Langballe', age=20, 
                 email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
     user9 = User(password='TestP', given_name='Frodo', family_name='Baggins', age=20, 
-                email='frodo.baggins@LOTR.com', club_id=7, total_points=100)
+                email='frodo.baggins@LOTR.com', club_id=7, total_points=100, profile_pic='frodo-pic.png')
     user10 = User(password='TestP', given_name='Bilbo', family_name='Baggins', age=20, 
                 email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
     user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=20, 
@@ -728,7 +728,7 @@ def db_data():
     user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
                 email='biden@whitehouse.com', club_id=3, total_points=1)
     user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
-                email='batman@penger.no', club_id=11, total_points=12)
+                email='batman@penger.no', club_id=11, total_points=12, profile_pic='batman-pic.png')
 
     user1.save()
     user2.save()

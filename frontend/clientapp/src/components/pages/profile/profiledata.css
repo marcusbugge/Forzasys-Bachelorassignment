@@ -16,10 +16,7 @@
 }
 
 .profiledata img {
-  width: 203px;
-  margin-top: 20px;
-  filter: invert(100%) sepia(100%) saturate(15%) hue-rotate(213deg)
-    brightness(105%) contrast(100%);
+  width: 350px;
 }
 
 .picture-icon-cnt {

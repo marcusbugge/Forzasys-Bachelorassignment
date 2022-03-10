@@ -57,7 +57,9 @@ export default function Profilepage() {
   }, []);
 
   async function getBadges() {
-    const henticon = await axios.get("http://localhost:5000/api/badges/user/1");
+    const henticon = await axios.get(
+      "http://localhost:5000/api/badges/user/" + loggedUser.id
+    );
     console.log("Req: ", henticon);
     const data = henticon.data;
     setBadges(data);
@@ -68,7 +70,11 @@ export default function Profilepage() {
     <div className="profile-cnt">
       <div className="profiledata">
         <div className="picture-icon-cnt">
-          <img src={usericon} alt="profilepicture" />
+          <img
+            src={require("../../../assets/profilepic/" +
+              loggedUser.profile_pic)}
+            alt="profilepicture"
+          />
         </div>
         <button className="profile-edit-menu-btn" onClick={editUser}>
           <IconContext.Provider value={{ size: "30px" }}>
@@ -147,7 +153,7 @@ export default function Profilepage() {
         </div>
         <div className="profile-points-cnt">
           <h1>Dine poeng</h1>
-          <p>{loggedUser.overall_rank}</p>
+          <p>{loggedUser.total_points}</p>
         </div>
       </div>
       <div className="most-popularclips-cnt">
