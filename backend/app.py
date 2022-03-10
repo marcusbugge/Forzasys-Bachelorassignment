@@ -95,23 +95,24 @@ def get_user(id):
 def update_user(id):
     user_to_uptdate = User.get_by_id(id)
     data = request.json
-    name = data['name']
-    words = name.split()
-    if data['password']:
+    if 'name' in data:
+        name = data['name']
+        words = name.split()
+        if len(words) == 2:
+            user_to_uptdate.given_name = words[0]
+            user_to_uptdate.family_name = words[1]
+        else:
+            user_to_uptdate.given_name = ""
+            for i in range(len(words) - 1):
+                user_to_uptdate.given_name += words[i] + " "
+                user_to_uptdate.family_name = words[len(words) - 1]
+    if 'password' in data:
         user_to_uptdate.password = data['password']
-    if len(words) == 2:
-        user_to_uptdate.given_name = words[0]
-        user_to_uptdate.family_name = words[1]
-    else:
-        user_to_uptdate.given_name = ""
-        for i in range(len(words) - 1):
-            user_to_uptdate.given_name += words[i] + " "
-        user_to_uptdate.family_name = words[len(words) - 1]
-    if data['age']:
+    if 'age' in data:
         user_to_uptdate.age = data['age']
-    if data['club_id']:
+    if 'club_id' in data:
         user_to_uptdate.club_id = data['club_id']
-    if data['email']:
+    if 'email' in data:
         user_to_uptdate.email = data['email']
 
     db.session.commit()
@@ -699,7 +700,7 @@ def db_data():
     user7 = User(password='TestP', given_name='Nilus', family_name='Langballe', age=20, 
                 email='nilus.langballe@trollmann.com', club_id=7, total_points=6)
     user9 = User(password='TestP', given_name='Frodo', family_name='Baggins', age=20, 
-                email='frodo.baggins@LOTR.com', club_id=7, total_points=100)
+                email='frodo.baggins@LOTR.com', club_id=7, total_points=100, profile_pic='frodo-pic.png')
     user10 = User(password='TestP', given_name='Bilbo', family_name='Baggins', age=20, 
                 email='bilbo.baggins@LOTR.com', club_id=11, total_points=1)
     user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=20, 
@@ -727,7 +728,7 @@ def db_data():
     user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
                 email='biden@whitehouse.com', club_id=3, total_points=1)
     user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
-                email='batman@penger.no', club_id=11, total_points=12)
+                email='batman@penger.no', club_id=11, total_points=12, profile_pic='batman-pic.png')
 
     user1.save()
     user2.save()
@@ -752,6 +753,10 @@ def db_data():
     user20.save()
     user22.save()
     user1.add_badge(badge1)
+    user1.add_badge(badge2)
+    user1.add_badge(badge3)
+    user1.add_badge(badge4)
+    user1.add_badge(badge5)
     user1.add_badge(badge6)
     user2.follow(user1)
     user3.follow(user1)

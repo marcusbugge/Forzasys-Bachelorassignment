@@ -16,6 +16,7 @@ export default function Navbar() {
   console.log(loggedUser);
 
   function logout(e) {
+    e.preventDefault();
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
     setRefresh(true);
