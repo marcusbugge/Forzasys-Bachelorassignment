@@ -5,6 +5,7 @@ import FeedPosts from "../feed/FeedPosts";
 import axios from "axios";
 import HoverImage from "react-hover-image";
 import { BiCog } from "react-icons/bi";
+import { AiOutlineEdit } from "react-icons/ai";
 import { IconContext } from "react-icons";
 
 export default function Profilepage() {
@@ -14,7 +15,15 @@ export default function Profilepage() {
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
 
-  const usertest = JSON.parse(localStorage.getItem("user"));
+  const loggedUser = JSON.parse(localStorage.getItem("user"));
+
+  const [putRequestName, setPutRequestName] = useState({
+    password: "TestP",
+    age: 20,
+    name: "Endret navn",
+    club_id: 1,
+    email: "test1@forzasys.no",
+  });
 
   const showBadge = (index) => {
     setHoveredBadge(index);
@@ -26,6 +35,14 @@ export default function Profilepage() {
     setDisplay("badge-info-cnt-notdisplayed");
   };
 
+  async function editUser() {
+    const test = await axios.put(
+      "http://localhost:5000/api/user/" + loggedUser.id,
+      putRequestName
+    );
+    console.log(test);
+  }
+
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");
     console.log("Req: ", test);
@@ -34,7 +51,7 @@ export default function Profilepage() {
     console.log("State: ", user);
   }
   useEffect(() => {
-    console.log(usertest);
+    console.log(loggedUser);
     getBadges();
   }, []);
   async function getBadges() {
@@ -53,13 +70,21 @@ export default function Profilepage() {
         <div className="picture-icon-cnt">
           <img src={usericon} alt="profilepicture" />
         </div>
-        <IconContext.Provider value={{ size: "30px" }}>
-          <div className="profile-edit-cnt">
-            <BiCog />
-          </div>
-        </IconContext.Provider>
-
-        <h1>{usertest.name}</h1>
+        <button className="profile-edit-menu-btn" onClick={editUser}>
+          <IconContext.Provider value={{ size: "30px" }}>
+            <div className="profile-edit-cnt">
+              <BiCog />
+            </div>
+          </IconContext.Provider>
+        </button>
+        <div className="profile-edit-name">
+          <IconContext.Provider value={{ size: "30px" }}>
+            <div className="profile-edit-cnt">
+              <AiOutlineEdit />
+            </div>
+          </IconContext.Provider>
+          <h1>{loggedUser.name}</h1>
+        </div>
       </div>
 
       <div className="badges-cnt">
@@ -109,19 +134,19 @@ export default function Profilepage() {
         <div className="profile-club-cnt">
           <div className="profile-club-cnt-club">
             <h1>Klubb</h1>
-            <p>{usertest.club_name}</p>
+            <p>{loggedUser.club_name}</p>
             <img
-              src={require("../../../assets/teamLogos/" + usertest.club_logo)}
+              src={require("../../../assets/teamLogos/" + loggedUser.club_logo)}
             />
           </div>
           <div className="profile-club-cnt-points">
-            <h2>Klubb-score: </h2>
-            <p>{usertest.club_score}</p>
+            <h2>Klubb-rang: </h2>
+            <p>{loggedUser.club_rank}</p>
           </div>
         </div>
         <div className="profile-points-cnt">
           <h1>Dine poeng</h1>
-          <p>{usertest.overall_score}</p>
+          <p>{loggedUser.overall_rank}</p>
         </div>
       </div>
       <div className="most-popularclips-cnt">
