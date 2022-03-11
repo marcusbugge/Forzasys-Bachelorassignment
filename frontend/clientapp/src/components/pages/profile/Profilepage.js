@@ -75,13 +75,16 @@ export default function Profilepage() {
   return (
     <div className="profile-cnt">
       <div className="profiledata">
-        <div className="picture-icon-cnt">
-          <img
-            src={require("../../../assets/profilepic/" +
-              loggedUser.profile_pic)}
-            alt="profilepicture"
-          />
+        <div className="profile-header">
+          <div className="picture-icon-cnt">
+            <img
+              src={require("../../../assets/profilepic/" +
+                loggedUser.profile_pic)}
+              alt="profilepicture"
+            />
+          </div>
         </div>
+
         <button className="profile-edit-menu-btn" onClick={userprofileLoad}>
           <IconContext.Provider value={{ size: "30px" }}>
             <div className="profile-edit-cnt">
@@ -90,11 +93,11 @@ export default function Profilepage() {
           </IconContext.Provider>
         </button>
         <div className="profile-edit-name">
-          <IconContext.Provider value={{ size: "30px" }}>
+          {/* <IconContext.Provider value={{ size: "30px" }}>
             <div className="profile-edit-cnt">
               <AiOutlineEdit />
             </div>
-          </IconContext.Provider>
+          </IconContext.Provider> */}
           <h1>{loggedUser.name}</h1>
         </div>
       </div>
