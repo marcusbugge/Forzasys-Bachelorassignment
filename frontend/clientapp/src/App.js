@@ -12,6 +12,7 @@ import CreateUser from "./components/pages/login/CreateUser";
 import { useEffect, useState } from "react";
 import Weeklytrivia from "./components/pages/competitions/weeklytrivia/Weeklytrivia";
 import ScrollToTop from "./ScrollToTop";
+import Editprofile from "./components/pages/editprofile/EditProfile";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -41,6 +42,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/profil" element={<Profilepage />} />
               <Route path="/profil/:username" element={<Profilepage />} />
+              <Route path="/editprofil" element={<Editprofile />} />
               <Route path="/highlights" element={<FeedPosts />} />
               <Route path="/signup" element={<CreateUser />} />
               <Route path="/following" element={<CreateUser />} />

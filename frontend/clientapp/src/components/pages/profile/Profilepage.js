@@ -8,6 +8,7 @@ import { BiCog } from "react-icons/bi";
 import { AiOutlineEdit } from "react-icons/ai";
 import { IconContext } from "react-icons";
 import { useParams } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export default function Profilepage() {
   const [user, setUser] = useState();
@@ -15,6 +16,7 @@ export default function Profilepage() {
   const [loading, setLoading] = useState();
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
+  let navigate = useNavigate();
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
@@ -66,6 +68,10 @@ export default function Profilepage() {
     console.log("State: ", badges);
   }
 
+  const userprofileLoad = async () => {
+    navigate("/editprofil");
+  };
+
   return (
     <div className="profile-cnt">
       <div className="profiledata">
@@ -76,7 +82,7 @@ export default function Profilepage() {
             alt="profilepicture"
           />
         </div>
-        <button className="profile-edit-menu-btn" onClick={editUser}>
+        <button className="profile-edit-menu-btn" onClick={userprofileLoad}>
           <IconContext.Provider value={{ size: "30px" }}>
             <div className="profile-edit-cnt">
               <BiCog />
