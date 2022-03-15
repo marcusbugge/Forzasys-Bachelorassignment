@@ -11,6 +11,7 @@ export default function MainStandPage() {
   const [stand, setStand] = useState([]);
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
+
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
   let navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function MainStandPage() {
   }
 
   const sortByYourClub = async () => {
-    requestAPI(url + "1");
+    requestAPI(url + loggedUser.club_id);
   };
 
   async function nextAndPrevPage(lower, upper) {
@@ -62,16 +63,10 @@ export default function MainStandPage() {
         <div className="filtering">
           <h1>Sort by</h1>
           <div className="sort-buttons">
-            <button onClick={(e) => sortByYourClub()}>
-              <div className="filterbyclub">
-                <img
-                  src={require("../../../assets/teamLogos/" +
-                    loggedUser.club_logo)}
-                  alt=""
-                />
-                {loggedUser.club_name}
-              </div>
-            </button>
+            {localStorage.getItem("loggedIn") ? (
+              <button onClick={(e) => sortByYourClub()}></button>
+            ) : null}
+
             <button onClick={() => sortByPlayers()}>
               Total points by players
             </button>
@@ -92,14 +87,17 @@ export default function MainStandPage() {
           <div>
             <div className="table-content">
               {stand.map((post, index) => (
-                <div className="table-element" key={index}>
+                <div
+                  className={
+                    loggedUser.name === post.name
+                      ? "table-element-active"
+                      : "table-element"
+                  }
+                  onClick={() => userprofileLoad(post.name)}
+                  key={index}
+                >
                   <p className="rank-table">{post.rank}</p>
-                  <p
-                    onClick={() => userprofileLoad(post.name)}
-                    className="name-table"
-                  >
-                    {post.name}
-                  </p>
+                  <p className="name-table">{post.name}</p>
                   <div className="img-club">
                     <img
                       src={require("../../../assets/teamLogos/" +

@@ -33,14 +33,20 @@ export default function Login() {
       .then((response) => {
         localStorage.setItem("loggedIn", true);
         localStorage.setItem("user", JSON.stringify(response.data));
-        window.location.reload();
         navigate("/");
       })
       .catch((e) => console.log("something went wrong :(", e));
   }
 
+  function exitLogin() {
+    navigate("/");
+  }
+
   return (
     <div className="login-page">
+      <div onClick={() => exitLogin()} className="exit-btn">
+        <div className="exit-tag">x</div>
+      </div>
       <div className="login-cnt">
         <div className="loginform">
           <div className="loginheader-cnt">

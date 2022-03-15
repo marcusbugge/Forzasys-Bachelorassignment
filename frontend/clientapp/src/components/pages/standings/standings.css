@@ -144,9 +144,23 @@
 .table-element {
   padding: 15px 50px;
   display: flex;
-
+  cursor: pointer;
   background-color: var(--lightgray);
   border-bottom: 1px solid lightgray;
+}
+
+.table-element-active {
+  padding: 15px 50px;
+  display: flex;
+  cursor: pointer;
+  background-color: rgb(224, 224, 224);
+  color: black;
+  border-bottom: 1px solid lightgray;
+}
+
+.table-element:hover,
+.table-element-active:hover {
+  background-color: var(--lightgray);
 }
 
 .rank-table,
