@@ -1,17 +1,25 @@
 import { FollowLiked } from "./FollowLiked";
 import React, { useEffect } from "react";
 import "./navbar.css";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import Welcome from "../../pages/welcome/Welcome";
 import { useState } from "react";
 
 import { CgProfile } from "react-icons/cg";
 import axios from "axios";
+import Login from "../../pages/login/Login";
 
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
 
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
+  const location = useLocation();
+  const { pathname } = location;
+  const splitLocation = pathname.split("/");
+
+  var loggedUser = "";
+  if (localStorage.getItem("loggedIn")) {
+    loggedUser = JSON.parse(localStorage.getItem("user"));
+  }
 
   console.log(loggedUser);
 
@@ -45,12 +53,12 @@ export default function Navbar() {
             <FollowLiked />
             <h1>LEADERBOARD</h1>
             <div className="links">
-              <div className="rank-nav-cnt">
+              <div className="rank-nav-cnt-">
                 <Link to="/">Allsvenskan</Link>
                 <div className="currentrank">#{loggedUser.overall_rank}</div>
               </div>
 
-              <div className="rank-nav-cnt">
+              <div className="rank-nav-cnt-">
                 <Link to="/">{loggedUser.club_name}</Link>
                 <div className="currentrank">#{loggedUser.club_rank}</div>
               </div>
@@ -62,18 +70,40 @@ export default function Navbar() {
 
         <h1>COMPETITIONS</h1>
         <div className="links">
-          <div className="rank-nav-cnt">
-            <NavLink to="/goaloftheround">Goal of the round</NavLink>
+          <div
+            className={
+              splitLocation[1] === "goaloftheround" ? "active" : "rank-nav-cnt"
+            }
+          >
+            <NavLink activeClassName="test" to="/goaloftheround">
+              Goal of the round
+            </NavLink>
           </div>
-          <div className="rank-nav-cnt">
+          <div
+            className={
+              splitLocation[1] === "weeklytrivia" ? "active" : "rank-nav-cnt"
+            }
+          >
             <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
           </div>
-          <div className="rank-nav-cnt">
-            <NavLink to="/">Most popular video</NavLink>
+          <div
+            className={
+              splitLocation[1] === "mostpopularvideo"
+                ? "active"
+                : "rank-nav-cnt"
+            }
+          >
+            <NavLink to="/mostpopularvideo">Most popular video</NavLink>
           </div>
 
-          <div className="rank-nav-cnt">
-            <NavLink to="/">Most popular clubsong</NavLink>
+          <div
+            className={
+              splitLocation[1] === "mostpopularclubsong"
+                ? "active"
+                : "rank-nav-cnt"
+            }
+          >
+            <NavLink to="/mostpopularclubsong">Most popular clubsong</NavLink>
           </div>
         </div>
 

@@ -7,22 +7,28 @@ export default function Weeklytrivia() {
 
   /* hentet liksom fra API */
   const [bool, setBool] = useState(true);
-
   const [questions, setQuestions] = useState(5);
   const [answeredQ, setAnsweredQ] = useState(0);
-
-  const [triviaData, setTriviaData] = useState();
+  const [triviaData, setTriviaData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getQuestions();
+    const fetchData = async () => {
+      try {
+        const { data: response } = await axios.get(
+          "http://localhost:5000/api/trivia/data/3"
+        );
+        console.log("response", response);
+        setTriviaData(response);
+        console.log("q", triviaData[0].question);
+        setLoading(false);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchData();
   }, []);
-  async function getQuestions() {
-    const henticon = await axios.get("http://localhost:5000/api/trivia/data");
-    console.log("Req: ", henticon);
-    const data = henticon.data;
-    setTriviaData(data);
-    console.log("State: ", triviaData);
-  }
 
   const questionlist = [
     {
@@ -74,11 +80,70 @@ export default function Weeklytrivia() {
   }
 
   const [disabled, setDisabled] = useState(false);
+  const [selected, setSelected] = useState();
 
-  function clickedAnswer(e) {
-    console.log(e);
-    e.target.className.disabled(true);
-  }
+  const [qCounter, setQCounter] = useState(0);
+
+  const QuizElem = () => {
+    return (
+      <div className="qustionobj">
+        <h1 className="question"></h1>
+        <p className="question-text">{questionlist[qCounter].question}</p>
+        <div className="answers">
+          {questionlist[qCounter].answers.map((answer, i) => (
+            <div
+              key={i}
+              disabled={disabled}
+              onClick={(e) => {
+                questionHandler(answer, questionlist[qCounter].correct);
+                setSelected(answer);
+              }}
+              style={{
+                backgroundColor: selected === answer ? "var(--secondary)" : "",
+              }}
+              className={"answers-cnt"}
+            >
+              <p className="trivia-ans">{answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const RenderQuiz = () => {
+    if (qCounter === 0) {
+      return (
+        <div>
+          <QuizElem counter={qCounter} />
+        </div>
+      );
+    } else if (qCounter === 1) {
+      return (
+        <div>
+          <QuizElem counter={qCounter} />
+        </div>
+      );
+    } else if (qCounter === 2) {
+      return (
+        <div>
+          <QuizElem counter={qCounter} />
+        </div>
+      );
+    } else if (qCounter === 3) {
+      return (
+        <div>
+          <QuizElem counter={qCounter} />
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <QuizElem counter={qCounter} />
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="quizpage">
@@ -96,7 +161,7 @@ export default function Weeklytrivia() {
         </div>
         <div className="trivia-data">
           <p>Questions: {questions}</p>
-          <p>Answered: {answeredQ}</p>
+          <p>Answered: {qCounter}</p>
         </div>
       </div>
 
@@ -106,35 +171,14 @@ export default function Weeklytrivia() {
         </div>
       </div>
 
+      {loading ? <RenderQuiz /> : ""}
+
+      <button onClick={(e) => setQCounter(qCounter + 1)}>Neste kyser</button>
+
       {bool ? (
         <div className="quizbox-cnt">
           <div className="quizheader">
-            <div className="questionselection">
-              {questionlist.map((qObj, index) => (
-                <div key={index} className="qustionobj">
-                  <h1 className="question"></h1>
-                  <p className="question-text">
-                    {qObj.spørsmål1} ipsum hahah loool Lorem ipsum hahah loool
-                    Lorem ipsum hahah loool ?
-                  </p>
-                  <div className="answers">
-                    {qObj.answers.map((answer, index) => (
-                      <div
-                        key={index}
-                        disabled={disabled}
-                        onClick={(e) => {
-                          questionHandler(answer, qObj.correct);
-                          clickedAnswer(e);
-                        }}
-                        className="answers-cnt"
-                      >
-                        <p className="trivia-ans">{answer}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div className="questionselection"></div>
           </div>
           <div className="submit-button-cnt">
             <button onClick={() => submitQuiz()}>Submit</button>

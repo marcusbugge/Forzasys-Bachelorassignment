@@ -1,10 +1,19 @@
-.links-cnt {
-  margin-left: 15px;
-}
-
 .welcome-nav {
   color: white;
   margin: 30px 15px;
+}
+
+.currentrank {
+  background-color: var(--lightgreen);
+  color: var(--darkgreen);
+  font-size: 12px;
+  border-radius: 10px;
+  min-width: 20px;
+  height: 22px;
+  padding: 0 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .welcome-nav h1 {
@@ -37,6 +46,7 @@
 .links-cnt h1 {
   margin-bottom: 10px;
   margin-top: 20px;
+  margin-left: 15px;
   font-size: 18px;
   color: var(--secondary);
   letter-spacing: 2px;
@@ -58,11 +68,6 @@
   flex-direction: column;
 }
 
-.active-cnt-elem {
-  display: flex;
-  padding: 4px 0px;
-}
-
 .like a {
   text-decoration: none;
   color: white;
@@ -80,22 +85,32 @@
 }
 
 .rank-nav-cnt {
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 15px;
+  padding: 5px 15px;
 }
 
-.currentrank {
-  background-color: var(--lightgreen);
-  color: var(--darkgreen);
-  font-size: 12px;
-  border-radius: 10px;
-  min-width: 20px;
-  height: 22px;
-  padding: 0 5px;
+.active {
+  background-color: var(--hover-blue);
+  padding: 5px 0px 5px 8px;
+}
+
+.rank-nav-cnt- {
+  padding: 5px 15px 5px 15px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+}
+
+.active-cnt-elem {
+  display: flex;
+  padding: 5px 0px 5px 15px;
+}
+
+.active-cnt-elem a {
+  color: white;
+  text-decoration: none;
+}
+
+.active-cnt-elem-active {
+  background-color: var(--hover-blue);
+  display: flex;
+  padding: 5px 0px 5px 15px;
 }
