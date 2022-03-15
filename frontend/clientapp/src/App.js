@@ -1,5 +1,11 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import Footer from "./components/core/footer/Footer";
 import Navbar from "./components/core/nav/Navbar";
 import Welcome from "./components/pages/welcome/Welcome";
@@ -12,6 +18,9 @@ import CreateUser from "./components/pages/login/CreateUser";
 import { useEffect, useState } from "react";
 import Weeklytrivia from "./components/pages/competitions/weeklytrivia/Weeklytrivia";
 import ScrollToTop from "./ScrollToTop";
+import FollowersPage from "./components/pages/follow/FollowersPage";
+import LikedVideos from "./components/pages/likedvideos/LikedVideos";
+import { useContext } from "react";
 import Editprofile from "./components/pages/editprofile/EditProfile";
 
 function App() {
@@ -29,6 +38,16 @@ function App() {
     validateIfIserIsLoggedIn();
   }, []);
 
+  const PrivateRoute = () => {
+    const location = useLocation();
+
+    return isLoggedIn ? (
+      <Outlet />
+    ) : (
+      <Navigate to="/login" replace state={{ from: location }} />
+    );
+  };
+
   return (
     <BrowserRouter>
       <ScrollToTop>
@@ -40,15 +59,21 @@ function App() {
           <div className="content">
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/standings" element={<MainStandPage />} />
               <Route path="/profil" element={<Profilepage />} />
-              <Route path="/profil/:username" element={<Profilepage />} />
               <Route path="/editprofil" element={<Editprofile />} />
+
+              <Route path="/profil:username" element={<Profilepage />} />
+
               <Route path="/highlights" element={<FeedPosts />} />
               <Route path="/signup" element={<CreateUser />} />
-              <Route path="/following" element={<CreateUser />} />
+              <Route path="/following" element={<FollowersPage />} />
+              <Route path="/likedvideos" element={<LikedVideos />} />
               <Route path="/weeklytrivia" element={<Weeklytrivia />} />
+              <Route path="/mostpopularvideo" element={<MainStandPage />} />
+              <Route path="/mostpopularclubsong" element={<MainStandPage />} />
               <Route path="/" element={<MainStandPage />} />
-              {/* <Route path="/*" element={<Navigate replace to="/" />} /> */}
+              {/* <Route path="*" element={<Navigate replace to="/" />} /> */}
             </Routes>
             <Footer />
           </div>
