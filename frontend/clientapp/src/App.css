@@ -25,8 +25,11 @@ body {
   overflow-x: hidden; /* Hide scrollbars */
   scroll-behavior: smooth;
 }
+
 a {
   transition: 0.1s;
+  color: white;
+  text-decoration: none;
 }
 
 a:hover {
@@ -50,3 +53,5 @@ a:hover {
   height: 100vh;
   background-color: var(--primary);
 }
+
+/** RESPONSIVE **/

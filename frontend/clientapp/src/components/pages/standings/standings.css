@@ -160,7 +160,7 @@
 
 .table-element:hover,
 .table-element-active:hover {
-  background-color: var(--lightgray);
+  background-color: var(--secondary);
 }
 
 .rank-table,

@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function Loginconfirmation() {
+export default function Alert() {
   return <div className="loginconfirm-cnt">Login successful!</div>;
 }

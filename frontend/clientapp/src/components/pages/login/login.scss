@@ -13,39 +13,91 @@
   position: fixed;
 }
 
+.login-part1 {
+  border-radius: 1em 0 0 1em;
+  height: 60vh;
+  padding: 50px 0px;
+  width: 300px;
+  background-color: var(--primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.part1-content {
+  text-align: center;
+  height: 50%;
+}
+
+.part1-content img {
+  width: 150px;
+}
+
+.part1-img {
+  margin-left: -10px;
+  height: 50%;
+}
+
 /* FORM */
 
 .loginform {
-  width: 27em;
+  width: 20em;
   height: 60vh;
   backdrop-filter: blur(5px);
   background-color: rgb(243, 243, 243);
   color: white;
-  border-radius: 1em;
+  border-radius: 0 1em 1em 0;
   text-align: center;
   padding: 50px 100px;
 }
 
-label {
-  text-align: end;
-  color: rgb(145, 145, 145);
-}
-label p {
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
+/* inspo hentet fra https://codepen.io/havardob/pen/eYJPwdb */
 
 .input {
-  font-family: var(--asapfont);
-  width: 100%;
-  margin: 5px;
-  height: 3em;
-  text-align: center;
-  border-style: none;
+  display: flex;
+  flex-direction: column-reverse;
+  position: relative;
+  padding-top: 1.5rem;
+  & + .input {
+    margin-top: 1.5rem;
+  }
 }
 
-.input:focus {
-  border-color: var(--tae_foreground_primary);
+input {
+  appearance: none;
+  border-radius: 0;
+}
+
+.input-label {
+  z-index: 10;
+  color: #8597a3;
+  position: absolute;
+  top: 1.5rem;
+  transition: 0.25s ease;
+}
+
+.input-field {
+  border: 0;
+  z-index: 1;
+  background-color: transparent;
+  border-bottom: 2px solid #eee;
+
+  &:focus,
+  &:valid {
+    outline: 0;
+    border-bottom-color: var(--primary);
+    & + .input-label {
+      color: var(--primary);
+      transform: translateY(-1.5rem);
+    }
+  }
+}
+
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--lightgray) inset !important;
+  -webkit-text-fill-color: rgb(0, 0, 0) !important;
 }
 
 .loginform h1 {
@@ -86,10 +138,14 @@ label p {
 
 .label-cnt a {
   font-size: 12px;
-  padding-top: 50px;
-  margin-left: 250px;
+
   text-decoration: none;
   color: var(--hover-blue);
+}
+
+.signup-link {
+  text-align: end;
+  padding-top: 10px;
 }
 
 .exit-btn {
@@ -115,6 +171,12 @@ label p {
   height: 50px;
 }
 
+.loginheader-cnt h1 {
+  font-size: 2rem;
+  margin-top: 50px;
+  margin-bottom: -20px;
+}
+
 /* LOGINCONFIRMATION */
 
 .loginconfirm-cnt {
@@ -132,9 +194,6 @@ label p {
   justify-content: center;
   align-items: center;
   animation: loginani 5s forwards;
-  box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
-    0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
-    0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
 }
 
 @keyframes loginani {

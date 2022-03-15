@@ -7,6 +7,7 @@
   background-color: var(--lightgreen);
   color: var(--darkgreen);
   font-size: 12px;
+  font-weight: 500;
   border-radius: 10px;
   min-width: 20px;
   height: 22px;
@@ -88,15 +89,15 @@
   padding: 5px 15px;
 }
 
-.active {
-  background-color: var(--hover-blue);
-  padding: 5px 0px 5px 8px;
-}
-
 .rank-nav-cnt- {
   padding: 5px 15px 5px 15px;
   display: flex;
   justify-content: space-between;
+}
+
+.active {
+  background-color: var(--hover-blue);
+  padding: 5px 0px 5px 8px;
 }
 
 .active-cnt-elem {
