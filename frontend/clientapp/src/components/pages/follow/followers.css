@@ -34,8 +34,13 @@
   background-color: var(--hover-blue);
 }
 
+.profilepic {
+  padding: 20px 0;
+  text-align: center;
+}
+
 .profilepic img {
-  width: 50px;
+  width: 70px;
 }
 
 .div-name {
@@ -85,4 +90,8 @@
 
 .club-follow img {
   width: 35px;
+}
+
+.follow-cnt:hover {
+  background-color: var(--primary);
 }

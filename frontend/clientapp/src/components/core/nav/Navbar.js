@@ -24,7 +24,6 @@ export default function Navbar() {
   console.log(loggedUser);
 
   function logout(e) {
-    e.preventDefault();
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
     setRefresh(true);
@@ -75,9 +74,7 @@ export default function Navbar() {
               splitLocation[1] === "goaloftheround" ? "active" : "rank-nav-cnt"
             }
           >
-            <NavLink activeClassName="test" to="/goaloftheround">
-              Goal of the round
-            </NavLink>
+            <NavLink to="/goaloftheround">Goal of the round</NavLink>
           </div>
           <div
             className={

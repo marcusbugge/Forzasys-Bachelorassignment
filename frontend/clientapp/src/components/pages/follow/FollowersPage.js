@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./followers.css";
+import { useNavigate } from "react-router-dom";
 
 export default function FollowersPage() {
   const [data, setData] = useState([]);
   const loggedUser = JSON.parse(localStorage.getItem("user"));
+  let navigate = useNavigate();
 
   const array = [
     {
@@ -41,15 +43,20 @@ export default function FollowersPage() {
     },
   ];
 
-  useEffect(() => {}, [data]);
-
   let url = "http://localhost:5000/api/followers/" + loggedUser.id;
 
+  useEffect(() => {
+    requestAPI(url);
+  }, []);
   function requestAPI(url) {
     axios.get(url).then((response) => {
       setData(response.data);
       console.log(data);
     });
+  }
+
+  function profilePageLoad(e) {
+    navigate("/profil/" + e);
   }
 
   return (
@@ -65,8 +72,8 @@ export default function FollowersPage() {
 
       <div className="follow-holder">
         {array.map((obj, index) => (
-          <div className="follow-cnt">
-            <div className="picture-icon-cnt">
+          <div className="follow-cnt" onClick={() => profilePageLoad(obj.name)}>
+            <div className="profilepic">
               <img
                 src={require("../../../assets/icons/usericon.png")}
                 alt="profilepicture"
