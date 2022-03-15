@@ -33,11 +33,9 @@
 .VideoInput {
   display: flex;
   flex-direction: column;
- 
 }
 
 .VideoInput_input {
-  
 }
 
 .VideoInput_box {
@@ -79,9 +77,9 @@
 }
 
 input[type="file"] {
-  border:0;
-  clip: rect(0,0,0,0);
-  height:1px;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
   overflow: hidden;
   padding: 0;
   position: absolute;
@@ -89,13 +87,12 @@ input[type="file"] {
   width: 1px;
 }
 
-
 [type="file"] + label {
   color: white;
   height: 20px;
   width: 100px;
   background-color: var(--primary);
-  cursor:pointer;
+  cursor: pointer;
   display: inline-block;
   height: 4rem;
   line-height: 4rem;
@@ -107,4 +104,3 @@ input[type="file"] {
 [type="file"] + label:hover {
   background-color: var(--hover-blue);
 }
-

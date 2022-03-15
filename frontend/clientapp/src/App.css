@@ -11,23 +11,29 @@
   --primary: #2368a1;
   --secondary: #aad5f5;
   --hover-blue: #1a4971;
-  --black: #222429;
   --red: #cc2c2d;
-  --lightgray: #f1f3f5;
   --darkgreen: #1b645d;
   --lightgreen: #6fd7d3;
+  --black: #222429;
+  --lightgray: #f1f3f5;
+  --gray1: #495057;
+  --gray2: #848d96;
+  --gray3: #acb5bd;
 }
 
 body {
   overflow-x: hidden; /* Hide scrollbars */
   scroll-behavior: smooth;
 }
+
 a {
   transition: 0.1s;
+  color: white;
+  text-decoration: none;
 }
+
 a:hover {
   margin-left: 5px;
-  color: var(--hover-blue);
 }
 
 /* NAVIGATION */
@@ -48,10 +54,4 @@ a:hover {
   background-color: var(--primary);
 }
 
-.selectedLink {
-  background-color: #1b645d;
-}
-
-.selected {
-  color: #ff0000;
-}
+/** RESPONSIVE **/

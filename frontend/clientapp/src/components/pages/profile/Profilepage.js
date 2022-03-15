@@ -15,6 +15,7 @@ export default function Profilepage() {
   const [loading, setLoading] = useState();
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
+  const usertest = "";
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 

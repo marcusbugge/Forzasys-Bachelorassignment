@@ -80,10 +80,6 @@
   justify-content: center;
 }
 
-.answers-cnt:focus {
-  border: 3px solid var(--hover-blue);
-}
-
 .answers-cnt-active {
   background-color: var(--primary);
   margin: 10px 0px;
