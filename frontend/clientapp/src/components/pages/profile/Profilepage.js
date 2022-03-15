@@ -5,6 +5,7 @@ import FeedPosts from "../feed/FeedPosts";
 import axios from "axios";
 import HoverImage from "react-hover-image";
 import { BiCog } from "react-icons/bi";
+import { AiOutlineEdit } from "react-icons/ai";
 import { IconContext } from "react-icons";
 import { useParams } from "react-router";
 
@@ -16,9 +17,11 @@ export default function Profilepage() {
   const [hoveredBadge, setHoveredBadge] = useState(-1);
   const usertest = "";
 
-  if (localStorage.getItem("loggedIn")) {
-    usertest = JSON.parse(localStorage.getItem("user"));
-  }
+  const loggedUser = JSON.parse(localStorage.getItem("user"));
+
+  const [putRequestName, setPutRequestName] = useState({
+    age: 25,
+  });
 
   const { username } = useParams();
 
@@ -34,13 +37,30 @@ export default function Profilepage() {
     setDisplay("badge-info-cnt-notdisplayed");
   };
 
+  async function editUser() {
+    const test = await axios.put(
+      "http://localhost:5000/api/user/" + loggedUser.id,
+      putRequestName
+    );
+    console.log(test);
+  }
+
+  async function getUsers() {
+    const test = await axios.get("http://localhost:5000/api/user");
+    console.log("Req: ", test);
+    const data = test.data;
+    setUser(data);
+    console.log("State: ", user);
+  }
   useEffect(() => {
-    console.log(usertest);
+    console.log(loggedUser);
     getBadges();
   }, []);
 
   async function getBadges() {
-    const henticon = await axios.get("http://localhost:5000/api/badges/user/1");
+    const henticon = await axios.get(
+      "http://localhost:5000/api/badges/user/" + loggedUser.id
+    );
     console.log("Req: ", henticon);
     const data = henticon.data;
     setBadges(data);
@@ -51,15 +71,27 @@ export default function Profilepage() {
     <div className="profile-cnt">
       <div className="profiledata">
         <div className="picture-icon-cnt">
-          <img src={usericon} alt="profilepicture" />
+          <img
+            src={require("../../../assets/profilepic/" +
+              loggedUser.profile_pic)}
+            alt="profilepicture"
+          />
         </div>
-        <IconContext.Provider value={{ size: "30px" }}>
-          <div className="profile-edit-cnt">
-            <BiCog />
-          </div>
-        </IconContext.Provider>
-
-        <h1>{username}</h1>
+        <button className="profile-edit-menu-btn" onClick={editUser}>
+          <IconContext.Provider value={{ size: "30px" }}>
+            <div className="profile-edit-cnt">
+              <BiCog />
+            </div>
+          </IconContext.Provider>
+        </button>
+        <div className="profile-edit-name">
+          <IconContext.Provider value={{ size: "30px" }}>
+            <div className="profile-edit-cnt">
+              <AiOutlineEdit />
+            </div>
+          </IconContext.Provider>
+          <h1>{loggedUser.name}</h1>
+        </div>
       </div>
 
       <div className="badges-cnt">
@@ -109,20 +141,20 @@ export default function Profilepage() {
         <div className="profile-club-cnt">
           <div className="profile-club-cnt-club">
             <h1>Klubb</h1>
-            <p>{usertest.club_name}</p>
+            <p>{loggedUser.club_name}</p>
             <img
-              alt={usertest.club_logo}
-              src={require("../../../assets/teamLogos/" + usertest.club_logo)}
+              alt={loggedUser.club_logo}
+              src={require("../../../assets/teamLogos/" + loggedUser.club_logo)}
             />
           </div>
           <div className="profile-club-cnt-points">
-            <h2>Klubb-score: </h2>
-            <p>{usertest.club_score}</p>
+            <h2>Klubb-rang: </h2>
+            <p>{loggedUser.club_rank}</p>
           </div>
         </div>
         <div className="profile-points-cnt">
           <h1>Dine poeng</h1>
-          <p>{usertest.overall_score}</p>
+          <p>{loggedUser.total_points}</p>
         </div>
       </div>
       <div className="most-popularclips-cnt">
