@@ -66,6 +66,7 @@ function App() {
               <Route path="/profil:username" element={<PrivateRoute />}>
                 <Route element={<Profilepage />} />
               </Route>
+
               <Route path="/highlights" element={<FeedPosts />} />
               <Route path="/signup" element={<CreateUser />} />
               <Route path="/following" element={<FollowersPage />} />
