@@ -71,13 +71,6 @@ export default function Navbar() {
         <div className="links">
           <div
             className={
-              splitLocation[1] === "goaloftheround" ? "active" : "rank-nav-cnt"
-            }
-          >
-            <NavLink to="/goaloftheround">Goal of the round</NavLink>
-          </div>
-          <div
-            className={
               splitLocation[1] === "weeklytrivia" ? "active" : "rank-nav-cnt"
             }
           >

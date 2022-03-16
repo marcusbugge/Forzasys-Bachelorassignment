@@ -59,11 +59,10 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/standings" element={<MainStandPage />} />
-              <Route path="profil" element={<PrivateRoute />}>
-                <Route path="/profil" element={<Profilepage />} />
-              </Route>
 
-              <Route path="/profil:username" element={<Profilepage />} />
+              <Route path="/profil" element={<Profilepage />} />
+
+              <Route path=":username" element={<Profilepage />} />
 
               <Route path="/highlights" element={<FeedPosts />} />
               <Route path="/signup" element={<CreateUser />} />
