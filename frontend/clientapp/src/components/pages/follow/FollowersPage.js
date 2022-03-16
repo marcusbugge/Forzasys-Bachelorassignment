@@ -4,54 +4,24 @@ import "./followers.css";
 import { useNavigate } from "react-router-dom";
 
 export default function FollowersPage() {
-  const [data, setData] = useState([]);
+  const [followers, setFollowers] = useState([]);
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   let navigate = useNavigate();
-
-  const array = [
-    {
-      name: "Kyser Kyser",
-      rank: "1",
-      club_rank: "1",
-      total_points: "1000",
-      badges: "4",
-      club_name: "AIK",
-    },
-    {
-      name: "Feppe Haha",
-      rank: "2",
-      club_rank: "1",
-      total_points: "100",
-      badges: "2",
-      club_name: "AIK",
-    },
-    {
-      name: "Brede HBK",
-      rank: "3",
-      club_rank: "2",
-      total_points: "10",
-      badges: "1",
-      club_name: "Hacken",
-    },
-    {
-      name: "Henke Star Wars",
-      rank: "22",
-      club_rank: "10",
-      badges: "10",
-      total_points: "1",
-      club_name: "Malmo",
-    },
-  ];
 
   let url = "http://localhost:5000/api/followers/" + loggedUser.id;
 
   useEffect(() => {
-    requestAPI(url);
-  }, []);
+    if (followers.length == 0) {
+      requestAPI(url);
+    }
+    else{
+      console.log("followers ", followers)
+    }
+  }, [followers]);
+
   function requestAPI(url) {
     axios.get(url).then((response) => {
-      setData(response.data);
-      console.log(data);
+      setFollowers(response.data);
     });
   }
 
@@ -71,11 +41,11 @@ export default function FollowersPage() {
       </div>
 
       <div className="follow-holder">
-        {array.map((obj, index) => (
+        {followers.map((obj, index) => (
           <div className="follow-cnt" onClick={() => profilePageLoad(obj.name)}>
             <div className="profilepic">
               <img
-                src={require("../../../assets/icons/usericon.png")}
+                src={require("../../../assets/profilepic/" + obj.profile_pic)}
                 alt="profilepicture"
               />
             </div>
@@ -88,8 +58,8 @@ export default function FollowersPage() {
 
             <div className="follow-data">
               <div className="ranking">
-                <p>Rank</p>
-                <p className="score-follow">{obj.rank}.</p>
+                <p>Overall rank</p>
+                <p className="score-follow">{obj.overall_rank}.</p>
               </div>
               <div className="clubrank">
                 <p>Clubrank</p>
@@ -104,10 +74,10 @@ export default function FollowersPage() {
             <div className="club-follow">
               <img
                 src={require("../../../assets/teamLogos/" +
-                  obj.club_name +
-                  "-Logo.png")}
+                  obj.club_logo)}
                 alt={obj.club_name}
               />
+              <p>{obj.club_name}</p>
             </div>
           </div>
         ))}

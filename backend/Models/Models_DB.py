@@ -58,6 +58,7 @@ class User(db.Model):
         'Video', secondary=videos_liked, backref='database', lazy='select')
     badges = db.relationship(
         'Badge', secondary=earned_badges, backref='database', lazy='select')
+    role = db.Column(db.String(10), nullable=False)
 
     def __repr__(self):
         return f'id={self.id}, score={self.total_points}'
@@ -121,6 +122,7 @@ class UserSchema(Schema):
     videos = fields.List(fields.String())
     badges = fields.List(fields.String())
     liked_videos = fields.List(fields.String())
+    role = fields.String()
 
 
 class Club(db.Model):
