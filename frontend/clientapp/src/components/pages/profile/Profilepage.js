@@ -20,10 +20,6 @@ export default function Profilepage() {
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
-  const [putRequestName, setPutRequestName] = useState({
-    age: 25,
-  });
-
   const { username } = useParams();
 
   console.log("test", { username });
@@ -37,14 +33,6 @@ export default function Profilepage() {
     setHoveredBadge(-1);
     setDisplay("badge-info-cnt-notdisplayed");
   };
-
-  async function editUser() {
-    const test = await axios.put(
-      "http://localhost:5000/api/user/" + loggedUser.id,
-      putRequestName
-    );
-    console.log(test);
-  }
 
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");

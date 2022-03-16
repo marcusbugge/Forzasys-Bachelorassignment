@@ -40,6 +40,18 @@
   margin-bottom: 20px;
 }
 
+.edit-btn-save {
+  border-style: none;
+  background-color: var(--primary);
+  width: 10rem;
+  height: 5rem;
+  color: white;
+}
+
+.edit-btn-save:hover {
+  background-color: var(--hover-blue);
+}
+
 .separator-cnt {
   justify-content: center;
   align-items: center;
@@ -73,6 +85,13 @@
 }
 
 .edit-choice-button:hover {
+  background-color: #e1e1e1;
+}
+
+.edit-choice-button-displayed {
+  border-style: none;
+  height: 10%;
+  width: 20rem;
   background-color: #e1e1e1;
 }
 
