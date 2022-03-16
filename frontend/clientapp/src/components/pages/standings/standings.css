@@ -106,9 +106,14 @@
 .rank,
 .name,
 .club,
-.points {
+.points,
+.fans {
   padding: 10px 5px;
   text-align: center;
+}
+
+.fans {
+  width: 10%;
 }
 
 .rank,
@@ -212,4 +217,22 @@
 
 button[disabled] {
   opacity: 0.2;
+}
+
+.club-sort {
+  margin-top: 100px;
+}
+
+.club-rank {
+  width: 400px;
+  height: 80px;
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+}
+.club-rank h1 {
+  font-size: 3rem;
+  color: white;
 }

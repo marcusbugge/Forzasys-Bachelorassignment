@@ -15,18 +15,6 @@ export default function Profilepage() {
   const [loading, setLoading] = useState();
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
-  const usertest = "";
-
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
-
-  const [putRequestName, setPutRequestName] = useState({
-    age: 25,
-  });
-
-  const { username } = useParams();
-
-  console.log("test", { username });
-
   const showBadge = (index) => {
     setHoveredBadge(index);
     setDisplay("badge-info-cnt-displayed");
@@ -36,6 +24,16 @@ export default function Profilepage() {
     setHoveredBadge(-1);
     setDisplay("badge-info-cnt-notdisplayed");
   };
+
+  // const loggedUser = JSON.parse(localStorage.getItem("user"));
+
+  const loggedUser = { name: "", profile_pic: "" };
+  const [putRequestName, setPutRequestName] = useState({
+    age: 25,
+  });
+  const { username } = useParams();
+
+  console.log("test", { username });
 
   async function editUser() {
     const test = await axios.put(
@@ -52,14 +50,14 @@ export default function Profilepage() {
     setUser(data);
     console.log("State: ", user);
   }
+
   useEffect(() => {
-    console.log(loggedUser);
     getBadges();
   }, []);
 
   async function getBadges() {
     const henticon = await axios.get(
-      "http://localhost:5000/api/badges/user/" + loggedUser.id
+      "http://localhost:5000/api/badges/user/" + 1
     );
     console.log("Req: ", henticon);
     const data = henticon.data;
@@ -70,13 +68,8 @@ export default function Profilepage() {
   return (
     <div className="profile-cnt">
       <div className="profiledata">
-        <div className="picture-icon-cnt">
-          <img
-            src={require("../../../assets/profilepic/" +
-              loggedUser.profile_pic)}
-            alt="profilepicture"
-          />
-        </div>
+        <div className="picture-icon-cnt"></div>
+
         <button className="profile-edit-menu-btn" onClick={editUser}>
           <IconContext.Provider value={{ size: "30px" }}>
             <div className="profile-edit-cnt">
