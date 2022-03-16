@@ -16,7 +16,11 @@ export default function Profilepage() {
   const [loading, setLoading] = useState();
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
-  let navigate = useNavigate();
+  const showBadge = (index) => {
+    setHoveredBadge(index);
+    setDisplay("badge-info-cnt-displayed");
+  };
+  /*   let navigate = useNavigate();
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
@@ -24,15 +28,28 @@ export default function Profilepage() {
 
   console.log("test", { username });
 
-  const showBadge = (index) => {
-    setHoveredBadge(index);
-    setDisplay("badge-info-cnt-displayed");
-  };
-
   const hideBadge = () => {
     setHoveredBadge(-1);
     setDisplay("badge-info-cnt-notdisplayed");
-  };
+  }; */
+
+  // const loggedUser = JSON.parse(localStorage.getItem("user"));
+
+  const loggedUser = { name: "", profile_pic: "" };
+  const [putRequestName, setPutRequestName] = useState({
+    age: 25,
+  });
+  const { username } = useParams();
+
+  console.log("test", { username });
+
+  async function editUser() {
+    const test = await axios.put(
+      "http://localhost:5000/api/user/" + loggedUser.id,
+      putRequestName
+    );
+    console.log(test);
+  }
 
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");
@@ -41,14 +58,14 @@ export default function Profilepage() {
     setUser(data);
     console.log("State: ", user);
   }
+
   useEffect(() => {
-    console.log(loggedUser);
     getBadges();
   }, []);
 
   async function getBadges() {
     const henticon = await axios.get(
-      "http://localhost:5000/api/badges/user/" + loggedUser.id
+      "http://localhost:5000/api/badges/user/" + 1
     );
     console.log("Req: ", henticon);
     const data = henticon.data;
@@ -63,6 +80,7 @@ export default function Profilepage() {
   return (
     <div className="profile-cnt">
       <div className="profiledata">
+        <div className="picture-icon-cnt"></div>
         <div className="profile-header">
           <div className="picture-icon-cnt">
             <img
