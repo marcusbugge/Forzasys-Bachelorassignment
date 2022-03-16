@@ -17,15 +17,12 @@ export default function Profilepage() {
   const [hoveredBadge, setHoveredBadge] = useState(-1);
   const usertest = "";
 
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
-
   const [putRequestName, setPutRequestName] = useState({
     age: 25,
   });
 
   const { username } = useParams();
-
-  console.log("test", { username });
+  console.log(username);
 
   const showBadge = (index) => {
     setHoveredBadge(index);
@@ -39,41 +36,47 @@ export default function Profilepage() {
 
   async function editUser() {
     const test = await axios.put(
-      "http://localhost:5000/api/user/" + loggedUser.id,
+      "http://localhost:5000/api/user/" + username,
       putRequestName
     );
-    console.log(test);
   }
 
-  async function getUsers() {
-    const test = await axios.get("http://localhost:5000/api/user");
-    console.log("Req: ", test);
-    const data = test.data;
-    setUser(data);
-    console.log("State: ", user);
+  async function getUser() {
+    await axios
+      .get("http://localhost:5000/api/user/" + username)
+      .then((response) => {
+        
+        setUser(response.data);
+        setLoading(true);
+        
+         
+        
+        console.log(response.data);
+      });
   }
+
   useEffect(() => {
-    console.log(loggedUser);
-    getBadges();
+   
+    getUser();
+    
+    
   }, []);
 
   async function getBadges() {
     const henticon = await axios.get(
-      "http://localhost:5000/api/badges/user/" + loggedUser.id
+      "http://localhost:5000/api/badges/user/" + user.id
     );
-    console.log("Req: ", henticon);
     const data = henticon.data;
     setBadges(data);
-    console.log("State: ", badges);
   }
 
   return (
     <div className="profile-cnt">
-      <div className="profiledata">
+      {loading ? <div><div className="profiledata">
         <div className="picture-icon-cnt">
           <img
             src={require("../../../assets/profilepic/" +
-              loggedUser.profile_pic)}
+              user.profile_pic)}
             alt="profilepicture"
           />
         </div>
@@ -90,7 +93,7 @@ export default function Profilepage() {
               <AiOutlineEdit />
             </div>
           </IconContext.Provider>
-          <h1>{loggedUser.name}</h1>
+          <h1>{user.name}</h1>
         </div>
       </div>
 
@@ -141,26 +144,26 @@ export default function Profilepage() {
         <div className="profile-club-cnt">
           <div className="profile-club-cnt-club">
             <h1>Klubb</h1>
-            <p>{loggedUser.club_name}</p>
+            <p>{user.club_name}</p>
             <img
-              alt={loggedUser.club_logo}
-              src={require("../../../assets/teamLogos/" + loggedUser.club_logo)}
+              alt={user.club_logo}
+              src={require("../../../assets/teamLogos/" + user.club_logo)}
             />
           </div>
           <div className="profile-club-cnt-points">
             <h2>Klubb-rang: </h2>
-            <p>{loggedUser.club_rank}</p>
+            <p>{user.club_rank}</p>
           </div>
         </div>
         <div className="profile-points-cnt">
           <h1>Dine poeng</h1>
-          <p>{loggedUser.total_points}</p>
+          <p>{user.total_points}</p>
         </div>
       </div>
       <div className="most-popularclips-cnt">
         <div className="stroke-blue"></div>
         <div className="posts"></div>
-      </div>
+      </div></div>: "" }
     </div>
   );
 }

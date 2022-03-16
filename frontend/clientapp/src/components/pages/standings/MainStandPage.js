@@ -12,8 +12,21 @@ export default function MainStandPage() {
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
+  let loggedUser = {
+    club_id : "",
+    club_logo : "",
+    club_name : "",
+    club_rank : "",
+    id : "",
+    name : "",
+    overall_rank : "",
+    profile_pic : "",
+    total_points : ""
+  };
 
+  if (localStorage.getItem("loggedIn")) {
+    loggedUser = JSON.parse(localStorage.getItem("user"));
+  }
   let navigate = useNavigate();
   let url = "http://localhost:5000/api/leaderboard/";
 
@@ -50,7 +63,7 @@ export default function MainStandPage() {
   }
 
   const userprofileLoad = async (e) => {
-    navigate("profil/" + e);
+    navigate("/" + e);
   };
 
   return (
@@ -64,7 +77,9 @@ export default function MainStandPage() {
           <h1>Sort by</h1>
           <div className="sort-buttons">
             {localStorage.getItem("loggedIn") ? (
-              <button onClick={(e) => sortByYourClub()}></button>
+              <button onClick={(e) => sortByYourClub()}>
+                {loggedUser.club_name}
+              </button>
             ) : null}
 
             <button onClick={() => sortByPlayers()}>
@@ -93,7 +108,7 @@ export default function MainStandPage() {
                       ? "table-element-active"
                       : "table-element"
                   }
-                  onClick={() => userprofileLoad(post.name)}
+                  onClick={() => userprofileLoad(post.username)}
                   key={index}
                 >
                   <p className="rank-table">{post.rank}</p>
