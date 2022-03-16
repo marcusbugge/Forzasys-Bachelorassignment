@@ -4,7 +4,8 @@
 
 .header-followpage-cnt {
   padding: 100px 150px;
-  margin-bottom: -50px;
+  margin-bottom: -75px;
+  margin-top: -50px;
 }
 
 .header-followpage-cnt h1 {
@@ -23,6 +24,7 @@
   margin-left: 150px;
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 100px;
 }
 
 .follow-cnt {
@@ -30,7 +32,7 @@
   margin-right: 30px;
   margin-top: 50px;
   width: 250px;
-  height: 350px;
+  height: 375px;
   background-color: var(--hover-blue);
 }
 
@@ -41,6 +43,8 @@
 
 .profilepic img {
   width: 70px;
+  height: 70px;
+  border-radius: 50%;
 }
 
 .div-name {
@@ -90,6 +94,9 @@
 
 .club-follow img {
   width: 35px;
+}
+.club-follow p{
+  color: white;
 }
 
 .follow-cnt:hover {

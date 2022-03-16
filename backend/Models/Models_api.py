@@ -33,7 +33,7 @@ class TriviaSchema(Schema):
 
 
 class PersonalScore(object):
-    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points):
+    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points, role):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -43,6 +43,7 @@ class PersonalScore(object):
         self.club_logo = club_logo
         self.club_rank = club_rank
         self.total_points = total_points
+        self.role = role
 
 class PersonalScoreSchema(Schema):
     id = fields.Integer()
@@ -54,6 +55,7 @@ class PersonalScoreSchema(Schema):
     club_logo = fields.String()
     club_rank = fields.Integer()
     total_points = fields.Integer()
+    role = fields.String()
 
 
 class LeaderboardClub(object):
@@ -76,9 +78,10 @@ class LeaderboardClubSchema(Schema):
 
 
 class Followlist(object):
-    def __init__(self, id, name, total_points, overall_rank, club_id, club_name, club_rank, club_logo, badges, badge_count):
+    def __init__(self, id, name, profile_pic, total_points, overall_rank, club_id, club_name, club_rank, club_logo, badges, badge_count):
         self.id = id
         self.name = name
+        self.profile_pic = profile_pic
         self.total_points = total_points
         self.overall_rank = overall_rank
         self.club_id = club_id
@@ -91,6 +94,7 @@ class Followlist(object):
 class FollowlistSchema(Schema):
     id = fields.Integer()
     name = fields.String()
+    profile_pic = fields.String()
     total_points = fields.Integer()
     overall_rank = fields.Integer()
     club_id = fields.Integer()
