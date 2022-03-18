@@ -66,7 +66,7 @@ export default function Editprofile() {
 
     e.preventDefault();
 
-    if (email !== "") {
+    if (email !== "" || name !== "" || uname !== "") {
       const userdata = {
         name: name,
         uname: uname,
