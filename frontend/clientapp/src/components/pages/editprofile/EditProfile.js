@@ -18,7 +18,8 @@ export default function Editprofile() {
   const [page1, setPage1] = useState(false);
   const [page2, setPage2] = useState(false);
   const [page3, setPage3] = useState(false);
-  const [saveButton, setSaveButton] = useState(false);
+  const [saveButtonPage1, setSaveButtonPage1] = useState(false);
+  const [saveButtonPage2, setSaveButtonPage2] = useState(false);
   const [display1, setDisplay1] = useState("edit-choice-button");
   const [display2, setDisplay2] = useState("edit-choice-button");
   const [display3, setDisplay3] = useState("edit-choice-button");
@@ -30,7 +31,8 @@ export default function Editprofile() {
     setPage1(true);
     setPage2(false);
     setPage3(false);
-    setSaveButton(true);
+    setSaveButtonPage1(true);
+    setSaveButtonPage2(false);
   };
 
   const page2Visible = () => {
@@ -40,7 +42,8 @@ export default function Editprofile() {
     setPage1(false);
     setPage2(true);
     setPage3(false);
-    setSaveButton(true);
+    setSaveButtonPage1(false);
+    setSaveButtonPage2(true);
   };
 
   const page3Visible = () => {
@@ -50,7 +53,8 @@ export default function Editprofile() {
     setPage1(false);
     setPage2(false);
     setPage3(true);
-    setSaveButton(true);
+    setSaveButtonPage1(false);
+    setSaveButtonPage2(false);
   };
 
   async function editUser(e) {
@@ -67,6 +71,33 @@ export default function Editprofile() {
         name: name,
         age: age,
         email: email,
+      };
+      console.log(userdata);
+
+      let url = "http://localhost:5000/api/user/" + loggedUser.id;
+
+      axios
+        .put(url, userdata)
+        .then((response) => {
+          console.log(response.status);
+          console.log(response.data);
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    }
+  }
+
+  async function editUserPassword(e) {
+    /*  const test = await axios.put(
+      "http://localhost:5000/api/user/" + loggedUser.id,
+      putRequestName
+    );
+    console.log(test); */
+
+    e.preventDefault();
+
+    if (password !== "" && password === cpassword) {
+      const userdata = {
+        password: password,
       };
       console.log(userdata);
 
@@ -159,53 +190,72 @@ export default function Editprofile() {
                 ></input>
               </div>
             )}
+            <div>
+              {saveButtonPage1 && (
+                <button type="submit" className="edit-btn-save">
+                  Lagre endringer
+                </button>
+              )}
+            </div>
           </div>
+        </form>
+        <form onSubmit={editUserPassword} className="edit-form" id="edit-form">
           <div>
             {page2 && (
               <div className="change-inputs-cnt">
                 <h2>Endre passord</h2>
-                <input type="text" className="change-input"></input>
+                <input
+                  type="text"
+                  className="change-input"
+                  id="inputpassword"
+                  onChange={(e) => setPassword(e.target.value)}
+                ></input>
 
                 <h2>Gjenta passord</h2>
-                <input type="text" className="change-input"></input>
-              </div>
-            )}
-          </div>
-          <div>
-            {page3 && (
-              <div className="change-inputs-cnt">
-                <h2>Navn</h2>
                 <input
                   type="text"
                   className="change-input"
-                  placeholder="Page3"
-                ></input>
-
-                <h2>Page 3</h2>
-                <input
-                  type="text"
-                  className="change-input"
-                  placeholder="Page3"
-                ></input>
-
-                <h2>Page 3</h2>
-                <input
-                  type="text"
-                  className="change-input"
-                  placeholder="Page3"
-                  //onChange={(e) => setEmail(e.target.value)}
+                  id="inputcpassword"
+                  onChange={(e) => setCpassword(e.target.value)}
                 ></input>
               </div>
             )}
-          </div>
-          <div>
-            {saveButton && (
-              <button type="submit" className="edit-btn-save">
-                Lagre endringer
-              </button>
-            )}
+            <div>
+              {saveButtonPage2 && (
+                <button type="submit" className="edit-btn-save">
+                  Lagre endringer
+                </button>
+              )}
+            </div>
           </div>
         </form>
+        <div>
+          {page3 && (
+            <div className="change-inputs-cnt">
+              <h2>Navn</h2>
+              <input
+                type="text"
+                className="change-input"
+                placeholder="Page3"
+              ></input>
+
+              <h2>Page 3</h2>
+              <input
+                type="text"
+                className="change-input"
+                placeholder="Page3"
+              ></input>
+
+              <h2>Page 3</h2>
+              <input
+                type="text"
+                className="change-input"
+                placeholder="Page3"
+                //onChange={(e) => setEmail(e.target.value)}
+              ></input>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

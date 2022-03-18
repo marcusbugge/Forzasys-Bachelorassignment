@@ -161,13 +161,13 @@ export default function Profilepage() {
             />
           </div>
           <div className="profile-club-cnt-points">
-            <h2>Klubb-rang: </h2>
-            <p>{loggedUser.club_rank}</p>
+            <h2>Dine poeng:</h2>
+            <p>{loggedUser.total_points}</p>
           </div>
         </div>
         <div className="profile-points-cnt">
-          <h1>Dine poeng</h1>
-          <p>{loggedUser.total_points}</p>
+          <h1>Klubb-rang:</h1>
+          <p>{loggedUser.club_rank}</p>
         </div>
       </div>
       <div className="most-popularclips-cnt">
