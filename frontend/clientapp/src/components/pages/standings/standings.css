@@ -224,8 +224,8 @@ button[disabled] {
 }
 
 .club-rank {
-  width: 400px;
-  height: 80px;
+  width: 300px;
+  height: 60px;
   background-color: var(--primary);
   display: flex;
   justify-content: center;
@@ -233,7 +233,7 @@ button[disabled] {
   margin-bottom: 50px;
 }
 .club-rank h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   color: white;
 }
 
@@ -241,5 +241,22 @@ button[disabled] {
 .player-sort {
   padding: 50px;
   border-radius: 1em;
-  background-color: rgb(238, 238, 238);
+  background-color: rgb(240, 240, 240);
+}
+
+.team-tables {
+  display: flex;
+  justify-content: space-between;
+}
+
+.supporter-table {
+  width: 39%;
+}
+
+.main-table {
+  width: 60%;
+}
+
+.supporters {
+  margin-left: 100px;
 }
