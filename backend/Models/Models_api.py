@@ -125,7 +125,7 @@ class SupporterChallenge(object):
 
 
 class SupporterChallengeSchema(Schema):
-    id = fields.Interger()
+    id = fields.Integer()
     club_name = fields.String()
     club_logo = fields.String()
     supporter_count = fields.Integer()
