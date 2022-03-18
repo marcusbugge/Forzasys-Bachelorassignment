@@ -35,20 +35,13 @@ export default function Profilepage() {
     setDisplay("badge-info-cnt-notdisplayed");
   };
 
-  async function editUser() {
-    const test = await axios.put(
-      "http://localhost:5000/api/user/" + username,
-      putRequestName
-    );
-  }
-
   async function getUser() {
     await axios
       .get("http://localhost:5000/api/user/" + username)
       .then((response) => {
         setUser(response.data);
         setLoading(true);
-
+        getBadges(response.data.id);
         console.log(response.data);
       });
   }
@@ -57,9 +50,9 @@ export default function Profilepage() {
     getUser();
   }, []);
 
-  async function getBadges() {
+  async function getBadges(e) {
     const henticon = await axios.get(
-      "http://localhost:5000/api/badges/user/" + user.id
+      "http://localhost:5000/api/badges/user/" + e
     );
     const data = henticon.data;
     setBadges(data);
@@ -82,19 +75,16 @@ export default function Profilepage() {
                   alt="profilepicture"
                 />
               </div>
-              <button
-                className="profile-edit-menu-btn"
-                onClick={userprofileLoad}
-              >
-                <IconContext.Provider value={{ size: "30px" }}>
-                  <div className="profile-edit-cnt">
-                    <BiCog />
-                  </div>
-                </IconContext.Provider>
-              </button>
-              <div className="profile-edit-name">
-                <h1>{user.name}</h1>
-              </div>
+            </div>
+            <button className="profile-edit-menu-btn" onClick={userprofileLoad}>
+              <IconContext.Provider value={{ size: "30px" }}>
+                <div className="profile-edit-cnt">
+                  <BiCog />
+                </div>
+              </IconContext.Provider>
+            </button>
+            <div className="profile-edit-name">
+              <h1>{user.name}</h1>
             </div>
 
             <div className="badges-cnt">

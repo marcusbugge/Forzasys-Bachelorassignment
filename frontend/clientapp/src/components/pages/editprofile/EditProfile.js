@@ -9,7 +9,7 @@ export default function Editprofile() {
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [age, setAge] = useState("");
+  const [uname, setUname] = useState("");
   const [password, setPassword] = useState("");
   const [cpassword, setCpassword] = useState("");
 
@@ -69,7 +69,7 @@ export default function Editprofile() {
     if (email !== "") {
       const userdata = {
         name: name,
-        age: age,
+        uname: uname,
         email: email,
       };
       console.log(userdata);
@@ -171,13 +171,13 @@ export default function Editprofile() {
                   onChange={(e) => setName(e.target.value)}
                 ></input>
 
-                <h2>Alder</h2>
+                <h2>Brukernavn</h2>
                 <input
                   type="text"
                   className="change-input"
                   id="inputage"
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder={loggedUser.age}
+                  onChange={(e) => setUname(e.target.value)}
+                  placeholder={loggedUser.username}
                 ></input>
 
                 <h2>E-mail</h2>
