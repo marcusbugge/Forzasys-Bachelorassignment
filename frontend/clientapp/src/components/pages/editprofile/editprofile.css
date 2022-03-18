@@ -1,0 +1,112 @@
+.editprofile-header {
+  width: 100%;
+  height: 250px;
+  background-color: var(--secondary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.editprofile-header h1 {
+  margin-bottom: -50px;
+  font-size: 3.5rem;
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 800px;
+  height: 120px;
+}
+
+.edit-cnt {
+  background-color: var(--lightgray);
+  padding: 50px;
+  width: 54%;
+  margin-left: 20%;
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  margin-bottom: 100px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.edit-choice-cnt {
+  margin-top: 60px;
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+}
+
+.edit-choice-cnt > h1 {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.edit-btn-save {
+  border-style: none;
+  background-color: var(--primary);
+  width: 10rem;
+  height: 5rem;
+  color: white;
+}
+
+.edit-btn-save:hover {
+  background-color: var(--hover-blue);
+}
+
+.separator-cnt {
+  justify-content: center;
+  align-items: center;
+}
+
+.separator-vertical {
+  height: 30rem;
+  width: 3px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 2px;
+  rotate: 90deg;
+  transform: rotate(90deg);
+  background-color: #e1e1e1;
+}
+
+.separator-horizontal {
+  height: 3px;
+  border-radius: 2px;
+  width: 20rem;
+  background-color: #e1e1e1;
+}
+
+.edit-choice-button {
+  border-style: none;
+  background-color: var(--lightgray);
+  height: 15%;
+  width: 20rem;
+  font-size: 20px;
+}
+
+.edit-choice-button:hover {
+  background-color: #e1e1e1;
+}
+
+.edit-choice-button-displayed {
+  border-style: none;
+  height: 15%;
+  width: 20rem;
+  background-color: #e1e1e1;
+  font-size: 20px;
+}
+
+.change-inputs-cnt {
+  margin-top: 50px;
+}
+
+.change-input {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 30em;
+}

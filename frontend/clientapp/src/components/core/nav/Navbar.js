@@ -17,8 +17,10 @@ export default function Navbar() {
   const splitLocation = pathname.split("/");
 
   var loggedUser = "";
+  var path = "";
   if (localStorage.getItem("loggedIn")) {
     loggedUser = JSON.parse(localStorage.getItem("user"));
+    path = "/" + loggedUser.username;
   }
 
   console.log(loggedUser);
@@ -102,7 +104,7 @@ export default function Navbar() {
             <h1>PROFIL</h1>
             <div className="links">
               <div className="rank-nav-cnt">
-                <NavLink to="/profil">Profil</NavLink>
+                <NavLink to={path}>Profil</NavLink>
               </div>
             </div>
           </div>
