@@ -21,6 +21,7 @@ import ScrollToTop from "./ScrollToTop";
 import FollowersPage from "./components/pages/follow/FollowersPage";
 import LikedVideos from "./components/pages/likedvideos/LikedVideos";
 import { useContext } from "react";
+import Editprofile from "./components/pages/editprofile/EditProfile";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,6 +62,7 @@ function App() {
               <Route path="/standings" element={<MainStandPage />} />
 
               <Route path="/profil" element={<Profilepage />} />
+              <Route path="/editprofil" element={<Editprofile />} />
 
               <Route path=":username" element={<Profilepage />} />
 
