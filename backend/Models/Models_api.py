@@ -1,13 +1,14 @@
 from marshmallow import Schema, fields
 
 class Leaderboard(object):
-    def __init__(self, user_id, rank, name, club, club_logo, points):
+    def __init__(self, user_id, rank, name, club, club_logo, points, username):
         self.user_id = user_id
         self.rank = rank
         self.name = name
         self.club = club
         self.club_logo = club_logo
         self.points = points
+        self.username = username
 
 class LeaderboardSchema(Schema):
     user_id = fields.Integer()
@@ -16,6 +17,7 @@ class LeaderboardSchema(Schema):
     club = fields.String()
     club_logo = fields.String()
     points = fields.Integer()
+    username = fields.String()
 
 
 class Trivia(object):
@@ -33,7 +35,7 @@ class TriviaSchema(Schema):
 
 
 class PersonalScore(object):
-    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points, role):
+    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points, role, username):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -44,6 +46,7 @@ class PersonalScore(object):
         self.club_rank = club_rank
         self.total_points = total_points
         self.role = role
+        self.username = username
 
 class PersonalScoreSchema(Schema):
     id = fields.Integer()
@@ -56,6 +59,7 @@ class PersonalScoreSchema(Schema):
     club_rank = fields.Integer()
     total_points = fields.Integer()
     role = fields.String()
+    username = fields.String()
 
 
 class LeaderboardClub(object):
