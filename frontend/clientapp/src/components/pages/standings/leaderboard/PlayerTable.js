@@ -77,7 +77,7 @@ export default function PlayerTable(props) {
                       ? "table-element-active"
                       : "table-element"
                   }
-                  onClick={() => userprofileLoad(post.name)}
+                  onClick={() => userprofileLoad(post.username)}
                   key={index}
                 >
                   <p className="rank-table">{post.rank}</p>
