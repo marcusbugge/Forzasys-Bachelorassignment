@@ -47,7 +47,10 @@ def get_idividual_score(loggedin_user, users):
                         club_rank = club_supporters.index(loggedin_user) + 1,
                         total_points = users[users.index(loggedin_user)].total_points,
                         role = loggedin_user.role,
-                        username = loggedin_user.username
+                        username = loggedin_user.username,
+                        badges=loggedin_user.badges,
+                        age = loggedin_user.age,
+                        email = loggedin_user.email
                         )
     serializer = PersonalScoreSchema()
     result = serializer.dump(user)
@@ -700,7 +703,7 @@ def db_data():
     badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys', family_name='Admin', age=25, 
-                email='admin@forzasys.no', club_id=1, total_points=0, role="user", username="admin")
+                email='admin@forzasys.no', club_id=1, total_points=0, role="admin", username="adminUser")
     user2 = User(password='TestP', given_name='Forzasys', family_name='User2', age=25, 
                 email='test2@forzasys.no', club_id=13, total_points=11, role="user", username="test2")
     user3 = User(password='TestP', given_name='Forzasys', family_name='User3', age=25, 
