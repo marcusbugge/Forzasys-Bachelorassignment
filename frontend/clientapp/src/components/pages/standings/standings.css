@@ -236,3 +236,10 @@ button[disabled] {
   font-size: 3rem;
   color: white;
 }
+
+.club-sort,
+.player-sort {
+  padding: 50px;
+  border-radius: 1em;
+  background-color: rgb(238, 238, 238);
+}

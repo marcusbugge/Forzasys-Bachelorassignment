@@ -53,7 +53,10 @@ export default function PlayerTable(props) {
 
   const MainTable = () => {
     return (
-      <div>
+      <div className="player-sort">
+        <div className="club-rank">
+          <h1>Player Ranking</h1>
+        </div>
         <div className="table-header">
           <div className="rank">Rank</div>
           <div className="name">Name</div>
