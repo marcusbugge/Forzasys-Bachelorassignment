@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./editprofile.css";
 import axios from "axios";
+import { IconContext } from "react-icons";
+import { FiInfo } from "react-icons/fi";
+import { BsKey } from "react-icons/bs";
 
 export default function Editprofile() {
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   const [name, setName] = useState("");
-  //const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
+  const [password, setPassword] = useState("");
+  const [cpassword, setCpassword] = useState("");
+
+  const [errorPassword, setErrorPassword] = useState(true);
+
   const [page1, setPage1] = useState(false);
   const [page2, setPage2] = useState(false);
   const [page3, setPage3] = useState(false);
@@ -54,22 +62,24 @@ export default function Editprofile() {
 
     e.preventDefault();
 
-    const userdata = {
-      name: name,
-      age: age,
-      //email: email,
-    };
-    console.log(userdata);
+    if (email !== "") {
+      const userdata = {
+        name: name,
+        age: age,
+        email: email,
+      };
+      console.log(userdata);
 
-    let url = "http://localhost:5000/api/user/" + loggedUser.id;
+      let url = "http://localhost:5000/api/user/" + loggedUser.id;
 
-    axios
-      .put(url, userdata)
-      .then((response) => {
-        console.log(response.status);
-        console.log(response.data);
-      })
-      .catch((e) => console.log("something went wrong :(", e));
+      axios
+        .put(url, userdata)
+        .then((response) => {
+          console.log(response.status);
+          console.log(response.data);
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    }
   }
 
   return (
@@ -79,18 +89,28 @@ export default function Editprofile() {
       </div>
       <div className="edit-cnt">
         <div className="edit-choice-cnt">
-          <h1>Editing profile</h1>
+          {/* <h1>Editing profile</h1> */}
           <div className="separator-cnt">
             <div className="separator-horizontal"></div>
           </div>
           <button className={display1} onClick={() => page1Visible()}>
+            <IconContext.Provider value={{ size: "20px" }}>
+              <div>
+                <FiInfo />
+              </div>
+            </IconContext.Provider>
             Personlig informasjon
           </button>
           <div className="separator-cnt">
             <div className="separator-horizontal"></div>
           </div>
           <button className={display2} onClick={() => page2Visible()}>
-            Lorem Ipsum
+            <IconContext.Provider value={{ size: "20px" }}>
+              <div>
+                <BsKey />
+              </div>
+            </IconContext.Provider>
+            Passord
           </button>
           <div className="separator-cnt">
             <div className="separator-horizontal"></div>
@@ -135,7 +155,7 @@ export default function Editprofile() {
                   className="change-input"
                   id="inputemail"
                   placeholder={loggedUser.email}
-                  //onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                 ></input>
               </div>
             )}
@@ -143,13 +163,10 @@ export default function Editprofile() {
           <div>
             {page2 && (
               <div className="change-inputs-cnt">
-                <h2>Page2</h2>
+                <h2>Endre passord</h2>
                 <input type="text" className="change-input"></input>
 
-                <h2>Page2</h2>
-                <input type="text" className="change-input"></input>
-
-                <h2>Page2</h2>
+                <h2>Gjenta passord</h2>
                 <input type="text" className="change-input"></input>
               </div>
             )}
@@ -183,7 +200,7 @@ export default function Editprofile() {
           </div>
           <div>
             {saveButton && (
-              <button type="submit" class="edit-btn-save">
+              <button type="submit" className="edit-btn-save">
                 Lagre endringer
               </button>
             )}

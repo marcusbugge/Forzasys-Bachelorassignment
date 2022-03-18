@@ -20,7 +20,7 @@ export default function Profilepage() {
     setHoveredBadge(index);
     setDisplay("badge-info-cnt-displayed");
   };
-  /*   let navigate = useNavigate();
+  let navigate = useNavigate();
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
@@ -31,11 +31,11 @@ export default function Profilepage() {
   const hideBadge = () => {
     setHoveredBadge(-1);
     setDisplay("badge-info-cnt-notdisplayed");
-  }; */
+  };
 
   // const loggedUser = JSON.parse(localStorage.getItem("user"));
 
-  const loggedUser = { name: "", profile_pic: "" };
+  /*   const loggedUser = { name: "", profile_pic: "" };
   const [putRequestName, setPutRequestName] = useState({
     age: 25,
   });
@@ -49,7 +49,7 @@ export default function Profilepage() {
       putRequestName
     );
     console.log(test);
-  }
+  } */
 
   async function getUsers() {
     const test = await axios.get("http://localhost:5000/api/user");
@@ -80,7 +80,6 @@ export default function Profilepage() {
   return (
     <div className="profile-cnt">
       <div className="profiledata">
-        <div className="picture-icon-cnt"></div>
         <div className="profile-header">
           <div className="picture-icon-cnt">
             <img

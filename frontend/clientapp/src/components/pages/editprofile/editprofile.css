@@ -21,7 +21,6 @@
 
 .edit-cnt {
   background-color: var(--lightgray);
-  margin-top: 200px;
   padding: 50px;
   width: 54%;
   margin-left: 20%;
@@ -29,10 +28,15 @@
   flex-direction: row;
   border-radius: 10px;
   margin-bottom: 100px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
 }
 
 .edit-choice-cnt {
+  margin-top: 60px;
   flex-direction: column;
+  align-items: center;
+  display: flex;
 }
 
 .edit-choice-cnt > h1 {
@@ -80,8 +84,9 @@
 .edit-choice-button {
   border-style: none;
   background-color: var(--lightgray);
-  height: 10%;
+  height: 15%;
   width: 20rem;
+  font-size: 20px;
 }
 
 .edit-choice-button:hover {
@@ -90,9 +95,10 @@
 
 .edit-choice-button-displayed {
   border-style: none;
-  height: 10%;
+  height: 15%;
   width: 20rem;
   background-color: #e1e1e1;
+  font-size: 20px;
 }
 
 .change-inputs-cnt {
