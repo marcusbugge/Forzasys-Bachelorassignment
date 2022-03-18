@@ -35,7 +35,7 @@ class TriviaSchema(Schema):
 
 
 class PersonalScore(object):
-    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points, role, username):
+    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points, role, username, badges, age, email):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -47,6 +47,9 @@ class PersonalScore(object):
         self.total_points = total_points
         self.role = role
         self.username = username
+        self.badges = badges
+        self.age = age
+        self.email = email
 
 class PersonalScoreSchema(Schema):
     id = fields.Integer()
@@ -60,6 +63,9 @@ class PersonalScoreSchema(Schema):
     total_points = fields.Integer()
     role = fields.String()
     username = fields.String()
+    badges = fields.List(fields.String())
+    age = fields.Integer()
+    email = fields.String()
 
 
 class LeaderboardClub(object):
