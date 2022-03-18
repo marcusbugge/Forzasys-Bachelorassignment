@@ -265,7 +265,7 @@ def supporter_leaderboard(club_id):
     for user in users:
         if user.club_id == club_id:
             leaderboard_user = Leaderboard(user_id=user.id, rank=i, name=user.given_name + " " + user.family_name, 
-                                            club = club.name, club_logo=club.logo, points=user.total_points)
+                                            club = club.name, club_logo=club.logo, points=user.total_points, username=user.username)
             users_to_return.append(leaderboard_user)
             i += 1
     if len(users_to_return) > 0:
