@@ -20,6 +20,7 @@ import Weeklytrivia from "./components/pages/competitions/weeklytrivia/Weeklytri
 import ScrollToTop from "./ScrollToTop";
 import FollowersPage from "./components/pages/follow/FollowersPage";
 import LikedVideos from "./components/pages/likedvideos/LikedVideos";
+import Admin from "../src/components/pages/admin/Admin"
 import { useContext } from "react";
 import Editprofile from "./components/pages/editprofile/EditProfile";
 
@@ -73,6 +74,7 @@ function App() {
               <Route path="/weeklytrivia" element={<Weeklytrivia />} />
               <Route path="/mostpopularvideo" element={<MainStandPage />} />
               <Route path="/mostpopularclubsong" element={<MainStandPage />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/" element={<MainStandPage />} />
               {/* <Route path="*" element={<Navigate replace to="/" />} /> */}
             </Routes>
