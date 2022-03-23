@@ -37,6 +37,8 @@
   flex-direction: column;
   align-items: center;
   display: flex;
+  width: 60%;
+  font-size-adjust: 0.5;
 }
 
 .edit-choice-cnt > h1 {
@@ -56,57 +58,285 @@
   background-color: var(--hover-blue);
 }
 
-.separator-cnt {
-  justify-content: center;
-  align-items: center;
+.edit-form-cnt {
+  width: 100%;
 }
 
-.separator-vertical {
-  height: 30rem;
-  width: 3px;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  margin-left: 20px;
-  margin-right: 20px;
-  border-radius: 2px;
-  rotate: 90deg;
-  transform: rotate(90deg);
-  background-color: #e1e1e1;
+@media only screen and (min-width: 1345px) {
+  .edit-choice-button-displayed {
+    border-style: none;
+    height: 15%;
+    width: 100%;
+    background-color: #e1e1e1;
+    font-size: 20px;
+  }
+
+  .edit-choice-button {
+    border-style: none;
+    background-color: var(--lightgray);
+    height: 15%;
+    width: 100%;
+    font-size: 20px;
+  }
+
+  .edit-choice-button:hover {
+    background-color: #e1e1e1;
+  }
+
+  .change-inputs-cnt {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .change-inputs-cnt > h2 {
+    width: 100%;
+    font-size: 20px;
+  }
+
+  .change-input {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 200%;
+    display: flex;
+    min-width: 100%;
+  }
+
+  .separator-cnt {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .separator-vertical {
+    height: 30rem;
+    width: 3px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 2px;
+    rotate: 90deg;
+    transform: rotate(90deg);
+    background-color: #e1e1e1;
+  }
+
+  .separator-horizontal {
+    height: 3px;
+    border-radius: 2px;
+    width: 100%;
+    background-color: #e1e1e1;
+  }
 }
 
-.separator-horizontal {
-  height: 3px;
-  border-radius: 2px;
-  width: 20rem;
-  background-color: #e1e1e1;
+@media only screen and (max-width: 1344px) and (min-width: 1291px) {
+  .edit-choice-button-displayed {
+    border-style: none;
+    height: 15%;
+    width: 100%;
+    background-color: #e1e1e1;
+    font-size: 17px;
+  }
+
+  .edit-choice-button {
+    border-style: none;
+    background-color: var(--lightgray);
+    height: 15%;
+    width: 100%;
+    font-size: 17px;
+  }
+
+  .edit-choice-button:hover {
+    background-color: #e1e1e1;
+  }
+
+  .change-inputs-cnt {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .change-inputs-cnt > h2 {
+    width: 100%;
+    font-size: 17px;
+  }
+
+  .change-input {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 200%;
+    display: flex;
+    min-width: 100%;
+  }
+
+  .separator-cnt {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .separator-vertical {
+    height: 30rem;
+    width: 3px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 2px;
+    rotate: 90deg;
+    transform: rotate(90deg);
+    background-color: #e1e1e1;
+  }
+
+  .separator-horizontal {
+    height: 3px;
+    border-radius: 2px;
+    width: 100%;
+    background-color: #e1e1e1;
+  }
 }
 
-.edit-choice-button {
-  border-style: none;
-  background-color: var(--lightgray);
-  height: 15%;
-  width: 20rem;
-  font-size: 20px;
+@media only screen and (max-width: 1290px) and (min-width: 1000px) {
+  .edit-choice-button {
+    border-style: none;
+    background-color: var(--lightgray);
+    height: 15%;
+    width: 100%;
+    font-size: 15px;
+  }
+  .edit-choice-button-displayed {
+    border-style: none;
+    height: 15%;
+    width: 100%;
+    background-color: #e1e1e1;
+    font-size: 15px;
+  }
+
+  .edit-choice-button:hover {
+    background-color: #e1e1e1;
+    font-size: 15px;
+  }
+
+  .change-inputs-cnt {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .change-inputs-cnt > h2 {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .change-input {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 200%;
+    display: flex;
+    min-width: 100%;
+    font-size: 15px;
+  }
+
+  .separator-cnt {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .separator-vertical {
+    height: 30rem;
+    width: 3px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 2px;
+    rotate: 90deg;
+    transform: rotate(90deg);
+    background-color: #e1e1e1;
+  }
+
+  .separator-horizontal {
+    height: 3px;
+    border-radius: 2px;
+    width: 100%;
+    background-color: #e1e1e1;
+  }
 }
 
-.edit-choice-button:hover {
-  background-color: #e1e1e1;
-}
+@media only screen and (max-width: 999px) {
+  .edit-cnt {
+    flex-direction: column;
+  }
 
-.edit-choice-button-displayed {
-  border-style: none;
-  height: 15%;
-  width: 20rem;
-  background-color: #e1e1e1;
-  font-size: 20px;
-}
+  .edit-choice-cnt {
+    flex-direction: row;
+  }
 
-.change-inputs-cnt {
-  margin-top: 50px;
-}
+  .edit-form-cnt {
+    flex-direction: row;
+  }
 
-.change-input {
-  margin-top: 10px;
-  margin-bottom: 20px;
-  width: 30em;
+  .edit-choice-button {
+    border-style: none;
+    background-color: var(--lightgray);
+    height: 15%;
+    width: 100%;
+    font-size: 15px;
+  }
+  .edit-choice-button-displayed {
+    border-style: none;
+    height: 15%;
+    width: 100%;
+    background-color: #e1e1e1;
+    font-size: 15px;
+  }
+
+  .edit-choice-button:hover {
+    background-color: #e1e1e1;
+    font-size: 15px;
+  }
+
+  .change-inputs-cnt {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+  .change-inputs-cnt > h2 {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .change-input {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 200%;
+    display: flex;
+    min-width: 100%;
+    font-size: 15px;
+  }
+
+  .separator-cnt {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 500px;
+    height: 50px;
+  }
+
+  .separator-vertical {
+    height: 500px;
+    width: 3px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 2px;
+    rotate: 90deg;
+    background-color: #e1e1e1;
+  }
+
+  .separator-horizontal {
+    height: 3px;
+    border-radius: 2px;
+    width: 82px;
+    background-color: #e1e1e1;
+    transform: rotate(90deg);
+  }
 }

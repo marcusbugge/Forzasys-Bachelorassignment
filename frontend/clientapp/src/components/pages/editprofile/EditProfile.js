@@ -47,7 +47,7 @@ export default function Editprofile() {
   };
 
   const page3Visible = () => {
-    setDisplay3("edit-choice-button");
+    setDisplay1("edit-choice-button");
     setDisplay2("edit-choice-button");
     setDisplay3("edit-choice-button-displayed");
     setPage1(false);
@@ -157,104 +157,109 @@ export default function Editprofile() {
         <div className="separator-cnt">
           <div className="separator-vertical"></div>
         </div>
+        <div className="edit-form-cnt">
+          <form onSubmit={editUser} className="edit-form" id="edit-form">
+            <div>
+              {page1 && (
+                <div className="change-inputs-cnt">
+                  <h2>Navn</h2>
+                  <input
+                    type="text"
+                    className="change-input"
+                    id="inputname"
+                    placeholder={loggedUser.name}
+                    onChange={(e) => setName(e.target.value)}
+                  ></input>
 
-        <form onSubmit={editUser} className="edit-form" id="edit-form">
+                  <h2>Brukernavn</h2>
+                  <input
+                    type="text"
+                    className="change-input"
+                    id="inputage"
+                    onChange={(e) => setUname(e.target.value)}
+                    placeholder={loggedUser.username}
+                  ></input>
+
+                  <h2>E-mail</h2>
+                  <input
+                    type="text"
+                    className="change-input"
+                    id="inputemail"
+                    placeholder={loggedUser.email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  ></input>
+                </div>
+              )}
+              <div>
+                {saveButtonPage1 && (
+                  <button type="submit" className="edit-btn-save">
+                    Lagre endringer
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
+          <form
+            onSubmit={editUserPassword}
+            className="edit-form"
+            id="edit-form"
+          >
+            <div>
+              {page2 && (
+                <div className="change-inputs-cnt">
+                  <h2>Endre passord</h2>
+                  <input
+                    type="text"
+                    className="change-input"
+                    id="inputpassword"
+                    onChange={(e) => setPassword(e.target.value)}
+                  ></input>
+
+                  <h2>Gjenta passord</h2>
+                  <input
+                    type="text"
+                    className="change-input"
+                    id="inputcpassword"
+                    onChange={(e) => setCpassword(e.target.value)}
+                  ></input>
+                </div>
+              )}
+              <div>
+                {saveButtonPage2 && (
+                  <button type="submit" className="edit-btn-save">
+                    Lagre endringer
+                  </button>
+                )}
+              </div>
+            </div>
+          </form>
           <div>
-            {page1 && (
+            {page3 && (
               <div className="change-inputs-cnt">
                 <h2>Navn</h2>
                 <input
                   type="text"
                   className="change-input"
-                  id="inputname"
-                  placeholder={loggedUser.name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Page3"
                 ></input>
 
-                <h2>Brukernavn</h2>
+                <h2>Page 3</h2>
                 <input
                   type="text"
                   className="change-input"
-                  id="inputage"
-                  onChange={(e) => setUname(e.target.value)}
-                  placeholder={loggedUser.username}
+                  placeholder="Page3"
                 ></input>
 
-                <h2>E-mail</h2>
+                <h2>Page 3</h2>
                 <input
                   type="text"
                   className="change-input"
-                  id="inputemail"
-                  placeholder={loggedUser.email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Page3"
+                  //onChange={(e) => setEmail(e.target.value)}
                 ></input>
               </div>
             )}
-            <div>
-              {saveButtonPage1 && (
-                <button type="submit" className="edit-btn-save">
-                  Lagre endringer
-                </button>
-              )}
-            </div>
           </div>
-        </form>
-        <form onSubmit={editUserPassword} className="edit-form" id="edit-form">
-          <div>
-            {page2 && (
-              <div className="change-inputs-cnt">
-                <h2>Endre passord</h2>
-                <input
-                  type="text"
-                  className="change-input"
-                  id="inputpassword"
-                  onChange={(e) => setPassword(e.target.value)}
-                ></input>
-
-                <h2>Gjenta passord</h2>
-                <input
-                  type="text"
-                  className="change-input"
-                  id="inputcpassword"
-                  onChange={(e) => setCpassword(e.target.value)}
-                ></input>
-              </div>
-            )}
-            <div>
-              {saveButtonPage2 && (
-                <button type="submit" className="edit-btn-save">
-                  Lagre endringer
-                </button>
-              )}
-            </div>
-          </div>
-        </form>
-        <div>
-          {page3 && (
-            <div className="change-inputs-cnt">
-              <h2>Navn</h2>
-              <input
-                type="text"
-                className="change-input"
-                placeholder="Page3"
-              ></input>
-
-              <h2>Page 3</h2>
-              <input
-                type="text"
-                className="change-input"
-                placeholder="Page3"
-              ></input>
-
-              <h2>Page 3</h2>
-              <input
-                type="text"
-                className="change-input"
-                placeholder="Page3"
-                //onChange={(e) => setEmail(e.target.value)}
-              ></input>
-            </div>
-          )}
         </div>
       </div>
     </div>
