@@ -121,9 +121,7 @@ export default function Editprofile() {
       <div className="edit-cnt">
         <div className="edit-choice-cnt">
           {/* <h1>Editing profile</h1> */}
-          <div className="separator-cnt">
-            <div className="separator-horizontal"></div>
-          </div>
+          <div className="separator-horizontal"></div>
           <button className={display1} onClick={() => page1Visible()}>
             <IconContext.Provider value={{ size: "20px" }}>
               <div>
@@ -132,9 +130,9 @@ export default function Editprofile() {
             </IconContext.Provider>
             Personlig informasjon
           </button>
-          <div className="separator-cnt">
-            <div className="separator-horizontal"></div>
-          </div>
+
+          <div className="separator-horizontal"></div>
+
           <button className={display2} onClick={() => page2Visible()}>
             <IconContext.Provider value={{ size: "20px" }}>
               <div>
@@ -143,20 +141,17 @@ export default function Editprofile() {
             </IconContext.Provider>
             Passord
           </button>
-          <div className="separator-cnt">
-            <div className="separator-horizontal"></div>
-          </div>
+
+          <div className="separator-horizontal"></div>
+
           <button className={display3} onClick={() => page3Visible()}>
             Lorem Ipsum
           </button>
-          <div className="separator-cnt">
-            <div className="separator-horizontal"></div>
-          </div>
+
+          <div className="separator-horizontal"></div>
         </div>
 
-        <div className="separator-cnt">
-          <div className="separator-vertical"></div>
-        </div>
+        <div className="separator-vertical"></div>
         <div className="edit-form-cnt">
           <form onSubmit={editUser} className="edit-form" id="edit-form">
             <div>

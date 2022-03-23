@@ -109,7 +109,7 @@
 
   .separator-vertical {
     height: 30rem;
-    width: 3px;
+    width: 7px;
     margin-top: 2rem;
     margin-bottom: 2rem;
     margin-left: 20px;
@@ -264,10 +264,15 @@
 @media only screen and (max-width: 999px) {
   .edit-cnt {
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .edit-choice-cnt {
     flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
   }
 
   .edit-form-cnt {
@@ -277,21 +282,23 @@
   .edit-choice-button {
     border-style: none;
     background-color: var(--lightgray);
-    height: 15%;
-    width: 100%;
     font-size: 15px;
+    height: 100px;
+    width: 100%;
   }
   .edit-choice-button-displayed {
     border-style: none;
-    height: 15%;
-    width: 100%;
     background-color: #e1e1e1;
     font-size: 15px;
+    height: 100px;
+    width: 100%;
   }
 
   .edit-choice-button:hover {
     background-color: #e1e1e1;
     font-size: 15px;
+    height: 100px;
+    width: 100%;
   }
 
   .change-inputs-cnt {
@@ -318,25 +325,22 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    width: 500px;
+
     height: 50px;
   }
 
   .separator-vertical {
-    height: 500px;
-    width: 3px;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-top: 1rem;
+    height: 3px;
+    width: 100%;
     border-radius: 2px;
-    rotate: 90deg;
     background-color: #e1e1e1;
   }
 
   .separator-horizontal {
-    height: 3px;
+    height: 100px;
     border-radius: 2px;
-    width: 82px;
+    width: 8px;
     background-color: #e1e1e1;
-    transform: rotate(90deg);
   }
 }
