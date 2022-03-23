@@ -3,7 +3,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, SubmittedQuiz, SubmittedQuizSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema
 
 
 CORS(app)
@@ -330,6 +330,18 @@ def top_supporter(club_id):
         return top_supporter_name
     else:
         return None
+
+@app.route('/api/most_supporters', methods=['GET'])
+def most_supporters():
+    clubs = Club.get_all()
+    club_challenge = []
+    for club in clubs:
+        club_challenge.append(SupporterChallenge(id = club.id, club_name=club.name, club_logo=club.logo, 
+                                                supporter_count=len(club.supporters)))
+    club_challenge.sort(key=lambda x: x.supporter_count, reverse=True)
+    serializer = SupporterChallengeSchema(many = True)
+    result = serializer.dump(club_challenge)
+    return jsonify(result), 200
 
 
 @app.route('/api/videos', methods=['GET'])

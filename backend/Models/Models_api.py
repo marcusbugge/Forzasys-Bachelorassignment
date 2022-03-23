@@ -35,7 +35,8 @@ class TriviaSchema(Schema):
 
 
 class PersonalScore(object):
-    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name, club_logo, club_rank, total_points, role, username, badges, age, email):
+    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name,
+                club_logo, club_rank, total_points, role, username, badges, age, email):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -113,3 +114,19 @@ class FollowlistSchema(Schema):
     club_logo = fields.String()
     badges = fields.List(fields.String())
     badge_count = fields.Integer()
+    
+
+class SupporterChallenge(object):
+    def __init__(self, id, club_name, club_logo, supporter_count):
+        self.id = id
+        self.club_name = club_name
+        self.club_logo = club_logo
+        self.supporter_count = supporter_count
+
+
+class SupporterChallengeSchema(Schema):
+    id = fields.Integer()
+    club_name = fields.String()
+    club_logo = fields.String()
+    supporter_count = fields.Integer()
+        
