@@ -40,7 +40,7 @@ export default function QuizChanges() {
         element: index,
         bool: true,
       });
-    } else if(visable.bool && visable.element === index){
+    } else if (visable.bool && visable.element === index) {
       setVisable({
         element: null,
         bool: false,
@@ -53,17 +53,57 @@ export default function QuizChanges() {
     }
   }
 
+  async function handlePutSubmit(event) {
+    event.preventDefault();
+
+    const club_to_return = {
+      name: event.target.name.value,
+      nationality: event.target.nationality.value,
+    };
+
+    const url = "http://localhost:5000/api/club/" + (visable.element + 1);
+    if (window.confirm("Er du sikker på at du vil endre på dette laget?")) {
+      await axios
+        .put(url, club_to_return)
+        .then((response) => {
+          console.log(response.status);
+          console.log(response.data);
+          setVisable({
+            element: null,
+            bool: false,
+          });
+          requestAPI();
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    }
+  }
+
   const Edit = () => {
     return (
-      <div className="change-area">
-        <form className="form-clubs">
-          <input type="text" name="name" placeholder="Enter a name" />
+      <div className="change-area-club">
+        <div className="clubChange-headers">
+          <p>Name</p>
+          <p>Nationality</p>
+        </div>
+        <form className="form-clubs" onSubmit={handlePutSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder={clubs[visable.element].name}
+            autoComplete="off"
+          />
           <input
             type="text"
             name="nationality"
-            placeholder="Enter nationality"
+            placeholder={clubs[visable.element].nationality}
+            autoComplete="off"
           />
-          <button type="submit">SAVE</button>
+            <button className="button-edit" type="reset">
+              Undo
+            </button>
+            <button className="button-submit" type="submit">
+              SAVE
+            </button>
         </form>
       </div>
     );
@@ -91,7 +131,12 @@ export default function QuizChanges() {
               <div className="club-name-content">{item.name}</div>
               <div className="club-nat-content">{item.nationality}</div>
               <div className="club-edit-content">
-                <button onClick={() => handleClick(index)}>EDIT</button>
+                <button
+                  className="button-edit"
+                  onClick={() => handleClick(index)}
+                >
+                  EDIT
+                </button>
               </div>
             </div>
             <div className="change-box">
@@ -115,7 +160,9 @@ export default function QuizChanges() {
             required="required"
             placeholder="Enter nationality"
           />
-          <button type="submit">Add</button>
+          <button className="button-submit" type="submit">
+            Add
+          </button>
         </form>
       </div>
     </div>
