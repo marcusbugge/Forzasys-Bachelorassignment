@@ -363,9 +363,13 @@ class Question(db.Model):
 
     def save(self):
         db.session.add(self)
+        for answer in self.answers:
+            answer.save()
         db.session.commit()
 
     def delete(self):
+        for answer in self.answers:
+            answer.delete()
         db.session.delete(self)
         db.session.commit()
 
@@ -390,7 +394,7 @@ class Answer(db.Model):
     correct = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return f'{self.content}'
+        return f'{self.content}, {self.correct}'
     
     @classmethod
     def get_all(cls):
@@ -439,3 +443,21 @@ class SubmittedQuizSchema(Schema):
     user_id = fields.Integer()
     submitted = fields.Boolean()
     submitted_time = fields.Date()
+
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(25))
+    data = db.Column(db.LargeBinary)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+class ImageSchema(Schema):
+    id = fields.Integer()
+    filename = fields.String()
+    data = BytesField(required=True)

@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
-from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, SubmittedQuiz, SubmittedQuizSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema
-
+from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema, SubmittedQuiz, SubmittedQuizSchema, Image, ImageSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema
+from base64 import b64encode
+from json import dumps
 
 CORS(app)
 
@@ -206,11 +207,11 @@ def update_club(id):
     club_to_uptdate = Club.get_by_id(id)
     data = request.json
 
-    if data['name']:
+    if 'name' in data and data['name'] != "":
         club_to_uptdate.name = data['name']
-    if data['nationality']:
+    if 'nationality' in data and data['nationality'] != "":
         club_to_uptdate.nationality = data['nationality']
-    if data['logo']:
+    if 'logo' in data and data['logo'] != "":
         club_to_uptdate.logo = data['logo']
 
     db.session.commit()
@@ -331,6 +332,18 @@ def top_supporter(club_id):
     else:
         return None
 
+@app.route('/api/most_supporters', methods=['GET'])
+def most_supporters():
+    clubs = Club.get_all()
+    club_challenge = []
+    for club in clubs:
+        club_challenge.append(SupporterChallenge(id = club.id, club_name=club.name, club_logo=club.logo, 
+                                                supporter_count=len(club.supporters)))
+    club_challenge.sort(key=lambda x: x.supporter_count, reverse=True)
+    serializer = SupporterChallengeSchema(many = True)
+    result = serializer.dump(club_challenge)
+    return jsonify(result), 200
+
 
 @app.route('/api/videos', methods=['GET'])
 def get_all_videos():
@@ -370,13 +383,13 @@ def update_video(id):
     video_to_uptdate = Video.get_by_id(id)
     data = request.json
 
-    if data['user_id']:
+    if 'user_id' in data and data['user_id'] != "":
         video_to_uptdate.user_id = data['user_id']
-    if data['caption']:
+    if 'caption' in data and data['caption'] != "":
         video_to_uptdate.caption = data['caption']
-    if data['likes']:
+    if 'likes' in data and data['likes'] != "":
         video_to_uptdate.likes = data['likes']
-    if data['views']:
+    if 'views' in data and data['views'] != "":
         video_to_uptdate.views = data['views']
 
     db.session.commit()
@@ -478,23 +491,23 @@ def update_badge(id):
     badge_to_uptdate = Badge.get_by_id(id)
     data = request.json
 
-    if data['name']:
+    if 'name' in data and data['name'] != "":
         badge_to_uptdate.name = data['name']
-    if data['name']:
+    if 'description' in data and data['description'] != "":
         badge_to_uptdate.description = data['description']
-    if data['level']:
+    if 'level' in data and data['level'] != "":
         badge_to_uptdate.level = data['level']
-    if data['picture']:
+    if 'picture' in data and data['picture'] != "":
         badge_to_uptdate.picture = data['picture']
-    if data['category']:
+    if 'category' in data and data['category'] != "":
         badge_to_uptdate.category = data['category']
-    if data['points_needed']:
+    if 'points_needed' in data and data['points_needed'] != "":
         badge_to_uptdate.points_needed = data['points_needed']
 
     db.session.commit()
-
-    serializer = BadgeSchema()
-    result = serializer.dump(badge_to_uptdate)
+    badges = Badge.get_all()
+    serializer = BadgeSchema(many=True)
+    result = serializer.dump(badges)
     return jsonify(result), 200
 
 
@@ -618,6 +631,63 @@ def submit_quiz(user_id):
     quiz.save()
     return jsonify({'message': 'Quiz submitted'}), 200
 
+@app.route('/api/question', methods=['POST'])
+def create_question():
+    data = request.json
+    print(data)
+
+    newQuestion = Question(
+        question=data['question'],
+        points=data['points'],
+    )
+    newQuestion.save()
+
+    for answer in data['answers']:
+        newAnswer = Answer(
+            question_id = newQuestion.id,
+            content = answer['content'],
+            correct = answer['correct']
+        )
+        newAnswer.save()
+
+    return jsonify({'message': 'Question made'}), 200
+
+
+
+@app.route('/api/question/<int:id>', methods=['DELETE'])
+def delete_question(id):
+    question = Question.get_by_id(id)
+    question.delete()
+
+    return jsonify({
+        'message': 'deleted'
+    }), 204
+
+@app.route('/api/question/<int:id>', methods=['PUT'])
+def edit_question(id):
+    question_to_update = Question.get_by_id(id)
+    data = request.json
+
+    if 'question' in data and data['question'] != "":
+        question_to_update.question = data['question']
+    if 'points' in data and data['points'] != "":
+        question_to_update.points = data['points']
+    db.session.commit()
+
+    questions = Question.get_all()
+    serializer = QuestionSchema(many=True)
+    result = serializer.dump(questions)
+
+    return jsonify(result), 201
+    
+
+@app.route('/api/answers', methods=['GET'])
+def get_answers():
+    answers = Answer.get_all()
+    serializer = AnswerSchema(many=True)
+    result = serializer.dump(answers)
+    return jsonify(result), 200
+
 
 @app.route('/api/')
 @app.errorhandler(404)
@@ -634,6 +704,7 @@ def internal_server(error):
 def db_data():
     db.drop_all()
     db.create_all()
+
     club1 = Club(name='AIK Fotboll', nationality='Sweden', logo="AIK-Logo.png")
     club2 = Club(name='BK Häcken', nationality='Sweden',
                  logo="Hacken-Logo.png")
@@ -792,9 +863,11 @@ def db_data():
     a1 = Answer(content='Henke', question_id=1, correct=True)
     a2 = Answer(content='Bugge', question_id=1, correct=False)
     a3 = Answer(content='Feppe', question_id=1, correct=False)
+    a4 = Answer(content='Brede', question_id=1, correct=False)
     a1.save()
     a2.save()
     a3.save()
+    a4.save()
 
     question = Question(
         question='Hvor mange lag er det i allsvenskan?', points=20)
@@ -802,9 +875,12 @@ def db_data():
     a1 = Answer(content='14', question_id=2, correct=False)
     a2 = Answer(content='15', question_id=2, correct=False)
     a3 = Answer(content='16', question_id=2, correct=True)
+    a4 = Answer(content='17', question_id=2, correct=False)
     a1.save()
     a2.save()
     a3.save()
+    a4.save()
+
 
     print('Added data to database')
 
