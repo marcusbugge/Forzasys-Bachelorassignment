@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask import request, jsonify
 from flask_cors import CORS
+from itsdangerous import json
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema, SubmittedQuiz, SubmittedQuizSchema, Image, ImageSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema
@@ -687,6 +688,22 @@ def get_answers():
     serializer = AnswerSchema(many=True)
     result = serializer.dump(answers)
     return jsonify(result), 200
+
+@app.route('/api/answers/<int:question_id>', methods=['PUT'])
+def edit_answers(question_id):
+    data = request.json
+    question = Question.get_by_id(question_id)
+    answers = question.answers
+    i = 0
+    while i < 4:
+        answer = Answer.get_by_id(answers[i].id)
+        if data[i]['content'] != "":
+            answer.content = data[i]['content']
+        answer.correct = data[i]['correct']
+        db.session.commit()
+        i+=1
+
+    return jsonify({'message': 'Answers updated'}), 201
 
 
 @app.route('/api/')
