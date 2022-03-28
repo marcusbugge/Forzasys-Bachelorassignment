@@ -15,8 +15,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 600px;
-  height: 100px;
+  min-width: 600px;
+  min-height: 100px;
 }
 
 /** LEADERBOARD **/
@@ -224,8 +224,8 @@ button[disabled] {
 }
 
 .club-rank {
-  width: 300px;
-  height: 60px;
+  max-width: 300px;
+  min-height: 60px;
   background-color: var(--primary);
   display: flex;
   justify-content: center;
