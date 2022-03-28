@@ -7,11 +7,11 @@ export default function BadgeChanges() {
   const [quiz, setQuiz] = useState([]);
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
+
   const [visable, setVisable] = useState({
     element: null,
     bool: false,
   });
-
   const [answersEdit, setAnswersEdit] = useState({
     bool: false,
     list: [],
@@ -20,7 +20,9 @@ export default function BadgeChanges() {
 
   const [newQuestion, setNewQuestion] = useState();
   const [correct, setCorrect] = useState();
+  const [correctEdit, setCorrectEdit] = useState();
   const newAnswers = [];
+  const [notClicked, setNotClicked] = useState(true);
 
   const url = "http://localhost:5000/api/quizes";
   useEffect(() => {
@@ -36,6 +38,8 @@ export default function BadgeChanges() {
   }, [answersEdit]);
 
   async function requestAPI() {
+    setNotClicked(true);
+    setCorrect();
     await axios
       .get(url)
       .then((response) => {
@@ -155,33 +159,37 @@ export default function BadgeChanges() {
 
   function handleAnswers(event) {
     event.preventDefault();
-    newAnswers.push({
-      content: event.target.answer1.value,
-      correct: false
-    });
-    newAnswers.push({
-      content: event.target.answer2.value,
-      correct: false
-    });
-    newAnswers.push({
-      content: event.target.answer3.value,
-      correct: false
-    });
-    newAnswers.push({
-      content: event.target.answer4.value,
-      correct: false
-    });
-    console.log(correct)
-    newAnswers[correct].correct = true;
+    if (!correct) {
+      setNotClicked(false);
+    } else {
+      newAnswers.push({
+        content: event.target.answer1.value,
+        correct: false,
+      });
+      newAnswers.push({
+        content: event.target.answer2.value,
+        correct: false,
+      });
+      newAnswers.push({
+        content: event.target.answer3.value,
+        correct: false,
+      });
+      newAnswers.push({
+        content: event.target.answer4.value,
+        correct: false,
+      });
+      console.log(correct);
+      newAnswers[correct].correct = true;
 
-    postQuestion(event);
+      postQuestion(event);
+    }
   }
 
   async function postQuestion(event) {
     const question_to_post = {
       question: newQuestion.question,
       points: newQuestion.points,
-      answers: newAnswers
+      answers: newAnswers,
     };
 
     console.log(question_to_post);
@@ -214,17 +222,56 @@ export default function BadgeChanges() {
     );
   };
 
-  const Answerkys = () => {
-    return (
-      <div className="answer-box">
-        {answersEdit.list.map((item, index) => (
-          <div key={index}>
-            Answer {index + 1} : {item}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  async function handleSubmitPutAnswers(event) {
+    event.preventDefault();
+
+    let alternatives = [
+      {
+        content: event.target.alternativ1.value,
+        correct: false,
+      },
+      {
+        content: event.target.alternativ2.value,
+        correct: false,
+      },
+      {
+        content: event.target.alternativ3.value,
+        correct: false,
+      },
+      {
+        content: event.target.alternativ4.value,
+        correct: false,
+      },
+    ];
+
+    if(correctEdit){
+      alternatives[correctEdit].correct = true;
+    }
+
+
+
+    const url = "http://localhost:5000/api/answers/" + quiz[answersEdit.element].id;
+    if (window.confirm("Er du sikker på at du vil endre på spørsmålet?")) {
+      await axios
+        .put(url, alternatives)
+        .then((response) => {
+          console.log(response.status);
+          console.log(response.data);
+          setVisable({
+            element: null,
+            bool: false,
+          });
+          setCorrectEdit();
+          setAnswersEdit({
+            bool: false,
+            list: [],
+            element: null,
+          });
+          requestAPI();
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    }
+  }
 
   return (
     <div className="admin-quiz-page">
@@ -256,7 +303,49 @@ export default function BadgeChanges() {
             </div>
             <div className="answers-view">
               {answersEdit.bool && answersEdit.element === index ? (
-                <Answerkys />
+                <div className="answer-box">
+                  <form onSubmit={handleSubmitPutAnswers}>
+                    <p>Alternativ 1</p>
+                    <input
+                      type="text"
+                      name="alternativ1"
+                      placeholder={answersEdit.list[0].split(", ")[0]}
+                    />
+                    <label>{answersEdit.list[0].split(", ")[1]}</label>
+                    <p>Alternativ 2</p>
+                    <input
+                      type="text"
+                      name="alternativ2"
+                      placeholder={answersEdit.list[1].split(", ")[0]}
+                    />
+                    <label>{answersEdit.list[1].split(", ")[1]}</label>
+                    <p>Alternativ 3</p>
+                    <input
+                      type="text"
+                      name="alternativ3"
+                      placeholder={answersEdit.list[2].split(", ")[0]}
+                    />
+                    <label>{answersEdit.list[2].split(", ")[1]}</label>
+                    <p>Alternativ 4</p>
+                    <input
+                      type="text"
+                      name="alternativ4"
+                      placeholder={answersEdit.list[3].split(", ")[0]}
+                    />
+                    <label>{answersEdit.list[3].split(", ")[1]}</label>
+                    <select onChange={(e) => setCorrectEdit(e.target.value)}>
+                      <option hidden selected disabled>
+                        Velg riktig alternativ
+                      </option>
+                      <option value="0">Alternativ 1</option>
+                      <option value="1">Alternativ 2</option>
+                      <option value="2">Alternativ 3</option>
+                      <option value="3">Alternativ 4</option>
+                    </select>
+                    <button type="submit">Submit</button>
+                    <button type="reset">Undo</button>
+                  </form>
+                </div>
               ) : (
                 ""
               )}
@@ -313,7 +402,9 @@ export default function BadgeChanges() {
                 required={true}
               />
               <select onChange={(e) => setCorrect(e.target.value)}>
-                <option hidden selected disabled>Velg riktig alternativ</option>
+                <option hidden selected disabled>
+                  Velg riktig alternativ
+                </option>
                 <option value="0">Alternativ 1</option>
                 <option value="1">Alternativ 2</option>
                 <option value="2">Alternativ 3</option>
@@ -321,6 +412,7 @@ export default function BadgeChanges() {
               </select>
               <button type="submit">Submit</button>
               <button onClick={() => setNewQuestion("")}>Abort</button>
+              {!correct && !notClicked ? <p>Velg riktig alternativ</p> : ""}
             </form>
           )}
         </div>

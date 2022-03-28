@@ -412,3 +412,21 @@ button:hover{
   border: 1px black solid;
   border-radius: 10px;
 }
+.answers-view{
+  width: 100%;
+  margin-left: 1%;
+  display: flex;
+}
+.answer-box{
+  width: 100%;
+}
+
+.answer-box label{
+  width: 100%;
+}
+
+.answer-box input{
+  width: 90%;
+  border: 1px black solid;
+  border-radius: 10px;
+}
