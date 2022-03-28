@@ -13,22 +13,48 @@ export default function Weeklytrivia() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: response } = await axios.get(
-          "http://localhost:5000/api/trivia/data/3"
-        );
-        console.log("response", response);
-        setTriviaData(response);
-        console.log("q", triviaData[0].question);
-        setLoading(false);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
+    if (triviaData.length == 0) {
+      fetchData();
+    } else {
+      console.log(triviaData);
+    }
+  }, [triviaData]);
 
-    fetchData();
-  }, []);
+  async function fetchData() {
+    try {
+      await axios.get("http://localhost:5000/api/quizes").then((response) => {
+        setTriviaData(response.data);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  const previousQuestion = (e, c) => {
+    console.log("Svar:" + e);
+    console.log(c);
+    if (c >= 0 && c <= triviaData.length) {
+      setQCounter(c);
+    } else {
+      console.log("Cant go that way");
+    }
+  };
+
+  const nextQuestion = (e, c) => {
+    console.log("Svar:" + e);
+    console.log(c);
+    if (c >= 0 && c <= triviaData.length) {
+      if (e === undefined) {
+        console.log("Must select answer");
+      } else {
+        setQCounter(c);
+        setSelected(undefined);
+      }
+    } else {
+      console.log("Cant go that way");
+    }
+  };
 
   const questionlist = [
     {
@@ -52,7 +78,7 @@ export default function Weeklytrivia() {
       correct: "henke",
     },
     {
-      spørsmål1: "Spørsmå4",
+      spørsmål1: "Spørsmå5",
       answers: ["henke", "brdfgdgfdfdfgede", "bugge"],
       correct: "henke",
     },
@@ -76,7 +102,11 @@ export default function Weeklytrivia() {
   };
 
   function submitQuiz() {
-    console.log("submit");
+    if (qCounter !== triviaData.length) {
+      console.log("You must answer all questions!!!!!");
+    } else {
+      console.log("submit");
+    }
   }
 
   const [disabled, setDisabled] = useState(false);
@@ -87,15 +117,15 @@ export default function Weeklytrivia() {
   const QuizElem = () => {
     return (
       <div className="qustionobj">
-        <h1 className="question"></h1>
-        <p className="question-text">{questionlist[qCounter].question}</p>
+        <h1 className="question">Spørsmål {qCounter + 1}</h1>
+        <p className="question-text">{triviaData[qCounter].question}</p>
         <div className="answers">
-          {questionlist[qCounter].answers.map((answer, i) => (
+          {triviaData[qCounter].answers.map((answer, i) => (
             <div
               key={i}
               disabled={disabled}
               onClick={(e) => {
-                questionHandler(answer, questionlist[qCounter].correct);
+                questionHandler(answer, triviaData[qCounter].correct);
                 setSelected(answer);
               }}
               style={{
@@ -113,35 +143,43 @@ export default function Weeklytrivia() {
 
   const RenderQuiz = () => {
     if (qCounter === 0) {
+      console.log(qCounter);
       return (
         <div>
           <QuizElem counter={qCounter} />
         </div>
       );
     } else if (qCounter === 1) {
+      console.log(qCounter);
       return (
         <div>
           <QuizElem counter={qCounter} />
         </div>
       );
     } else if (qCounter === 2) {
+      console.log(qCounter);
       return (
         <div>
           <QuizElem counter={qCounter} />
         </div>
       );
     } else if (qCounter === 3) {
+      console.log(qCounter);
+      return (
+        <div>
+          <QuizElem counter={qCounter} />
+        </div>
+      );
+    } else if (qCounter === 4) {
+      console.log(qCounter);
       return (
         <div>
           <QuizElem counter={qCounter} />
         </div>
       );
     } else {
-      return (
-        <div>
-          <QuizElem counter={qCounter} />
-        </div>
-      );
+      console.log(qCounter);
+      return null;
     }
   };
 
@@ -150,7 +188,6 @@ export default function Weeklytrivia() {
       <div className="header">
         <h1>Weekly Trivia</h1>
       </div>
-
       <div className="trivia-info">
         <div className="vertical-stroke"></div>
         <div className="trivia-text">
@@ -160,20 +197,28 @@ export default function Weeklytrivia() {
           </p>
         </div>
         <div className="trivia-data">
-          <p>Questions: {questions}</p>
+          <p>Questions: {triviaData.length}</p>
           <p>Answered: {qCounter}</p>
         </div>
       </div>
-
       <div className="trivia-cnt">
         <div className="triviadata">
           <div className="picture-trivia"></div>
         </div>
       </div>
-
-      {loading ? <RenderQuiz /> : ""}
-
-      <button onClick={(e) => setQCounter(qCounter + 1)}>Neste kyser</button>
+      {!loading ? <RenderQuiz /> : ""}
+      <button
+        className="previous-button"
+        onClick={(e) => previousQuestion(selected, qCounter - 1)}
+      >
+        Forrige kyser
+      </button>
+      <button
+        className="next-button"
+        onClick={(e) => nextQuestion(selected, qCounter + 1)}
+      >
+        Neste kyser
+      </button>
 
       {bool ? (
         <div className="quizbox-cnt">
