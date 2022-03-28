@@ -818,6 +818,26 @@ def db_data():
     a2.save()
     a3.save()
 
+    question = Question(
+        question='Hvor mange lag er det i tullesvenskan?', points=20)
+    question.save()
+    a1 = Answer(content='14', question_id=3, correct=False)
+    a2 = Answer(content='15', question_id=3, correct=False)
+    a3 = Answer(content='16', question_id=3, correct=True)
+    a1.save()
+    a2.save()
+    a3.save()
+
+    question = Question(
+        question='Hvor mange lag er det i forzasys?', points=20)
+    question.save()
+    a1 = Answer(content='14', question_id=4, correct=False)
+    a2 = Answer(content='15', question_id=4, correct=False)
+    a3 = Answer(content='16', question_id=4, correct=True)
+    a1.save()
+    a2.save()
+    a3.save()
+
     print('Added data to database')
 
 
