@@ -41,19 +41,27 @@ button:hover{
 }
 
 .badge-name{
-  width: 30%;
+  width: 20%;
 }
 
 .badge-desc{
-  width: 35%;
+  width: 30%;
+}
+.badge-level{
+  width: 10%;
 }
 
 .badge-cat{
-  width: 12%;
+  width: 5%;
 }
 
 .badge-points{
-  width: 18%;
+  width: 20%;
+}
+
+.badge-edit,
+.badge-delete{
+  width: 7.5%;
 }
 
 .body-row{
@@ -67,52 +75,130 @@ button:hover{
   margin-left: 1%;
 }
 
-.badge-pic-content,
-.badge-edit-content{
-  width: 5%;
+.badge-pic-content{
+  width: 3%;
 }
 
 .badge-name-content{
-  width: 25%;
-}
-.badge-cat-content{
-  width: 20%;
+  width: 17%;
 }
 
 .badge-desc-content{
-  width: 35%;
+  width: 30%;
+}
+
+.badge-level-content{
+  width: 10%;
+}
+
+.badge-cat-content{
+  width: 15%;
 }
 
 .badge-points-content{
   width: 10%;
 }
 
-.badge-img{
-  width: 25px;
+.badge-edit-content,
+.badge-delete-content{
+  width: 7.5%;
 }
 
-.change-area{
-  width: 106.7%;
-  display: flex;
-  background-color: var(--lightgray);
-  border-bottom: 1px solid lightgray;
-  margin-left: 1%;
+.badge-img{
+  width: 25px;
+  margin-top: -3px;
 }
-.change-area form{
+
+.change-box-badge{
   width: 100%;
 }
 
-.form-badges button{
-  width: 50px;
-  height: 20px;
-  margin-left: 3%;
-  background-color: var(--secondary);
-  color: var(--black);  
+.change-area-badge{
+  width: 106.7%;
+  height: 80px;
+  display: flex;
+  border-bottom: 1px solid lightgray;
+  margin-left: 1%;
+}
+
+.form-area-badge{
+  width: 100%;
+  background-color: rgba(211, 211, 211, 0.568);
+}
+
+.badge-info{
+  width: 100%;
+  display: flex;
   margin-top: 5px;
 }
 
-.form-badges input{
-  width: 20%;
+
+.badge-info p{
+  width: 17.9%;
+}
+
+.p-name{
+  margin-left: .2%;
+}
+
+.form-badge-content form{
+  width: 100%;
+  display: flex;
+}
+
+
+.form-badge-content input{
+  width: 17.5%;
+  text-align: left;
+}
+
+.button-edit,
+.button-delete,
+.button-submit{
+  width: 50px;
+  height: 20px;
+  color: var(--black);  
+  margin-top: 5px;
+  border-style: none;
+  border-radius: 5px;
+}
+
+.form-badge-content button{
+  width: 3%;
+  margin-left: 1%;
+}
+
+.button-edit{
+  background-color: var(--secondary);
+}
+
+.button-edit:hover{
+  background-color: rgba(255, 0, 0, 0);
+  border: 1px var(--secondary) solid;
+}
+
+.button-delete{
+  background-color: rgb(255, 142, 142);
+}
+
+.button-delete:hover{
+  background-color: rgba(255, 0, 0, 0);
+  border: 1px rgb(255, 142, 142) solid;
+}
+
+.button-submit{
+  background-color: rgb(221, 255, 170);
+}
+
+.button-submit:hover{
+  background-color: rgba(255, 0, 0, 0);
+  border: 1px rgb(221, 255, 170) solid;
+}
+
+
+.add-badge-area{
+  width: 50%;
+  margin-left: 1%;
 }
 
 /** ADMIN CLUBS **/
@@ -123,7 +209,7 @@ button:hover{
 }
 
 .table-clubs{
-  width: 40%;
+  width: 30%;
 }
 
 .clubs-head{
@@ -178,35 +264,44 @@ button:hover{
 
 
 .club-nat-content{
-  width: 40%;
+  width: 37%;
 }
 
 .club-img{
   width: 25px;
 }
 
-.change-area{
+.change-area-club{
   width: 106.7%;
-  display: flex;
+  height: 70px;
   background-color: var(--lightgray);
   border-bottom: 1px solid lightgray;
   margin-left: 1%;
 }
-.change-area form{
+
+.clubChange-headers{
+  width: 100%;
+  display: flex;
+  margin-top: 5px;
+  margin-left: 1%;
+}
+
+.clubChange-headers p{
+  width: 40%;
+}
+
+.form-clubs{
   width: 100%;
 }
 
-.form-clubs button{
-  width: 50px;
-  height: 20px;
-  margin-left: 10%;
-  background-color: var(--secondary);
-  color: var(--black);  
-  margin-top: 5px;
+.form-clubs input{
+  width: 38%;
+  margin-left: 1%;
 }
 
-.form-clubs input{
-  width: 20%;
+.form-clubs button{
+  width: 9%;
+  margin-left: 1%;
 }
 
 .addClub-form{
@@ -239,17 +334,18 @@ button:hover{
 }
 
 .quiz-question{
-  width: 60%;
+  width: 50%;
 }
 
 
 .quiz-points{
-  width: 20%;
+  width: 10%;
 }
 
 .quiz-edit,
-.quiz-answers{
-  width: 10%;
+.quiz-answers,
+.quiz-delete{
+  width: 13.33%;
 }
 
 .body-row{
@@ -259,32 +355,33 @@ button:hover{
   cursor: pointer;
   background-color: var(--lightgray);
   border-bottom: 1px solid lightgray;
-  margin-right: 1%;
   margin-left: 1%;
 }
 
 .quiz-question-content{
-  width: 60%;
+  width: 50%;
 }
 
 .quiz-points-content{
-  width: 20%;
-}
-
-.quiz-answers-content,
-.quiz-edit-content{
   width: 10%;
 }
 
 
-.change-area{
+.button-edit-quiz,
+.button-answer-quiz,
+.button-delete-quiz{
+  width: 13.3%;
+}
+
+
+.change-area-quiz{
   width: 106.7%;
   display: flex;
   background-color: var(--lightgray);
   border-bottom: 1px solid lightgray;
   margin-left: 1%;
 }
-.change-area form{
+.change-area-quiz form{
   width: 100%;
 }
 
@@ -304,4 +401,32 @@ button:hover{
 .addquiz-form{
   width: 50%;
   margin-left: 10%;
+}
+
+.add-question{
+  width: 40%;
+  margin-left: 10%;
+}
+
+.add-question input{
+  border: 1px black solid;
+  border-radius: 10px;
+}
+.answers-view{
+  width: 100%;
+  margin-left: 1%;
+  display: flex;
+}
+.answer-box{
+  width: 100%;
+}
+
+.answer-box label{
+  width: 100%;
+}
+
+.answer-box input{
+  width: 90%;
+  border: 1px black solid;
+  border-radius: 10px;
 }
