@@ -117,7 +117,7 @@ export default function Weeklytrivia() {
   const QuizElem = () => {
     return (
       <div className="qustionobj">
-        <h1 className="question">{triviaData[qCounter].question}</h1>
+        <h1 className="question">Spørsmål {qCounter + 1}</h1>
         <p className="question-text">{triviaData[qCounter].question}</p>
         <div className="answers">
           {triviaData[qCounter].answers.map((answer, i) => (
