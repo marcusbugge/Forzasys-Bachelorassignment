@@ -1,5 +1,6 @@
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
+import "./video.css";
 
 import "./feed.css";
 import VideoInput from "./VideoInput";
@@ -45,13 +46,49 @@ export default function FeedPosts() {
     });
   }
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://vjs.zencdn.net/7.17.0/video.min.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <div className="feed">
       <div className="VideoUpload">
         <h1>Video upload</h1>
         <VideoInput />
       </div>
-      {posts.map((post, index) => (
+      <video
+        id="my-video"
+        className="video-js"
+        preload="auto"
+        controls
+        width="640"
+        height="264"
+        poster="https://d22hh18o76pkhl.cloudfront.net/mediabank/thumb/eliteserien/2966/05409.jpg"
+        data-setup="{}"
+      >
+        <source
+          src="https://api.forzasys.com/eliteserien/playlist.m3u8/2966:5399000:5434000/Manifest.m3u8"
+          type="application/x-mpegURL"
+        />
+        <p className="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to
+          a web browser that
+          <a href="https://videojs.com/html5-video-support/" target="_blank">
+            supports HTML5 video
+          </a>
+        </p>
+      </video>
+    </div>
+  );
+}
+{
+  /**  {posts.map((post, index) => (
         <div key={index}>
           <div className="feed-element">
             <h1>Posted by: {post.owner}</h1>
@@ -66,7 +103,5 @@ export default function FeedPosts() {
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  );
+))}*/
 }

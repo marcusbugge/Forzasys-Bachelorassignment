@@ -13,6 +13,11 @@
   margin-bottom: 20px;
 }
 
+.admin-buttons button:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 2px var(--secondary) solid;
+}
+
 /** ADMIN BADGES **/
 
 .admin-badge-page {
@@ -368,6 +373,7 @@
   border-bottom: 1px solid lightgray;
   margin-left: 1%;
 }
+
 .change-area-quiz form {
   width: 100%;
 }

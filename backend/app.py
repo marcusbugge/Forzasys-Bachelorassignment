@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from flask import request, jsonify
 from flask_cors import CORS
-from itsdangerous import json
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema, SubmittedQuiz, SubmittedQuizSchema, Image, ImageSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema
@@ -578,7 +577,7 @@ def reply_a_comment(comment_id):
 
 @app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
 def get_questions(user_id):
-    if user_already_submitted_quiz(user_id):
+    if weekly_quiz_ready(user_id):
         questions = Question.get_all()
         quiz = []
         for q in questions:
@@ -595,7 +594,7 @@ def get_questions(user_id):
     else:
         return jsonify({'message' : 'Quiz this week is already submitted'}), 400
 
-def user_already_submitted_quiz(user_id):
+def weekly_quiz_ready(user_id):
     submitted = SubmittedQuiz.get_all()
     submitted_by_user = []
     for quiz in submitted:
@@ -612,6 +611,8 @@ def user_already_submitted_quiz(user_id):
 def get_last_friday():
     now = datetime.now()
     closest_friday = now + timedelta(days=(4 - now.weekday()))
+    result = datetime.combine(closest_friday, time())
+    print(result)
     return (closest_friday if closest_friday < now
             else closest_friday - timedelta(days=7))
 
@@ -628,9 +629,12 @@ def submit_quiz(user_id):
     data = request.json
 
     quiz = SubmittedQuiz(user_id=user_id, submitted=True,
-                         submitted_time=data['time'])
+                         submitted_time=datetime.now(), correct = data['correct'])
     quiz.save()
-    return jsonify({'message': 'Quiz submitted'}), 200
+    return jsonify({
+        'message': 'Quiz submitted',
+        'data' : data['correct']
+        }), 200
 
 @app.route('/api/question', methods=['POST'])
 def create_question():
@@ -831,7 +835,7 @@ def db_data():
     user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=28, 
                 email='jr.Neymar@PSG.com', club_id=7, total_points=32, profile_pic='neymar-pic.png', role="user",username="NeyNeyBrazil")
     user20 = User(password='TestP', given_name='Vladimir', family_name='Putin', age=68, 
-                email='putin@crazy.com', club_id=8, total_points=1000, profile_pic='putin-pic.png', role="user",username="TsarVladimir")
+                email='putin@crazy.com', club_id=8, total_points=1000, profile_pic = 'putin-pic.png', role="user",username="PutinTheGreat")
     user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
                 email='biden@whitehouse.com', club_id=3, total_points=1, profile_pic='biden-pic.png', role="user",username="SleepyJoe")
     user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
@@ -843,7 +847,6 @@ def db_data():
     user4.save()
     user5.save()
     user6.save()
-    user21.save()
     user7.save()
     user8.save()
     user9.save()
@@ -858,6 +861,7 @@ def db_data():
     user17.save()
     user19.save()
     user20.save()
+    user21.save()
     user22.save()
     user20.add_badge(badge2)
     user20.add_badge(badge3)
@@ -875,19 +879,19 @@ def db_data():
                   video='Random Video', user_id=1)
     video.save()
 
-    question = Question(question='Hvem er eldst?', points=50)
+    question = Question(question='Hvem vant Allsvenskan i år 2000?', points=10)
     question.save()
-    a1 = Answer(content='Henke', question_id=1, correct=True)
-    a2 = Answer(content='Bugge', question_id=1, correct=False)
-    a3 = Answer(content='Feppe', question_id=1, correct=False)
-    a4 = Answer(content='Brede', question_id=1, correct=False)
+    a1 = Answer(content='Halmstad', question_id=1, correct=True)
+    a2 = Answer(content='Malmö FF', question_id=1, correct=False)
+    a3 = Answer(content='AIK', question_id=1, correct=False)
+    a4 = Answer(content='Varbergs Bois', question_id=1, correct=False)
     a1.save()
     a2.save()
     a3.save()
     a4.save()
 
     question = Question(
-        question='Hvor mange lag er det i allsvenskan?', points=20)
+        question='Hvor mange lag er det i allsvenskan?', points=10)
     question.save()
     a1 = Answer(content='14', question_id=2, correct=False)
     a2 = Answer(content='15', question_id=2, correct=False)
@@ -898,26 +902,54 @@ def db_data():
     a3.save()
     a4.save()
 
-
     question = Question(
-        question='Hvor mange lag er det i tullesvenskan?', points=20)
+        question='Når ble Allsvenskan grunnlagt?', points=10)
     question.save()
-    a1 = Answer(content='14', question_id=3, correct=False)
-    a2 = Answer(content='15', question_id=3, correct=False)
-    a3 = Answer(content='16', question_id=3, correct=True)
+    a1 = Answer(content='1921', question_id=3, correct=False)
+    a2 = Answer(content='1922', question_id=3, correct=False)
+    a3 = Answer(content='1923', question_id=3, correct=False)
+    a4 = Answer(content='1924', question_id=3, correct=True)
     a1.save()
     a2.save()
     a3.save()
+    a4.save()
 
     question = Question(
-        question='Hvor mange lag er det i forzasys?', points=20)
+        question='Hvilket år scoret Zlatan sitt første mål på elitenivå?', points=10)
     question.save()
-    a1 = Answer(content='14', question_id=4, correct=False)
-    a2 = Answer(content='15', question_id=4, correct=False)
-    a3 = Answer(content='16', question_id=4, correct=True)
+    a1 = Answer(content='1997', question_id=4, correct=False)
+    a2 = Answer(content='1998', question_id=4, correct=False)
+    a3 = Answer(content='1999', question_id=4, correct=True)
+    a4 = Answer(content='2000', question_id=4, correct=False)
     a1.save()
     a2.save()
     a3.save()
+    a4.save()
+
+    question = Question(
+        question='I 1925 satte Filip Johansson en utrolig målrekord, hvor mange mål scoret han den sessongen?', points=10)
+    question.save()
+    a1 = Answer(content='38', question_id=5, correct=False)
+    a2 = Answer(content='39', question_id=5, correct=True)
+    a3 = Answer(content='40', question_id=5, correct=False)
+    a4 = Answer(content='41', question_id=5, correct=False)
+    a1.save()
+    a2.save()
+    a3.save()
+    a4.save()
+
+    question = Question(
+        question='Hvilket lag har flest titler i Allsvenskan?', points=10)
+    question.save()
+    a1 = Answer(content='Malmø FF', question_id=6, correct=True)
+    a2 = Answer(content='Halmstad', question_id=6, correct=False)
+    a3 = Answer(content='AIK', question_id=6, correct=False)
+    a4 = Answer(content='IFK Göteborg', question_id=6, correct=False)
+    a1.save()
+    a2.save()
+    a3.save()
+    a4.save()
+    
 
     print('Added data to database')
 
