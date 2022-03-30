@@ -12,25 +12,33 @@ export default function Weeklytrivia() {
   const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [solution, setSolution] = useState([]);
+  const [result, setResult] = useState();
   let correct = "";
 
   useEffect(() => {
-    if (triviaData.length === 0) {
+    if (triviaData.length === 0 && result === undefined) {
       fetchData();
     } else {
       setAnsweredQ(answeredQ);
       console.log(triviaData);
+      console.log(result);
     }
-  }, [triviaData, answeredQ]);
+  }, [triviaData, answeredQ, result]);
 
   async function fetchData() {
     try {
       await axios
         .get("http://localhost:5000/api/trivia/data/" + user.id)
         .then((response) => {
-          console.log(response);
-          sortTriviaData(response.data);
+          console.log(response.data);
           console.log(response.status);
+          if (response.status == 200) {
+            sortTriviaData(response.data);
+          } else {
+            setResult(response.data);
+            setLoading(false);
+            setSubmitted(true);
+          }
         });
     } catch (error) {
       console.error(error.message);
@@ -108,6 +116,7 @@ export default function Weeklytrivia() {
 
   async function postQuiz() {
     const data = {
+      questions: triviaData.length,
       correct: correct,
     };
 
@@ -253,76 +262,103 @@ export default function Weeklytrivia() {
     }
   };
 
-  return (
-    <div className="quizpage">
-      <div className="header">
-        <h1>Weekly Trivia</h1>
-      </div>
-      <div className="trivia-info">
-        <div className="vertical-stroke"></div>
-        <div className="trivia-text">
-          {triviaData.length === 0 ? (
-            <p>
-              Du har allerede tatt quizen denne uken, ny quiz kommer {<Timer />}
-            </p>
+  if (!loading) {
+    return (
+      <div className="quizpage">
+        <div className="header">
+          <h1>Weekly Trivia</h1>
+        </div>
+        <div className="trivia-info">
+          <div
+            className={
+              triviaData.length > 0 ? "vertical-stroke1" : "vertical-stroke2"
+            }
+          />
+          <div className="trivia-text">
+            {triviaData.length === 0 ? (
+              <div className="trivia-data-holder">
+                <div className="trivia-data-info">
+                  Du har tatt quizen denne uken, ny quiz kommer om: {<Timer />}
+                </div>
+                <div className="trivia-data">
+                  <p>Forrige resultat: </p>
+                  <p>
+                    Antall riktige: {result.correct}/{result.questions}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="trivia-data-holder">
+                <div className="trivia-data-info">
+                  <p>
+                    Svar på vår ukentlige quiz for å klatre på poengtavla!
+                  </p>
+                </div>
+                <div className="trivia-data">
+                  <p>
+                    Besvart: {answeredQ}/{triviaData.length}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="trivia-cnt">
+          <div className="triviadata">
+            <div className="picture-trivia"></div>
+          </div>
+        </div>
+        {!loading ? <RenderQuiz /> : ""}
+        <div className="prev-next-button">
+          {qCounter === 0 || qCounter === triviaData.length ? (
+            ""
           ) : (
-            <p>
-              Answer our weekly trivia to earn points to climb on the ladder!
-            </p>
+            <div className="previous-button">
+              <button onClick={() => setQCounter(qCounter - 1)}>
+                Forrige spørsmål
+              </button>
+            </div>
+          )}
+          {finished && qCounter !== triviaData.length ? (
+            <div className="overview-button">
+              <button onClick={() => setQCounter(triviaData.length)}>
+                Oversikt
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
+          {qCounter < triviaData.length && !submitted ? (
+            <div className="next-button">
+              <button onClick={() => setQCounter(qCounter + 1)}>
+                Neste spørsmål
+              </button>
+            </div>
+          ) : (
+            ""
           )}
         </div>
-        <div className="trivia-data">
-          <p>Questions: {triviaData.length}</p>
-          <p>Answered: {answeredQ}</p>
+        <div className="quizbox-cnt">
+          <div className="quizheader">
+            <div className="questionselection"></div>
+          </div>
+          {!submitted && triviaData.length !== 0 ? (
+            <div className="submit-button-cnt">
+              <button onClick={() => readyToSubmit()}>Submit</button>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
-      <div className="trivia-cnt">
-        <div className="triviadata">
-          <div className="picture-trivia"></div>
+    );
+  } else {
+    return (
+      <div className="quizpage">
+        <div className="header">
+          <h1>Weekly Trivia</h1>
         </div>
       </div>
-      {!loading ? <RenderQuiz /> : ""}
-      <div className="prev-next-button">
-        {qCounter === 0 || qCounter === triviaData.length ? (
-          ""
-        ) : (
-          <div className="previous-button">
-            <button onClick={() => setQCounter(qCounter - 1)}>
-              Forrige spørsmål
-            </button>
-          </div>
-        )}
-        {finished && qCounter !== triviaData.length ? (
-          <div className="overview-button">
-            <button onClick={() => setQCounter(triviaData.length)}>
-              Oversikt
-            </button>
-          </div>
-        ) : (
-          ""
-        )}
-        {qCounter < triviaData.length && !submitted ? (
-          <div className="next-button">
-            <button onClick={() => setQCounter(qCounter + 1)}>
-              Neste spørsmål
-            </button>
-          </div>
-        ) : (
-          ""
-        )}
-      </div>
-      <div className="quizbox-cnt">
-        <div className="quizheader">
-          <div className="questionselection"></div>
-        </div>
-        {!submitted && triviaData.length !== 0 ? (
-          <div className="submit-button-cnt">
-            <button onClick={() => readyToSubmit()}>Submit</button>
-          </div>
-        ) : (
-          ""
-        )}
-      </div>
-    </div>
-  );
+    );
+  }
 }
