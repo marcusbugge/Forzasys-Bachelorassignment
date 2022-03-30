@@ -4,8 +4,7 @@ from flask_cors import CORS
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema, SubmittedQuiz, SubmittedQuizSchema, Image, ImageSchema
 from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema
-from base64 import b64encode
-from json import dumps
+from sqlalchemy import desc
 
 CORS(app)
 
@@ -592,17 +591,17 @@ def get_questions(user_id):
     
         return jsonify(result), 200
     else:
-        return jsonify({'message' : 'Quiz this week is already submitted'}), 400
+        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).order_by(desc(SubmittedQuiz.submitted_time)).first()
+        serializer = SubmittedQuizSchema()
+        result = serializer.dump(submitted)
+        return jsonify(result), 202
 
 def weekly_quiz_ready(user_id):
-    submitted = SubmittedQuiz.get_all()
-    submitted_by_user = []
-    for quiz in submitted:
-        if quiz.user_id == user_id:
-            submitted_by_user.append(quiz)
-    if len(submitted_by_user) == 0:
+    submitted = SubmittedQuiz.query.filter_by(user_id = user_id).order_by(desc(SubmittedQuiz.submitted_time)).first()
+    print(submitted)
+    if not submitted:
         return True
-    elif get_last_friday() > submitted_by_user[len(submitted_by_user) - 1].submitted_time:
+    elif get_last_friday() > submitted.submitted_time:
         return True
     else:
         return False
@@ -611,10 +610,11 @@ def weekly_quiz_ready(user_id):
 def get_last_friday():
     now = datetime.now()
     closest_friday = now + timedelta(days=(4 - now.weekday()))
+    print(closest_friday)
     result = datetime.combine(closest_friday, time())
     print(result)
-    return (closest_friday if closest_friday < now
-            else closest_friday - timedelta(days=7))
+    return (result if result < now
+            else result - timedelta(days=7))
 
 @app.route('/api/quizes', methods=['GET'])
 def all_questions():
@@ -628,8 +628,10 @@ def all_questions():
 def submit_quiz(user_id):
     data = request.json
 
-    quiz = SubmittedQuiz(user_id=user_id, submitted=True,
-                         submitted_time=datetime.now(), correct = data['correct'])
+    quiz = SubmittedQuiz(user_id=user_id,
+                         submitted_time=datetime.now(),
+                         questions = data['questions'],
+                         correct = data['correct'])
     quiz.save()
     return jsonify({
         'message': 'Quiz submitted',

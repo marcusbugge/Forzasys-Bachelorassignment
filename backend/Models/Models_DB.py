@@ -422,25 +422,26 @@ class AnswerSchema(Schema):
 class SubmittedQuiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    submitted = db.Column(db.Boolean, nullable=False)
     submitted_time = db.Column(db.DateTime)
+    questions = db.Column(db.Integer, nullable=False)
     correct = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'{self.correct}'
 
     @classmethod
     def get_all(cls):
         return cls.query.all()
 
-
     def save(self):
         db.session.add(self)
         db.session.commit()
-    
 
 class SubmittedQuizSchema(Schema):
     id = fields.Integer()
     user_id = fields.Integer()
-    submitted = fields.Boolean()
     submitted_time = fields.Date()
+    questions = fields.Integer()
     correct = fields.Integer()
 
 class Image(db.Model):
