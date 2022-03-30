@@ -11,6 +11,11 @@
   align-items: center;
 }
 
+.question-cnt{
+  width: 70%;
+  margin-left: 15%;
+}
+
 .trivia-data {
   color: var(--darkgreen);
   font-weight: 800;
@@ -100,4 +105,49 @@
   color: var(--black);
   border-style: none;
   margin-bottom: 100px;
+}
+
+.prev-next-button{
+  width: 70%;
+  margin-left: 15%;
+  display: flex;
+}
+
+.previous-button{
+  justify-content: flex-start;
+}
+
+.overview-button{
+  margin-left: auto;
+}
+
+.next-button{
+  margin-left: auto;
+}
+
+.prev-next-button button{
+  width: 200px;
+  height: 40px;
+  background-color: var(--primary);
+  color: white;
+  border-style: none;
+}
+
+.prev-next-button button:hover{
+  background-color: var(--hover-blue);
+}
+
+.quiz-overview{
+  width: 70%;
+  margin-left: 15%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.quiz-overview-cnt{
+  width:100%;
+  align-items: center;
+  height: 50px;
 }

@@ -424,6 +424,7 @@ class SubmittedQuiz(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     submitted = db.Column(db.Boolean, nullable=False)
     submitted_time = db.Column(db.DateTime)
+    correct = db.Column(db.Integer, nullable=False)
 
     @classmethod
     def get_all(cls):
@@ -434,15 +435,13 @@ class SubmittedQuiz(db.Model):
         db.session.add(self)
         db.session.commit()
     
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
 class SubmittedQuizSchema(Schema):
     id = fields.Integer()
     user_id = fields.Integer()
     submitted = fields.Boolean()
     submitted_time = fields.Date()
+    correct = fields.Integer()
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
