@@ -115,3 +115,19 @@
   display: flex;
   padding: 5px 0px 5px 15px;
 }
+
+/* mob nav */
+
+.mob-nav {
+  top: 0;
+  left: 0;
+  position: sticky;
+  min-width: 230px;
+  height: 100vh;
+  background-color: var(--primary);
+}
+
+@keyframes nav-animation {
+  0% {
+  }
+}
