@@ -3,7 +3,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
 from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema, SubmittedQuiz, SubmittedQuizSchema, Image, ImageSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema
+from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema, QuizLeaderboard, QuizLeaderboardSchema
 from sqlalchemy import desc
 
 CORS(app)
@@ -75,7 +75,9 @@ def create_user():
         total_points=0,
         age=data['age'],
         email=data['email'],
-        club_id=data['club_id']
+        club_id=data['club_id'],
+        role = data['role'],
+        username = data['username']
     )
 
     newUser.save()
@@ -583,7 +585,7 @@ def get_questions(user_id):
             for answer in q.answers:
                 if answer.correct:
                     trivia = Trivia(question=q.question,
-                                    answers=q.answers, correct=answer, points=25)
+                                    answers=q.answers, correct=answer)
             quiz.append(trivia)
 
         serializer = TriviaSchema(many=True)
@@ -598,7 +600,6 @@ def get_questions(user_id):
 
 def weekly_quiz_ready(user_id):
     submitted = SubmittedQuiz.query.filter_by(user_id = user_id).order_by(desc(SubmittedQuiz.submitted_time)).first()
-    print(submitted)
     if not submitted:
         return True
     elif get_last_friday() > submitted.submitted_time:
@@ -610,9 +611,7 @@ def weekly_quiz_ready(user_id):
 def get_last_friday():
     now = datetime.now()
     closest_friday = now + timedelta(days=(4 - now.weekday()))
-    print(closest_friday)
     result = datetime.combine(closest_friday, time())
-    print(result)
     return (result if result < now
             else result - timedelta(days=7))
 
@@ -628,11 +627,30 @@ def all_questions():
 def submit_quiz(user_id):
     data = request.json
 
-    quiz = SubmittedQuiz(user_id=user_id,
-                         submitted_time=datetime.now(),
-                         questions = data['questions'],
-                         correct = data['correct'])
-    quiz.save()
+    points = (data['correct']*2 + 5 
+            if (data['questions'] - data['correct'] == 0) 
+            else (data['questions'] - (data['questions'] - data['correct']))*2)
+
+    user = User.get_by_id(user_id)
+    user.give_points(points)
+    give_user_badge('points', user.total_points, user_id)
+
+
+
+    SubmittedQuiz(user_id=user_id,
+                submitted_time=datetime.now(),
+                questions = data['questions'],
+                correct = data['correct'],
+                points = points).save()
+    
+    quiz_by_user = SubmittedQuiz.get_by_user(user_id)
+    top_score = 0
+    for quiz in quiz_by_user:
+        if quiz.questions - quiz.correct == 0:
+            top_score += 1
+    give_user_badge('quiz', len(quiz_by_user), user_id)
+    give_user_badge('quizExpert', top_score, user_id)
+
     return jsonify({
         'message': 'Quiz submitted',
         'data' : data['correct']
@@ -641,11 +659,9 @@ def submit_quiz(user_id):
 @app.route('/api/question', methods=['POST'])
 def create_question():
     data = request.json
-    print(data)
 
     newQuestion = Question(
         question=data['question'],
-        points=data['points'],
     )
     newQuestion.save()
 
@@ -677,8 +693,6 @@ def edit_question(id):
 
     if 'question' in data and data['question'] != "":
         question_to_update.question = data['question']
-    if 'points' in data and data['points'] != "":
-        question_to_update.points = data['points']
     db.session.commit()
 
     questions = Question.get_all()
@@ -712,6 +726,61 @@ def edit_answers(question_id):
     return jsonify({'message': 'Answers updated'}), 201
 
 
+@app.route('/api/quiz/leaderboard/points', methods=['GET'])
+def get_quiz_leaderboard_points():
+    quiz_leaderboard = format_list()
+    quiz_leaderboard.sort(key=lambda x: x.total_quiz_points, reverse=True)
+    serializer = QuizLeaderboardSchema(many=True)
+    result = serializer.dump(quiz_leaderboard)
+    return jsonify(result), 200
+
+
+@app.route('/api/quiz/leaderboard/participations', methods=['GET'])
+def get_quiz_leaderboard_participations():
+    quiz_leaderboard = format_list()
+    quiz_leaderboard.sort(key=lambda x: x.participations, reverse=True)
+    serializer = QuizLeaderboardSchema(many=True)
+    result = serializer.dump(quiz_leaderboard)
+    return jsonify(result), 200
+
+
+def format_list():
+    quiz_history = SubmittedQuiz.get_all()
+    quiz_leaderboard = []
+    for element in quiz_history:
+        if already_in_list(quiz_leaderboard, element.user_id):
+            for e in quiz_leaderboard:
+                if element.user_id == e.id:
+                    e.participations += 1
+                    e.total_quiz_points += element.points
+        else:
+            user = User.get_by_id(element.user_id)
+            club = Club.get_by_id(user.club_id)
+            quiz_leaderboard.append(QuizLeaderboard(id = element.user_id,
+            participations = 1,
+            total_quiz_points=element.points,
+            name = user.given_name + " " + user.family_name,
+            club_name = club.name,
+            club_logo= club.logo
+            ))
+    return quiz_leaderboard
+
+def already_in_list(quiz_leaderboard, user_id):
+    for element in quiz_leaderboard:
+        if element.id == user_id:
+            return True
+    return False
+
+def give_user_badge(category, points, user_id):
+    user = User.get_by_id(user_id)
+    badges = Badge.get_badge_by_category(category)
+    badges.sort(key=lambda x: x.points_needed, reverse=True)
+    for badge in badges:
+        if points >= badge.points_needed and badge not in user.badges:
+            user.add_badge(badge.id, category)
+            return True
+    return False
+
 @app.route('/api/')
 @app.errorhandler(404)
 def not_found(error):
@@ -728,73 +797,63 @@ def db_data():
     db.drop_all()
     db.create_all()
 
-    club1 = Club(name='AIK Fotboll', nationality='Sweden', logo="AIK-Logo.png")
-    club2 = Club(name='BK Häcken', nationality='Sweden',
-                 logo="Hacken-Logo.png")
-    club3 = Club(name='Degerfors IF', nationality='Sweden',
-                 logo="Degerfors-Logo.png")
-    club4 = Club(name='Djurgårdens IF Fotboll',
-                 nationality='Sweden', logo="Djurgardens-Logo.png")
-    club5 = Club(name='GIF Sundsvall', nationality='Sweden',
-                 logo="Sundsvall-Logo.png")
-    club6 = Club(name='Hammarby IF', nationality='Sweden',
-                 logo="Hammarby-Logo.png")
-    club7 = Club(name='Helsingborgs IF', nationality='Sweden',
-                 logo="Helsingborgs-Logo.png")
-    club8 = Club(name='IF Elfsborg', nationality='Sweden',
-                 logo="Elfsborg-Logo.png")
-    club9 = Club(name='IFK Göteborg', nationality='Sweden',
-                 logo="Goteborg-Logo.png")
-    club10 = Club(name='IFK Norrköping', nationality='Sweden',
-                  logo="Norrkoping-Logo.png")
-    club11 = Club(name='IFK Värnamo', nationality='Sweden',
-                  logo="Varnamo-Logo.png")
-    club12 = Club(name='IK Sirius', nationality='Sweden',
-                  logo="Sirius-Logo.png")
-    club13 = Club(name='Kalmar FF', nationality='Sweden',
-                  logo="Kalmar-Logo.png")
-    club14 = Club(name='Malmö FF', nationality='Sweden', logo="Malmo-Logo.png")
-    club15 = Club(name='Mjällby AIF', nationality='Sweden',
-                  logo="Mjallby-Logo.png")
-    club16 = Club(name='Varbergs BoIS', nationality='Sweden',
-                  logo="Varbergs-Logo.png")
+    Club(name='AIK Fotboll', nationality='Sweden', logo="AIK-Logo.png").save()
+    Club(name='BK Häcken', nationality='Sweden', logo="Hacken-Logo.png").save()
+    Club(name='Degerfors IF', nationality='Sweden', logo="Degerfors-Logo.png").save()
+    Club(name='Djurgårdens IF Fotboll', nationality='Sweden', logo="Djurgardens-Logo.png").save()
+    Club(name='GIF Sundsvall', nationality='Sweden', logo="Sundsvall-Logo.png").save()
+    Club(name='Hammarby IF', nationality='Sweden', logo="Hammarby-Logo.png").save()
+    Club(name='Helsingborgs IF', nationality='Sweden', logo="Helsingborgs-Logo.png").save()
+    Club(name='IF Elfsborg', nationality='Sweden', logo="Elfsborg-Logo.png").save()
+    Club(name='IFK Göteborg', nationality='Sweden', logo="Goteborg-Logo.png").save()
+    Club(name='IFK Norrköping', nationality='Sweden', logo="Norrkoping-Logo.png").save()
+    Club(name='IFK Värnamo', nationality='Sweden', logo="Varnamo-Logo.png").save()
+    Club(name='IK Sirius', nationality='Sweden', logo="Sirius-Logo.png").save()
+    Club(name='Kalmar FF', nationality='Sweden', logo="Kalmar-Logo.png").save()
+    Club(name='Malmö FF', nationality='Sweden', logo="Malmo-Logo.png").save()
+    Club(name='Mjällby AIF', nationality='Sweden', logo="Mjallby-Logo.png").save()
+    Club(name='Varbergs BoIS', nationality='Sweden', logo="Varbergs-Logo.png").save()
 
-    club1.save()
-    club2.save()
-    club3.save()
-    club4.save()
-    club5.save()
-    club6.save()
-    club7.save()
-    club8.save()
-    club9.save()
-    club10.save()
-    club11.save()
-    club12.save()
-    club13.save()
-    club14.save()
-    club15.save()
-    club16.save()
 
-    badge1 = Badge(name='Created account', description='Create an account', level='Normal',
-                   picture='Setup.png', category='null', points_needed='0')
-    badge2 = Badge(name='Overall bronze', description='Total points collected 100', level='Bronze',
-                   picture='Bronze.png', category='totalPoints', points_needed='100')
-    badge3 = Badge(name='Overall silver', description='Total points collected 500', level='Silver',
-                   picture='Silver.png', category='totalPoints', points_needed='500')
-    badge4 = Badge(name='Overall gold', description='Total points collected 1000', level='Gold',
-                   picture='Gold.png', category='totalPoints', points_needed='1000')
-    badge5 = Badge(name='Overall platinum', description='Total points collected 2500', level='Platinum',
-                   picture='Platinum.png', category='totalPoints', points_needed='2500')
-    badge6 = Badge(name='Overall diamond', description='Total points collected 5000', level='Diamond',
-                   picture='Diamond.png', category='totalPoints', points_needed='5000')
+    Badge(name='Lage bruker', description='Lag en bruker hos forzasys', level=0,
+                   picture='Setup.png', category='null', points_needed=0).save()
+    Badge(name='Medlem', description='Samle ditt første poeng', level=0,
+                    picture='normal.png', category='points', points_needed=1).save()
+    Badge(name='Bronse medlem', description='Samle 100 poeng', level=1,
+                   picture='Bronze.png', category='points', points_needed=100).save()
+    Badge(name='Sølv medlem', description='Samle 500 poeng', level=2,
+                   picture='Silver.png', category='points', points_needed=500).save()
+    Badge(name='Gull medlem', description='Samle 1000 poeng', level=3,
+                   picture='Gold.png', category='points', points_needed=1000).save()
+    Badge(name='Platinum medlem', description='Samle 2500 poeng', level=4,
+                   picture='Platinum.png', category='points', points_needed=2500).save()
+    Badge(name='Diamant medlem', description='Samle 5000 poeng', level=5,
+                   picture='Diamond.png', category='points', points_needed=5000).save()
+    Badge(name='Første quiz', description='Delta på en quiz', level=0,
+                    picture='quiz-normal.png', category='quiz', points_needed=1).save()
+    Badge(name='Første quiz', description='Delta på quiz 5 ganger', level=1,
+                    picture='quiz-bronze.png', category='quiz', points_needed=5).save()
+    Badge(name='Quiz-deltakelse sølv', description='Delta på quiz 25 ganger', level=2,
+                    picture='quiz-silver.png', category='quiz', points_needed=25).save()
+    Badge(name='Quiz-deltakelse gull', description='Delta på quiz 50 ganger', level=3,
+                    picture='quiz-gold.png', category='quiz', points_needed=50).save()
+    Badge(name='Quiz-deltakelse platinum', description='Delta på quiz 100 ganger', level=4,
+                    picture='quiz-plat.png', category='quiz', points_needed=100).save()
+    Badge(name='Quiz-deltakelse Diamant', description='Delta på quiz 250 ganger', level=5,
+                    picture='quiz-diamond.png', category='quiz', points_needed=250).save()
+    Badge(name='Full pott', description='Få alt riktig på en quiz', level=0,
+                    picture='quizExpert-normal.png', category='quizExpert', points_needed=1).save()
+    Badge(name='Full pott Bronse', description='Få alt riktig på quiz 5 ganger', level=1,
+                    picture='quizExpert-bronze.png', category='quizExpert', points_needed=5).save()
+    Badge(name='Full pott Sølv', description='Få alt riktig på quiz 10 ganger', level=2,
+                    picture='quizExpert-silver.png', category='quizExpert', points_needed=10).save()
+    Badge(name='Full pott Gull', description='Få alt riktig på quiz 25 ganger', level=3,
+                    picture='quizExpert-gold.png', category='quizExpert', points_needed=25).save()
+    Badge(name='Full pott Platinum', description='Få alt riktig på quiz 50 ganger', level=4,
+                    picture='quizExpert-plat.png', category='quizExpert', points_needed=50).save()
+    Badge(name='Full pott Diamant', description='Få alt riktig på quiz 100 ganger', level=5,
+                    picture='quizExpert-diamond.png', category='quizExpert', points_needed=100).save()
 
-    badge1.save()
-    badge2.save()
-    badge3.save()
-    badge4.save()
-    badge5.save()
-    badge6.save()
 
     user1 = User(password='TestP', given_name='Forzasys', family_name='Admin', age=25, 
                 email='admin@forzasys.no', club_id=1, total_points=0, role="admin", username="adminUser")
@@ -819,9 +878,9 @@ def db_data():
     user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=20, 
                 email='iron.man@marvel.com', club_id=2, total_points=400, profile_pic='ironman-pic.png', role="user",username="IronMan")
     user12 = User(password='TestP', given_name='Jon', family_name='Snow', age=20, 
-                email='jon.snow@bastard.com', club_id=3, total_points=0, profile_pic='snow-pic.png', role="user",username="JonSnow")
+                email='jon.snow@bastard.com', club_id=3, total_points=1, profile_pic='snow-pic.png', role="user",username="JonSnow")
     user13 = User(password='TestP', given_name='Ned', family_name='Stark', age=20, 
-                email='ned.stark@winterfell.com', club_id=8, total_points=70, profile_pic='nedstark-pic.png', role="user",username="WinterIsComming")
+                email='ned.stark@winterfell.com', club_id=8, total_points=70, profile_pic='nedstark-pic.png', role="user",username="WinterIsComing")
     user14 = User(password='TestP', given_name='Henke', family_name='Madsen', age=20, 
                 email='henkem@DNB.no', club_id=12, total_points=65, role="user",username="HenkeFraTønsberg")
     user15 = User(password='TestP', given_name='Peter', family_name='Parker', age=20, 
@@ -865,93 +924,51 @@ def db_data():
     user20.save()
     user21.save()
     user22.save()
-    user20.add_badge(badge2)
-    user20.add_badge(badge3)
-    user20.add_badge(badge4)
-    user20.add_badge(badge5)
-    user20.add_badge(badge6)
-    user8.follow(user20)
-    user13.follow(user20)
-    user15.follow(user20)
-    user6.follow(user20)
-    user17.follow(user20)
-    user21.follow(user20)
+    user8.follow(20)
+    user13.follow(20)
+    user15.follow(20)
+    user6.follow(20)
+    user17.follow(20)
+    user21.follow(20)
 
-    video = Video(caption='Funny video', likes=0, views=0,
-                  video='Random Video', user_id=1)
-    video.save()
 
-    question = Question(question='Hvem vant Allsvenskan i år 2000?', points=10)
-    question.save()
-    a1 = Answer(content='Halmstad', question_id=1, correct=True)
-    a2 = Answer(content='Malmö FF', question_id=1, correct=False)
-    a3 = Answer(content='AIK', question_id=1, correct=False)
-    a4 = Answer(content='Varbergs Bois', question_id=1, correct=False)
-    a1.save()
-    a2.save()
-    a3.save()
-    a4.save()
+    Video(caption='Funny video', likes=0, views=0,video='Random Video', user_id=21).save()
 
-    question = Question(
-        question='Hvor mange lag er det i allsvenskan?', points=10)
-    question.save()
-    a1 = Answer(content='14', question_id=2, correct=False)
-    a2 = Answer(content='15', question_id=2, correct=False)
-    a3 = Answer(content='16', question_id=2, correct=True)
-    a4 = Answer(content='17', question_id=2, correct=False)
-    a1.save()
-    a2.save()
-    a3.save()
-    a4.save()
+    Question(question='Hvem vant Allsvenskan i år 2000?').save()
+    Answer(content='Halmstad', question_id=1, correct=True).save()
+    Answer(content='Malmö FF', question_id=1, correct=False).save()
+    Answer(content='AIK', question_id=1, correct=False).save()
+    Answer(content='Varbergs Bois', question_id=1, correct=False).save()
 
-    question = Question(
-        question='Når ble Allsvenskan grunnlagt?', points=10)
-    question.save()
-    a1 = Answer(content='1921', question_id=3, correct=False)
-    a2 = Answer(content='1922', question_id=3, correct=False)
-    a3 = Answer(content='1923', question_id=3, correct=False)
-    a4 = Answer(content='1924', question_id=3, correct=True)
-    a1.save()
-    a2.save()
-    a3.save()
-    a4.save()
+    Question(question='Hvor mange lag er det i allsvenskan?').save()
+    Answer(content='14', question_id=2, correct=False).save()
+    Answer(content='15', question_id=2, correct=False).save()
+    Answer(content='16', question_id=2, correct=True).save()
+    Answer(content='17', question_id=2, correct=False).save()
 
-    question = Question(
-        question='Hvilket år scoret Zlatan sitt første mål på elitenivå?', points=10)
-    question.save()
-    a1 = Answer(content='1997', question_id=4, correct=False)
-    a2 = Answer(content='1998', question_id=4, correct=False)
-    a3 = Answer(content='1999', question_id=4, correct=True)
-    a4 = Answer(content='2000', question_id=4, correct=False)
-    a1.save()
-    a2.save()
-    a3.save()
-    a4.save()
+    Question(question='Når ble Allsvenskan grunnlagt?').save()
+    Answer(content='1921', question_id=3, correct=False).save()
+    Answer(content='1922', question_id=3, correct=False).save()
+    Answer(content='1923', question_id=3, correct=False).save()
+    Answer(content='1924', question_id=3, correct=True).save()
 
-    question = Question(
-        question='I 1925 satte Filip Johansson en utrolig målrekord, hvor mange mål scoret han den sessongen?', points=10)
-    question.save()
-    a1 = Answer(content='38', question_id=5, correct=False)
-    a2 = Answer(content='39', question_id=5, correct=True)
-    a3 = Answer(content='40', question_id=5, correct=False)
-    a4 = Answer(content='41', question_id=5, correct=False)
-    a1.save()
-    a2.save()
-    a3.save()
-    a4.save()
-
-    question = Question(
-        question='Hvilket lag har flest titler i Allsvenskan?', points=10)
-    question.save()
-    a1 = Answer(content='Malmø FF', question_id=6, correct=True)
-    a2 = Answer(content='Halmstad', question_id=6, correct=False)
-    a3 = Answer(content='AIK', question_id=6, correct=False)
-    a4 = Answer(content='IFK Göteborg', question_id=6, correct=False)
-    a1.save()
-    a2.save()
-    a3.save()
-    a4.save()
+    Question(question='Hvilket år scoret Zlatan sitt første mål på elitenivå?').save()
+    Answer(content='1997', question_id=4, correct=False).save()
+    Answer(content='1998', question_id=4, correct=False).save()
+    Answer(content='1999', question_id=4, correct=True).save()
+    Answer(content='2000', question_id=4, correct=False).save()
     
+    Question(question='I 1925 satte Filip Johansson en utrolig målrekord, hvor mange mål scoret han den sessongen?').save()
+    Answer(content='38', question_id=5, correct=False).save()
+    Answer(content='39', question_id=5, correct=True).save()
+    Answer(content='40', question_id=5, correct=False).save()
+    Answer(content='41', question_id=5, correct=False).save()
+
+    Question(question='Hvilket lag har flest titler i Allsvenskan?').save()
+    Answer(content='Malmø FF', question_id=6, correct=True).save()
+    Answer(content='Halmstad', question_id=6, correct=False).save()
+    Answer(content='AIK', question_id=6, correct=False).save()
+    Answer(content='IFK Göteborg', question_id=6, correct=False).save()
 
     print('Added data to database')
 

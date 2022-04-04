@@ -25,6 +25,9 @@ export default function Weeklytrivia() {
     }
   }, [triviaData, answeredQ, result]);
 
+//"http://localhost:5000/api/quizes"
+//"http://localhost:5000/api/trivia/data/" + user.id
+
   async function fetchData() {
     try {
       await axios
@@ -310,7 +313,7 @@ export default function Weeklytrivia() {
         </div>
         {!loading ? <RenderQuiz /> : ""}
         <div className="prev-next-button">
-          {qCounter === 0 || qCounter === triviaData.length ? (
+          {qCounter === 0 || qCounter === triviaData.length || submitted ? (
             ""
           ) : (
             <div className="previous-button">

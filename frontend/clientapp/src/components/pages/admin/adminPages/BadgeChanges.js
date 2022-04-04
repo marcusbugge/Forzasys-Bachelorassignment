@@ -112,32 +112,14 @@ export default function BadgeChanges() {
     setSource(url);
   };
 
-  function handleSubmitPost() {
+  async function handleSubmitPost() {
     const data = new FormData();
     data.append("file", image.selectedFile);
-    axios.post("public", data).then((res) => {
+    await axios.post("public", data).then((res) => {
       console.log(res);
     });
   }
 
-  /**  
-  //https://stackoverflow.com/questions/63249648/problem-with-sending-image-from-react-to-flask
-  async function handleSubmitPost(event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-
-    await fetch("http://localhost:5000/api/image/test", {
-      mode: "no-cors",
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-      });
-  }
- */
   const Edit = () => {
     return (
       <div className="change-area-badge">
@@ -266,34 +248,3 @@ export default function BadgeChanges() {
     </div>
   );
 }
-
-/**<input
-            type="text"
-            name="name"
-            required="required"
-            placeholder="Enter a name"
-          />
-          <input
-            type="text"
-            name="description"
-            required="required"
-            placeholder="Enter description"
-          />
-          <input
-            type="text"
-            name="level"
-            required="required"
-            placeholder="Enter level"
-          />
-          <input
-            type="text"
-            name="category"
-            required="required"
-            placeholder="Enter a category"
-          />
-          <input
-            type="text"
-            name="total_points"
-            required="required"
-            placeholder="Enter points"
-          /> */

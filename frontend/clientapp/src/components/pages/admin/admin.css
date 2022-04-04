@@ -18,6 +18,11 @@
   border: 2px var(--secondary) solid;
 }
 
+input{
+  border: 1px black solid;
+  border-radius: 10px;
+}
+
 /** ADMIN BADGES **/
 
 .admin-badge-page{
@@ -114,7 +119,7 @@
 }
 
 .change-area-badge{
-  width: 106.7%;
+  width: 108.5%;
   height: 80px;
   display: flex;
   border-bottom: 1px solid lightgray;
@@ -123,7 +128,7 @@
 
 .form-area-badge{
   width: 100%;
-  background-color: rgba(211, 211, 211, 0.568);
+  background-color: white;
 }
 
 .badge-info{
@@ -144,6 +149,7 @@
 .form-badge-content form{
   width: 100%;
   display: flex;
+  padding: 5px black;
 }
 
 
@@ -230,7 +236,6 @@
 
 .club-name{
   width: 35%;
-  margin-left: -15px;
 }
 
 .club-nat{
@@ -271,13 +276,19 @@
   width: 25px;
 }
 
+.change-box{
+  width: 100%;
+}
+
 .change-area-club{
-  width: 106.7%;
-  height: 70px;
-  background-color: var(--lightgray);
+  width: 126%;
+  height: 75px;
+  background-color: white;
+  margin-top: -5px;
   border-bottom: 1px solid lightgray;
   margin-left: 1%;
 }
+
 
 .clubChange-headers{
   width: 100%;
@@ -334,12 +345,7 @@
 }
 
 .quiz-question{
-  width: 50%;
-}
-
-
-.quiz-points{
-  width: 10%;
+  width: 60%;
 }
 
 .quiz-edit,
@@ -359,12 +365,9 @@
 }
 
 .quiz-question-content{
-  width: 50%;
+  width: 60%;
 }
 
-.quiz-points-content{
-  width: 10%;
-}
 
 
 .button-edit-quiz,
@@ -428,6 +431,4 @@
 
 .answer-box input{
   width: 90%;
-  border: 1px black solid;
-  border-radius: 10px;
 }
