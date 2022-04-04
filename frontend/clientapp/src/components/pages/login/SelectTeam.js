@@ -11,7 +11,7 @@ export default function SelectTeam(props) {
   useEffect(() => {
     const fetchData = async () => {
       axios
-        .get("http://localhost:5000/api/teams")
+        .get("http://localhost:5000/api/clubs")
         .then((response) => checkData(response.data))
         .catch((error) => {
           console.error("There was an error!", error);

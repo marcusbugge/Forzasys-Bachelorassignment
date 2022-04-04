@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import BadgeChange from "./adminPages/BadgeChanges";
 import ClubChanges from "./adminPages/ClubChanges"
 import QuizChanges from "./adminPages/QuizChanges"
+import axios from "axios";
 
 export default function Admin() {
   const [clicked, setClicked] = useState("");

@@ -122,7 +122,6 @@ export default function BadgeChanges() {
 
     const question_to_return = {
       question: event.target.question.value,
-      points: event.target.points.value,
     };
 
     const url =
@@ -148,13 +147,11 @@ export default function BadgeChanges() {
 
     const question = {
       question: event.target.question.value,
-      points: event.target.points.value,
     };
 
     setNewQuestion(question);
     console.log(question);
     event.target.question.value = "";
-    event.target.points.value = "";
   }
 
   function handleAnswers(event) {
@@ -188,7 +185,6 @@ export default function BadgeChanges() {
   async function postQuestion(event) {
     const question_to_post = {
       question: newQuestion.question,
-      points: newQuestion.points,
       answers: newAnswers,
     };
 
@@ -214,7 +210,6 @@ export default function BadgeChanges() {
       <div className="change-area">
         <form className="form-area" onSubmit={handleSubmitPut}>
           <input type="text" name="question" placeholder="Enter question" />
-          <input type="number" name="points" placeholder="Enter points" />
           <button type="reset">Undo</button>
           <button type="submit">SAVE</button>
         </form>
@@ -278,7 +273,6 @@ export default function BadgeChanges() {
       <div className="table-quiz">
         <div className="quiz-head">
           <div className="quiz-question">Question</div>
-          <div className="quiz-points">Points</div>
           <div className="quiz-edit">Edit</div>
           <div className="quiz-answers">Answers</div>
           <div className="quiz-delete">Delete</div>
@@ -288,7 +282,6 @@ export default function BadgeChanges() {
           <div className="quiz-body" key={index}>
             <div className="body-row">
               <div className="quiz-question-content">{item.question}</div>
-              <div className="quiz-points-content">{item.points}</div>
               <div className="button-edit-quiz">
                 <button onClick={() => handleEditClick(index)}>EDIT</button>
               </div>
@@ -365,12 +358,6 @@ export default function BadgeChanges() {
                 type="text"
                 name="question"
                 placeholder="Write the question"
-                required={true}
-              />
-              <input
-                type="number"
-                name="points"
-                placeholder="Write points for correct answer"
                 required={true}
               />
               <button type="submit">Submit</button>
