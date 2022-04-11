@@ -31,6 +31,28 @@ export default function Navbar() {
     setRefresh(true);
   }
 
+  const [triviaStatus, setTriviaStatus] = useState(false);
+
+  useEffect(() => {
+    checkTriviaStatus();
+  }, [triviaStatus]);
+
+  async function checkTriviaStatus() {
+    try {
+      await axios
+        .get("http://localhost:5000/api/trivia/data/" + loggedUser.id)
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            setTriviaStatus(true);
+          }
+          console.log(response.status);
+        });
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
   return (
     <div className="nav">
       <div className="nav-header"></div>
@@ -76,7 +98,14 @@ export default function Navbar() {
               splitLocation[1] === "weeklytrivia" ? "active" : "rank-nav-cnt"
             }
           >
-            <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
+            <div className="trivia-cnt-nav">
+              <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
+              {triviaStatus ? (
+                <div className="circle-nav-trivia-ok"></div>
+              ) : (
+                <div className="circle-nav-trivia"></div>
+              )}
+            </div>
           </div>
           <div
             className={

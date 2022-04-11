@@ -116,6 +116,30 @@
   padding: 5px 0px 5px 15px;
 }
 
+.trivia-cnt-nav {
+  display: flex;
+  height: 23px;
+  align-items: center;
+}
+
+.circle-nav-trivia-ok {
+  width: 10px;
+  height: 10px;
+  background-color: var(--lightgreen);
+  border-radius: 1em;
+}
+
+.circle-nav-trivia {
+  width: 10px;
+  height: 10px;
+  background-color: var(--red);
+  border-radius: 1em;
+}
+
+.trivia-cnt-nav a {
+  margin-right: 90px;
+}
+
 /* mob nav */
 
 .mob-nav {
