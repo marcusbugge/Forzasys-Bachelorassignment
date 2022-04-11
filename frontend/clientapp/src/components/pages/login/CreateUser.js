@@ -33,13 +33,13 @@ export default function CreateUser() {
       const headers = { "header-name": "value" };
       const config = { headers };
 
-      /**await axios
+      await axios
         .post(url, userdata, config)
         .then((response) => {
           console.log(response.status);
           console.log(response.data);
         })
-        .catch((e) => console.log("something went wrong :(", e));*/
+        .catch((e) => console.log("something went wrong :(", e));
     } else {
       setErrorPassword(false);
     }
@@ -72,6 +72,7 @@ export default function CreateUser() {
                     name="username"
                     id="username"
                     autoComplete="off"
+                    required="true"
                   />
                 </div>
                 <div className="form-group">
@@ -82,6 +83,7 @@ export default function CreateUser() {
                     name="fname"
                     id="fname"
                     autoComplete="off"
+                    required="true"
                   />
                 </div>
 
@@ -93,6 +95,7 @@ export default function CreateUser() {
                     name="lname"
                     id="lname"
                     autoComplete="off"
+                    required="true"
                   />
                 </div>
 
@@ -104,6 +107,7 @@ export default function CreateUser() {
                     name="email"
                     id="email"
                     autoComplete="off"
+                    required="true"
                   />
                 </div>
 
@@ -115,6 +119,7 @@ export default function CreateUser() {
                     name="age"
                     id="age"
                     autoComplete="off"
+                    required="true"
                   />
                 </div>
 
@@ -126,6 +131,7 @@ export default function CreateUser() {
                     name="password"
                     id="password"
                     autoComplete="off"
+                    required="true"
                   />
                 </div>
 
@@ -137,6 +143,7 @@ export default function CreateUser() {
                     name="cpassword"
                     id="cpassword"
                     autoComplete="off"
+                    required="true"
                   />
                   <h5 className="error" hidden={errorPassword}>
                     Passwords don't match
@@ -144,7 +151,7 @@ export default function CreateUser() {
                 </div>
 
                 <div className="testest">
-                  <SelectTeam setTeam={setTeam} />
+                  <SelectTeam setTeam={setTeam} team={team} />
                 </div>
 
                 <div className="form-button">
