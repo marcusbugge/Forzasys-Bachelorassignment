@@ -3,12 +3,21 @@
 }
 
 .trivia-info {
-  margin: 120px 200px 0 200px;
-  padding: 50px 100px 50px 50px;
+  margin-top: 150px;
+  width: 70%;
+  margin-left: 15%;
   font-size: 1.2rem;
+  padding: 50px 0;
   background-color: var(--lightgray);
   display: flex;
   align-items: center;
+}
+
+.trivia-text{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .question-cnt{
@@ -16,20 +25,37 @@
   margin-left: 15%;
 }
 
+.trivia-data-holder{
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.trivia-data-info{
+  width: 60%;
+  margin-left: 5%;
+}
+
 .trivia-data {
   color: var(--darkgreen);
   font-weight: 800;
-  width: 30%;
+  width: 35%;
 }
 
-.trivia-text {
-  margin-right: 100px;
-}
-.vertical-stroke {
+.vertical-stroke1 {
   margin-right: 30px;
+  margin-left: 2%;
   height: 70px;
   width: 10px;
   background-color: var(--lightgreen);
+}
+
+.vertical-stroke2 {
+  margin-right: 30px;
+  margin-left: 2%;
+  height: 70px;
+  width: 10px;
+  background-color: red;
 }
 
 .quizbox-cnt {

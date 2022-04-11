@@ -80,10 +80,15 @@ class User(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    def give_points(self, points):
+        self.total_points += points
+        db.session.commit()
 
-    def follow(self, user):
-        if not self.is_following(user):
-            self.followed.append(user)
+    def follow(self, user_id):
+        user_to_follow = User.get_by_id(user_id)
+        if not self.is_following(user_to_follow):
+            self.followed.append(user_to_follow)
             db.session.commit()
 
     def unfollow(self, user):
@@ -91,8 +96,18 @@ class User(db.Model):
             self.followed.remove(user)
             db.session.commit()
 
-    def add_badge(self, badge):
-        self.badges.append(badge)
+    def add_badge(self, badge_id, category):
+        new_badge = Badge.get_by_id(badge_id)
+        new_category = True
+        for badge in self.badges:
+            if badge.category == category:
+                new_category = False
+                if badge.level < new_badge.level:
+                    self.badges.remove(badge)
+                    self.badges.append(new_badge)
+        if new_category:
+            self.badges.append(new_badge)
+        
         db.session.commit()
 
     def like_video(self, video):
@@ -218,7 +233,7 @@ class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
     description = db.Column(db.String(150), nullable=False)
-    level = db.Column(db.String(10), nullable=False)
+    level = db.Column(db.Integer, nullable=False)
     picture = db.Column(db.String(250), unique=True, nullable=False)
     category = db.Column(db.String(15), nullable=False)
     points_needed = db.Column(db.Integer, nullable=False)
@@ -234,6 +249,10 @@ class Badge(db.Model):
     def get_by_id(cls, id):
         return cls.query.get_or_404(id)
 
+    @classmethod
+    def get_badge_by_category(cls, category):
+        return cls.query.filter_by(category=category).all()
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -247,7 +266,7 @@ class BadgeSchema(Schema):
     id = fields.Integer()
     name = fields.String()
     description = fields.String()
-    level = fields.String()
+    level = fields.Integer()
     picture = fields.String()
     category = fields.String()
     points_needed = fields.String()
@@ -348,7 +367,6 @@ class Question(db.Model):
     question = db.Column(db.String(150), unique=True, nullable=False)
     answers = db.relationship('Answer', backref=db.backref(
         'database', lazy='joined'), lazy='select')
-    points = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return f'Question=(id = {self.id}, question={self.question}, answers={self.answers})'
@@ -385,7 +403,6 @@ class QuestionSchema(Schema):
     id = fields.Integer()
     question = fields.String()
     answers = fields.List(fields.String())
-    points = fields.Integer()
 
 class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -422,26 +439,33 @@ class AnswerSchema(Schema):
 class SubmittedQuiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    submitted = db.Column(db.Boolean, nullable=False)
     submitted_time = db.Column(db.DateTime)
+    questions = db.Column(db.Integer, nullable=False)
     correct = db.Column(db.Integer, nullable=False)
+    points = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'{self.correct}'
 
     @classmethod
     def get_all(cls):
         return cls.query.all()
 
+    @classmethod
+    def get_by_user(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()
 
     def save(self):
         db.session.add(self)
         db.session.commit()
-    
 
 class SubmittedQuizSchema(Schema):
     id = fields.Integer()
     user_id = fields.Integer()
-    submitted = fields.Boolean()
     submitted_time = fields.Date()
+    questions = fields.Integer()
     correct = fields.Integer()
+    points = fields.Integer()
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)

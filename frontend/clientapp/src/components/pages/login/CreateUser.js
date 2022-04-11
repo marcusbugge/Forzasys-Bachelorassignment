@@ -27,7 +27,9 @@ export default function CreateUser() {
         family_name: lname,
         age: age,
         email: email,
-        team_id: localStorage.getItem("team"),
+        club_id: localStorage.getItem("team"),
+        role: 'user',
+        username: fname + 123
       };
       console.log(userdata);
 
@@ -36,7 +38,7 @@ export default function CreateUser() {
       const headers = { "header-name": "value" };
       const config = { headers };
 
-      axios
+      await axios
         .post(url, userdata, config)
         .then((response) => {
           console.log(response.status);

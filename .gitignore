@@ -3,3 +3,4 @@ backend/buggeDB.db
 backend/__pycache__/db.cpython-310.pyc
 backend/Models/__pycache__/Models_DB.cpython-310.pyc
 backend/Models/__pycache__/Models_api.cpython-310.pyc
+backend/Models/Models_test
