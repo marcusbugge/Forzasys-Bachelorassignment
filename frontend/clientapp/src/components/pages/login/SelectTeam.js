@@ -46,7 +46,7 @@ export default function SelectTeam(props) {
               <div
                 onClick={(e) => selectTeam(item.id)}
                 key={item.name}
-                className="team"
+                className={props.team == item.id ? "selectedTeam" : "team"}
               >
                 <div className="team-img-cnt" value={item.name}>
                   <img src={require("../../../assets/teamLogos/"+item.logo)} alt={item.name} />

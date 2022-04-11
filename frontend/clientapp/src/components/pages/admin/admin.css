@@ -18,10 +18,7 @@
   border: 2px var(--secondary) solid;
 }
 
-input{
-  border: 1px black solid;
-  border-radius: 10px;
-}
+
 
 /** ADMIN BADGES **/
 

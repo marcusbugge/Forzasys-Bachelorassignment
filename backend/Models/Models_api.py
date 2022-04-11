@@ -1,4 +1,3 @@
-from unicodedata import name
 from marshmallow import Schema, fields
 
 class Leaderboard(object):
@@ -131,13 +130,14 @@ class SupporterChallengeSchema(Schema):
 
 
 class QuizLeaderboard(object):
-    def __init__(self, id, participations, total_quiz_points, name, club_name, club_logo):
+    def __init__(self, id, participations, total_quiz_points, name, club_name, club_logo, username):
         self.id = id
         self.participations = participations
         self.total_quiz_points = total_quiz_points
         self.name = name
         self.club_name = club_name
         self.club_logo = club_logo
+        self.username = username
 
 
 class QuizLeaderboardSchema(Schema):
@@ -147,4 +147,5 @@ class QuizLeaderboardSchema(Schema):
     name = fields.String()
     club_name = fields.String()
     club_logo = fields.String()
+    username = fields.String()
         

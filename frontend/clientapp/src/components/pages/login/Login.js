@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   let navigate = useNavigate();
+  const [hidden, setHidden] = useState(true);
 
   const logout = () => {
     localStorage.removeItem("loggedIn");
@@ -33,7 +34,10 @@ export default function Login() {
         localStorage.setItem("user", JSON.stringify(response.data));
         navigate("/");
       })
-      .catch((e) => console.log("something went wrong :(", e));
+      .catch((e) => {
+        console.log("something went wrong :(", e);
+        setHidden(false);
+      });
   }
 
   function exitLogin() {
@@ -77,6 +81,12 @@ export default function Login() {
                   />
                   <label className="input-label">Password</label>
                 </div>
+
+                {hidden ? (
+                  <div>""</div>
+                ) : (
+                  <div className="failed-login">Wrong email or password</div>
+                )}
 
                 <div className="signup-link">
                   <Link to="/signup">Dont have a user? Sign up now!</Link>

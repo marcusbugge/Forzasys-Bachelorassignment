@@ -1,61 +1,17 @@
-from datetime import datetime, timedelta, time
 from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
-from Models.Models_DB import FollowerSchema, User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema, SubmittedQuiz, SubmittedQuizSchema, Image, ImageSchema
-from Models.Models_api import Leaderboard, LeaderboardSchema, Trivia, TriviaSchema, PersonalScore, PersonalScoreSchema, LeaderboardClub, LeaderboardClubSchema, Followlist, FollowlistSchema, SupporterChallenge, SupporterChallengeSchema, QuizLeaderboard, QuizLeaderboardSchema
-from sqlalchemy import desc
+from Models.Models_DB import User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
+from Reposotories import UserRepo, BadgeRepo, ClubRepo, QuizRepo
 
 CORS(app)
 
+#<------------------------------ USERS ------------------------------>
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.json
-    email = data['email']
-    password = data['password']
-    users = User.get_all()
-    for user in users:
-        if user.is_authenticated(email, password):
-            return get_idividual_score(user, users)
-    return jsonify({
-        'error': 'Wrong email and/ or password'
-    }), 404
-
-def get_rank_total(user):
-    users = User.get_all()
-    users.sort(key=lambda x: x.total_points, reverse=True)
-    return users.index(user) +1
-
-def get_rank_club(user, club):
-    supporters = club.supporters
-    supporters.sort(key=lambda x: x.total_points, reverse=True)
-    return supporters.index(user) + 1
-
-def get_idividual_score(loggedin_user, users):
-    club = Club.get_by_id(loggedin_user.club_id)
-    club_supporters = club.supporters
-    club_supporters.sort(key=lambda x: x.total_points, reverse=True)
-    users.sort(key=lambda x: x.total_points, reverse=True)
-    user = PersonalScore(id = loggedin_user.id, 
-                        name = loggedin_user.given_name + " " + loggedin_user.family_name,
-                        profile_pic = loggedin_user.profile_pic,
-                        overall_rank = users.index(loggedin_user) + 1,
-                        club_id = club.id,
-                        club_name = club.name, 
-                        club_logo = club.logo,
-                        club_rank = club_supporters.index(loggedin_user) + 1,
-                        total_points = users[users.index(loggedin_user)].total_points,
-                        role = loggedin_user.role,
-                        username = loggedin_user.username,
-                        badges=loggedin_user.badges,
-                        age = loggedin_user.age,
-                        email = loggedin_user.email
-                        )
-    serializer = PersonalScoreSchema()
-    result = serializer.dump(user)
-    return jsonify(result), 200
-
+    return UserRepo.login(request.json)
+    
 
 @app.route('/api/users', methods=['GET'])
 def get_all_users():
@@ -99,8 +55,8 @@ def get_user(id):
 
 @app.route('/api/user/<int:id>', methods=['PUT'])
 def update_user(id):
-    user_to_uptdate = User.get_by_id(id)
     data = request.json
+    user_to_uptdate = User.get_by_id(id)
     if 'name' in data:
         name = data['name']
         words = name.split()
@@ -126,7 +82,7 @@ def update_user(id):
     serializer = UserSchema()
     result = serializer.dump(user_to_uptdate)
     return jsonify(result), 200
-
+    
 
 @app.route('/api/user<int:id>', methods=['DELETE'])
 def delete_user(id):
@@ -137,11 +93,12 @@ def delete_user(id):
         'message': 'deleted'
     }), 204
 
+
 @app.route('/api/user/<string:username>', methods=['GET'])
 def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
     users = User.get_all()
-    return get_idividual_score(user, users)
+    return UserRepo.get_idividual_score(user, users)
 
 
 @app.route('/api/user/follow/<int:id>', methods=['PUT'])
@@ -157,20 +114,11 @@ def follow_user(id):
 
 @app.route('/api/followers/<int:id>', methods=['GET'])
 def follow_table(id):
-    users = User.get_all()
-    user_with_followers = User.get_by_id(id)
-    followers = []
-    for user in users:
-        if user.is_following(user_with_followers):
-            club = Club.get_by_id(user.club_id)
-            followers.append(Followlist(id = user.id, name = user.given_name + " " + user.family_name, profile_pic=user.profile_pic,
-                                        total_points = user.total_points, overall_rank = get_rank_total(user),
-                                        club_rank = get_rank_club(user, club), club_logo = club.logo, club_id = club.id, 
-                                        club_name = club.name, badges = user.badges, badge_count = len(user.badges)))
-    followers.sort(key=lambda x: x.total_points, reverse=True)
-    serializer = FollowlistSchema(many=True)
-    result = serializer.dump(followers)
-    return jsonify(result), 200
+    return UserRepo.follow_table(id)
+    
+
+
+#<------------------------------ CLUBS ------------------------------>
 
 
 @app.route('/api/clubs', methods=['GET'])
@@ -234,116 +182,26 @@ def delete_club(id):
 
 @app.route('/api/leaderboard/<int:start>/<int:end>')
 def get_leaderboard(start, end):
-    users = User.get_all()
-    users.sort(key=lambda x: x.total_points, reverse=True)
-    users_to_return = []
-    i = start
-    if(end < len(users)):
-        while i <= end:
-            club = Club.get_by_id(users[i].club_id)
-            user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
-                               users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points, username=users[i].username)
-            users_to_return.append(user)
-            i += 1
-    else:
-        while i < len(users):
-            club = Club.get_by_id(users[i].club_id)
-            user = Leaderboard(user_id=users[i].id, rank=i+1, name=users[i].given_name + " " +
-                               users[i].family_name, club=club.name, club_logo=club.logo, points=users[i].total_points, username=users[i].username)
-            users_to_return.append(user)
-            i += 1
-    if len(users_to_return) != 0:
-        serializer = LeaderboardSchema(many=True)
-        result = serializer.dump(users_to_return)
-        return jsonify(result), 200
-    else:
-        return jsonify({'message' : 'Users do not exist'}), 404
+    return ClubRepo.get_leaderboard(start, end)
 
 
 @app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
 def supporter_leaderboard(club_id):
-    users = User.get_all()
-    users.sort(key=lambda x: x.total_points, reverse=True)
-    club = Club.get_by_id(club_id)
-    users_to_return = []
-    i=1
-    for user in users:
-        if user.club_id == club_id:
-            leaderboard_user = Leaderboard(user_id=user.id, rank=i, name=user.given_name + " " + user.family_name, 
-                                            club = club.name, club_logo=club.logo, points=user.total_points, username=user.username)
-            users_to_return.append(leaderboard_user)
-            i += 1
-    if len(users_to_return) > 0:
-        users_to_return.sort(key=lambda x: x.points, reverse=True)
-        serializer = LeaderboardSchema(many=True)
-        result = serializer.dump(users_to_return)
-        return jsonify(result), 200
-    else:
-        return jsonify({'message': 'The club with id ' + club_id + 'has no supporters'}), 404
+    return ClubRepo.supporter_leaderboard(club_id)
 
 
 @app.route('/api/leaderboard/sortbyclub/<int:start>/<int:end>', methods=['GET'])
 def leaderboard_clubs(start, end):
-    clubs = Club.get_all()
-    clubs_sorted_by_points = []
-    for club in clubs:
-        clubs_sorted_by_points.append(LeaderboardClub(club_id=club.id,club_name=club.name,club_logo=club.logo,
-                            club_points=total_points_club(club.id),club_rank=None,top_supporter_name=top_supporter(club.id)))
-    clubs_sorted_by_points.sort(key=lambda x: x.club_points, reverse=True)
-    i = 1
-    for club in clubs_sorted_by_points:
-        club.club_rank = i
-        i += 1
-    clubs_to_return = []
-    i = start
-    if end < len(clubs_sorted_by_points):
-        while i <= end:
-            clubs_to_return.append(clubs_sorted_by_points[i])
-            i += 1
-    else:
-        while i < len(clubs_sorted_by_points):
-            clubs_to_return.append(clubs_sorted_by_points[i])
-            i += 1
+    return ClubRepo.leaderboard_clubs(start, end)
 
-    serializer = LeaderboardClubSchema(many=True)
-    result = serializer.dump(clubs_to_return)
-    if len(result) != 0:
-        return jsonify(result), 200
-    else:
-        return jsonify({'message' : 'There is no more teams'}), 200
-
-
-def total_points_club(club_id):
-    club = Club.get_by_id(club_id)
-    total_points = 0
-    for supporter in club.supporters:
-        total_points += supporter.total_points
-    return total_points
-
-def top_supporter(club_id):
-    club = Club.get_by_id(club_id)
-    if len(club.supporters) > 0:
-        top_supporter_name = club.supporters[0].given_name + " " + club.supporters[0].family_name
-        i = 1
-        while i < len(club.supporters):
-            if club.supporters[i - 1].total_points < club.supporters[i].total_points:
-                top_supporter_name =  club.supporters[i].given_name + " " + club.supporters[i].family_name
-            i += 1
-        return top_supporter_name
-    else:
-        return None
 
 @app.route('/api/most_supporters', methods=['GET'])
 def most_supporters():
-    clubs = Club.get_all()
-    club_challenge = []
-    for club in clubs:
-        club_challenge.append(SupporterChallenge(id = club.id, club_name=club.name, club_logo=club.logo, 
-                                                supporter_count=len(club.supporters)))
-    club_challenge.sort(key=lambda x: x.supporter_count, reverse=True)
-    serializer = SupporterChallengeSchema(many = True)
-    result = serializer.dump(club_challenge)
-    return jsonify(result), 200
+    return ClubRepo.most_supporters()
+
+
+
+#<------------------------------ VIDEOS ------------------------------>
 
 
 @app.route('/api/videos', methods=['GET'])
@@ -435,6 +293,10 @@ def delete_video(id):
     }), 204
 
 
+
+#<------------------------------ BADGES ------------------------------>
+
+
 @app.route('/api/badges', methods=['GET'])
 def get_all_badges():
     badges = Badge.get_all()
@@ -474,17 +336,7 @@ def get_badge(id):
 
 @app.route('/api/badges/user/<int:id>', methods=['GET'])
 def get_users_badges(id):
-    badges = Badge.get_all()
-    user = User.get_by_id(id)
-    users_badges = user.badges
-    array = []
-    for badge in badges:
-        for user_badge in users_badges:
-            if badge == user_badge:
-                array.append(badge)
-    serializer = BadgeSchema(many=True)
-    result = serializer.dump(array)
-    return jsonify(result), 200
+    return BadgeRepo.get_users_badges(id)
 
 
 @app.route('/api/badge/<int:id>', methods=['PUT'])
@@ -522,18 +374,8 @@ def delete_badge(id):
     }), 204
 
 
-@app.route('/api/badge/collect/<int:id>', methods=['PUT'])
-def user_badge(id):
-    user = User.get_by_id(id)
-    data = request.json
-    badge = Badge.get_by_id(data['id'])
-    user.badges.append(badge)
-    db.session.commit()
 
-    serializer = UserSchema()
-    result = serializer.dump(user)
-    return jsonify(result), 200
-
+#<------------------------------ COMMENTS? ------------------------------>
 
 @app.route('/api/comment', methods=['GET'])
 def get_all_comments():
@@ -576,44 +418,13 @@ def reply_a_comment(comment_id):
     return jsonify(result), 200
 
 
+
+#<------------------------------ QUIZ/ TRIVIA ------------------------------>
+
 @app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
 def get_questions(user_id):
-    if weekly_quiz_ready(user_id):
-        questions = Question.get_all()
-        quiz = []
-        for q in questions:
-            for answer in q.answers:
-                if answer.correct:
-                    trivia = Trivia(question=q.question,
-                                    answers=q.answers, correct=answer)
-            quiz.append(trivia)
+    return QuizRepo.get_questions(user_id)
 
-        serializer = TriviaSchema(many=True)
-        result = serializer.dump(quiz)
-    
-        return jsonify(result), 200
-    else:
-        submitted = SubmittedQuiz.query.filter_by(user_id = user_id).order_by(desc(SubmittedQuiz.submitted_time)).first()
-        serializer = SubmittedQuizSchema()
-        result = serializer.dump(submitted)
-        return jsonify(result), 202
-
-def weekly_quiz_ready(user_id):
-    submitted = SubmittedQuiz.query.filter_by(user_id = user_id).order_by(desc(SubmittedQuiz.submitted_time)).first()
-    if not submitted:
-        return True
-    elif get_last_friday() > submitted.submitted_time:
-        return True
-    else:
-        return False
-
-#https://stackoverflow.com/questions/12686991/how-to-get-last-friday
-def get_last_friday():
-    now = datetime.now()
-    closest_friday = now + timedelta(days=(4 - now.weekday()))
-    result = datetime.combine(closest_friday, time())
-    return (result if result < now
-            else result - timedelta(days=7))
 
 @app.route('/api/quizes', methods=['GET'])
 def all_questions():
@@ -623,43 +434,15 @@ def all_questions():
 
     return  jsonify(result), 200
 
+
 @app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
 def submit_quiz(user_id):
-    data = request.json
+    return QuizRepo.submit_quiz(user_id, request.json)
 
-    points = (data['correct']*2 + 5 
-            if (data['questions'] - data['correct'] == 0) 
-            else (data['questions'] - (data['questions'] - data['correct']))*2)
-
-    user = User.get_by_id(user_id)
-    user.give_points(points)
-    give_user_badge('points', user.total_points, user_id)
-
-
-
-    SubmittedQuiz(user_id=user_id,
-                submitted_time=datetime.now(),
-                questions = data['questions'],
-                correct = data['correct'],
-                points = points).save()
-    
-    quiz_by_user = SubmittedQuiz.get_by_user(user_id)
-    top_score = 0
-    for quiz in quiz_by_user:
-        if quiz.questions - quiz.correct == 0:
-            top_score += 1
-    give_user_badge('quiz', len(quiz_by_user), user_id)
-    give_user_badge('quizExpert', top_score, user_id)
-
-    return jsonify({
-        'message': 'Quiz submitted',
-        'data' : data['correct']
-        }), 200
 
 @app.route('/api/question', methods=['POST'])
 def create_question():
     data = request.json
-
     newQuestion = Question(
         question=data['question'],
     )
@@ -676,7 +459,6 @@ def create_question():
     return jsonify({'message': 'Question made'}), 200
 
 
-
 @app.route('/api/question/<int:id>', methods=['DELETE'])
 def delete_question(id):
     question = Question.get_by_id(id)
@@ -685,6 +467,7 @@ def delete_question(id):
     return jsonify({
         'message': 'deleted'
     }), 204
+
 
 @app.route('/api/question/<int:id>', methods=['PUT'])
 def edit_question(id):
@@ -728,58 +511,13 @@ def edit_answers(question_id):
 
 @app.route('/api/quiz/leaderboard/points', methods=['GET'])
 def get_quiz_leaderboard_points():
-    quiz_leaderboard = format_list()
-    quiz_leaderboard.sort(key=lambda x: x.total_quiz_points, reverse=True)
-    serializer = QuizLeaderboardSchema(many=True)
-    result = serializer.dump(quiz_leaderboard)
-    return jsonify(result), 200
+    return QuizRepo.get_quiz_leaderboard_points()
 
 
 @app.route('/api/quiz/leaderboard/participations', methods=['GET'])
 def get_quiz_leaderboard_participations():
-    quiz_leaderboard = format_list()
-    quiz_leaderboard.sort(key=lambda x: x.participations, reverse=True)
-    serializer = QuizLeaderboardSchema(many=True)
-    result = serializer.dump(quiz_leaderboard)
-    return jsonify(result), 200
+    return QuizRepo.get_quiz_leaderboard_participations()
 
-
-def format_list():
-    quiz_history = SubmittedQuiz.get_all()
-    quiz_leaderboard = []
-    for element in quiz_history:
-        if already_in_list(quiz_leaderboard, element.user_id):
-            for e in quiz_leaderboard:
-                if element.user_id == e.id:
-                    e.participations += 1
-                    e.total_quiz_points += element.points
-        else:
-            user = User.get_by_id(element.user_id)
-            club = Club.get_by_id(user.club_id)
-            quiz_leaderboard.append(QuizLeaderboard(id = element.user_id,
-            participations = 1,
-            total_quiz_points=element.points,
-            name = user.given_name + " " + user.family_name,
-            club_name = club.name,
-            club_logo= club.logo
-            ))
-    return quiz_leaderboard
-
-def already_in_list(quiz_leaderboard, user_id):
-    for element in quiz_leaderboard:
-        if element.id == user_id:
-            return True
-    return False
-
-def give_user_badge(category, points, user_id):
-    user = User.get_by_id(user_id)
-    badges = Badge.get_badge_by_category(category)
-    badges.sort(key=lambda x: x.points_needed, reverse=True)
-    for badge in badges:
-        if points >= badge.points_needed and badge not in user.badges:
-            user.add_badge(badge.id, category)
-            return True
-    return False
 
 @app.route('/api/')
 @app.errorhandler(404)

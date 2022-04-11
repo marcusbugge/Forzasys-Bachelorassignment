@@ -73,7 +73,7 @@ export default function FeedPosts() {
         data-setup="{}"
       >
         <source
-          src="https://api.forzasys.com/eliteserien/playlist.m3u8/2966:5399000:5434000/Manifest.m3u8"
+          src="https://api.forzasys.com/eliteserien/playlist.m3u8/4446:5856000:5866000/Manifest.m3u8"
           type="application/x-mpegURL"
         />
         <p className="vjs-no-js">

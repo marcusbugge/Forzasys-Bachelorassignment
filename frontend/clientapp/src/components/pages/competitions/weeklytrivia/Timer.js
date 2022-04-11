@@ -13,7 +13,7 @@ export default function Timer() {
       toDay.getFullYear(),
       toDay.getMonth(),
       toDay.getDate() + ((7 + 5 - toDay.getDay()) % 7),
-      "00",
+      "18",
       "00"
     );
 
@@ -22,12 +22,15 @@ export default function Timer() {
     return friday;
   }
 
+ /**  if (difference === 0) {
+    window.location.reload(false);
+  }*/
+
   const target = nextFriday();
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       const difference = target.getTime() - now.getTime();
-
       const d = Math.floor(difference / (1000 * 60 * 60 * 24));
       setDager(d);
       const h = Math.floor(
@@ -39,7 +42,7 @@ export default function Timer() {
       const s = Math.floor((difference % (1000 * 60)) / 1000);
       setSekunder(s);
     }, 1000);
-  }, [dager]);
+  }, [dager, sekunder]);
 
   return (
     <div className="countdown-cnt">
