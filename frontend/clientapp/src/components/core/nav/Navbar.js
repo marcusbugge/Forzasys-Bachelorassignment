@@ -23,8 +23,6 @@ export default function Navbar() {
     path = "/" + loggedUser.username;
   }
 
-  console.log(loggedUser);
-
   function logout(e) {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
@@ -42,11 +40,9 @@ export default function Navbar() {
       await axios
         .get("http://localhost:5000/api/trivia/data/" + loggedUser.id)
         .then((response) => {
-          console.log(response);
           if (response.status === 200) {
             setTriviaStatus(true);
           }
-          console.log(response.status);
         });
     } catch (error) {
       console.error(error.message);
