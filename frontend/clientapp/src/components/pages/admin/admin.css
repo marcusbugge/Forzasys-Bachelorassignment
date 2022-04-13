@@ -1,4 +1,4 @@
-.admin-buttons{
+.admin-buttons {
   margin-top: 100px;
   margin-bottom: 100px;
 }
@@ -13,24 +13,26 @@
   margin-bottom: 20px;
 }
 
-.admin-buttons button:hover{
+.admin-buttons button:hover {
   background-color: rgba(255, 0, 0, 0);
   border: 2px var(--secondary) solid;
 }
 
-
+input {
+  border-radius: 10px;
+}
 
 /** ADMIN BADGES **/
 
-.admin-badge-page{
+.admin-badge-page {
   width: 100%;
 }
 
-.table-badges{
+.table-badges {
   width: 90%;
 }
 
-.badges-head{
+.badges-head {
   color: var(--secondary);
   display: flex;
   background-color: var(--primary);
@@ -42,31 +44,31 @@
   align-items: center;
 }
 
-.badge-name{
+.badge-name {
   width: 20%;
 }
 
-.badge-desc{
+.badge-desc {
   width: 30%;
 }
-.badge-level{
+.badge-level {
   width: 10%;
 }
 
-.badge-cat{
+.badge-cat {
   width: 5%;
 }
 
-.badge-points{
+.badge-points {
   width: 20%;
 }
 
 .badge-edit,
-.badge-delete{
+.badge-delete {
   width: 7.5%;
 }
 
-.body-row{
+.body-row {
   padding: 15px 50px;
   width: 100%;
   display: flex;
@@ -77,45 +79,45 @@
   margin-left: 1%;
 }
 
-.badge-pic-content{
+.badge-pic-content {
   width: 3%;
 }
 
-.badge-name-content{
+.badge-name-content {
   width: 17%;
 }
 
-.badge-desc-content{
+.badge-desc-content {
   width: 30%;
 }
 
-.badge-level-content{
+.badge-level-content {
   width: 10%;
 }
 
-.badge-cat-content{
+.badge-cat-content {
   width: 15%;
 }
 
-.badge-points-content{
+.badge-points-content {
   width: 10%;
 }
 
 .badge-edit-content,
-.badge-delete-content{
+.badge-delete-content {
   width: 7.5%;
 }
 
-.badge-img{
+.badge-img {
   width: 25px;
   margin-top: -3px;
 }
 
-.change-box-badge{
+.change-box-badge {
   width: 100%;
 }
 
-.change-area-badge{
+.change-area-badge {
   width: 108.5%;
   height: 80px;
   display: flex;
@@ -123,99 +125,96 @@
   margin-left: 1%;
 }
 
-.form-area-badge{
+.form-area-badge {
   width: 100%;
   background-color: white;
 }
 
-.badge-info{
+.badge-info {
   width: 100%;
   display: flex;
   margin-top: 5px;
 }
 
-
-.badge-info p{
+.badge-info p {
   width: 17.9%;
 }
 
-.p-name{
-  margin-left: .2%;
+.p-name {
+  margin-left: 0.2%;
 }
 
-.form-badge-content form{
+.form-badge-content form {
   width: 100%;
   display: flex;
   padding: 5px black;
 }
 
-
-.form-badge-content input{
+.form-badge-content input {
   width: 17.5%;
   text-align: left;
 }
 
 .button-edit,
 .button-delete,
-.button-submit{
+.button-submit {
   width: 50px;
   height: 20px;
-  color: var(--black);  
+  color: var(--black);
   margin-top: 5px;
   border-style: none;
   border-radius: 5px;
 }
 
-.form-badge-content button{
+.form-badge-content button {
   width: 3%;
   margin-left: 1%;
 }
 
-.button-edit{
+.button-edit {
   background-color: var(--secondary);
 }
 
-.button-edit:hover{
+.button-edit:hover {
   background-color: rgba(255, 0, 0, 0);
   border: 1px var(--secondary) solid;
 }
 
-.button-delete{
+.button-delete {
   background-color: rgb(255, 142, 142);
 }
 
-.button-delete:hover{
+.button-delete:hover {
   background-color: rgba(255, 0, 0, 0);
   border: 1px rgb(255, 142, 142) solid;
 }
 
-.button-submit{
+.button-submit {
   background-color: rgb(221, 255, 170);
 }
 
-.button-submit:hover{
+.button-submit:hover {
   background-color: rgba(255, 0, 0, 0);
   border: 1px rgb(221, 255, 170) solid;
 }
 
-
-.add-badge-area{
+.add-badge-area {
   width: 50%;
   margin-left: 1%;
 }
 
 /** ADMIN CLUBS **/
 
-.admin-club-page{
+.admin-club-page {
   width: 100%;
   display: flex;
 }
 
-.table-clubs{
+.table-clubs {
   width: 30%;
 }
 
-.clubs-head{
+.clubs-head {
   color: var(--secondary);
   display: flex;
   background-color: var(--primary);
@@ -227,24 +226,24 @@
   align-items: center;
 }
 
-.club-logo{
+.club-logo {
   width: 15%;
 }
 
-.club-name{
+.club-name {
   width: 35%;
 }
 
-.club-nat{
+.club-nat {
   width: 25%;
 }
 
-.club-edit{
+.club-edit {
   width: 10%;
   margin-left: 15%;
 }
 
-.body-row{
+.body-row {
   padding: 15px 50px;
   width: 100%;
   display: flex;
@@ -256,28 +255,27 @@
 }
 
 .club-logo-content,
-.club-edit-content{
+.club-edit-content {
   width: 10%;
 }
 
-.club-name-content{
+.club-name-content {
   width: 40%;
 }
 
-
-.club-nat-content{
+.club-nat-content {
   width: 37%;
 }
 
-.club-img{
+.club-img {
   width: 25px;
 }
 
-.change-box{
+.change-box {
   width: 100%;
 }
 
-.change-area-club{
+.change-area-club {
   width: 126%;
   height: 75px;
   background-color: white;
@@ -286,50 +284,48 @@
   margin-left: 1%;
 }
 
-
-.clubChange-headers{
+.clubChange-headers {
   width: 100%;
   display: flex;
   margin-top: 5px;
   margin-left: 1%;
 }
 
-.clubChange-headers p{
+.clubChange-headers p {
   width: 40%;
 }
 
-.form-clubs{
+.form-clubs {
   width: 100%;
 }
 
-.form-clubs input{
+.form-clubs input {
   width: 38%;
   margin-left: 1%;
 }
 
-.form-clubs button{
+.form-clubs button {
   width: 9%;
   margin-left: 1%;
 }
 
-.addClub-form{
+.addClub-form {
   width: 50%;
   margin-left: 10%;
 }
 
-
 /**ADMIN QUIZ*/
 
-.admin-quiz-page{
+.admin-quiz-page {
   width: 100%;
   display: flex;
 }
 
-.table-quiz{
+.table-quiz {
   width: 40%;
 }
 
-.quiz-head{
+.quiz-head {
   color: var(--secondary);
   display: flex;
   background-color: var(--primary);
@@ -341,17 +337,17 @@
   align-items: center;
 }
 
-.quiz-question{
+.quiz-question {
   width: 60%;
 }
 
 .quiz-edit,
 .quiz-answers,
-.quiz-delete{
+.quiz-delete {
   width: 13.33%;
 }
 
-.body-row{
+.body-row {
   padding: 15px 50px;
   width: 100%;
   display: flex;
@@ -361,20 +357,17 @@
   margin-left: 1%;
 }
 
-.quiz-question-content{
+.quiz-question-content {
   width: 60%;
 }
 
-
-
 .button-edit-quiz,
 .button-answer-quiz,
-.button-delete-quiz{
+.button-delete-quiz {
   width: 13.3%;
 }
 
-
-.change-area-quiz{
+.change-area-quiz {
   width: 106.7%;
   display: flex;
   background-color: var(--lightgray);
@@ -382,50 +375,50 @@
   margin-left: 1%;
 }
 
-.change-area-quiz form{
+.change-area-quiz form {
   width: 100%;
 }
 
-.form-quiz button{
+.form-quiz button {
   width: 50px;
   height: 20px;
   margin-left: 10%;
   background-color: var(--secondary);
-  color: var(--black);  
+  color: var(--black);
   margin-top: 5px;
 }
 
-.form-quiz input{
+.form-quiz input {
   width: 20%;
 }
 
-.addquiz-form{
+.addquiz-form {
   width: 50%;
   margin-left: 10%;
 }
 
-.add-question{
+.add-question {
   width: 40%;
   margin-left: 10%;
 }
 
-.add-question input{
+.add-question input {
   border: 1px black solid;
   border-radius: 10px;
 }
-.answers-view{
+.answers-view {
   width: 100%;
   margin-left: 1%;
   display: flex;
 }
-.answer-box{
+.answer-box {
   width: 100%;
 }
 
-.answer-box label{
+.answer-box label {
   width: 100%;
 }
 
-.answer-box input{
+.answer-box input {
   width: 90%;
 }

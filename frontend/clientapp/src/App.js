@@ -20,9 +20,10 @@ import Weeklytrivia from "./components/pages/competitions/weeklytrivia/Weeklytri
 import ScrollToTop from "./ScrollToTop";
 import FollowersPage from "./components/pages/follow/FollowersPage";
 import LikedVideos from "./components/pages/likedvideos/LikedVideos";
-import Admin from "../src/components/pages/admin/Admin"
+import Admin from "../src/components/pages/admin/Admin";
 import { useContext } from "react";
 import Editprofile from "./components/pages/editprofile/EditProfile";
+import MobileNavHandler from "./components/core/nav/MobileNavHandler";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,16 +58,15 @@ function App() {
             <Navbar />
           </div>
 
+          <MobileNavHandler />
+
           <div className="content">
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/standings" element={<MainStandPage />} />
-
               <Route path="/profil" element={<Profilepage />} />
               <Route path="/editprofil" element={<Editprofile />} />
-
               <Route path=":username" element={<Profilepage />} />
-
               <Route path="/highlights" element={<FeedPosts />} />
               <Route path="/signup" element={<CreateUser />} />
               <Route path="/following" element={<FollowersPage />} />
