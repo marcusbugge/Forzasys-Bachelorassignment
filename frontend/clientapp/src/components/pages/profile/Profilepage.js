@@ -26,6 +26,11 @@ export default function Profilepage() {
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
 
+  let loggedUsername = " ";
+  if (JSON.parse(localStorage.getItem("user"))) {
+    loggedUsername = loggedUser.username;
+  }
+
   const { username } = useParams();
 
   console.log("test", { username });
@@ -76,13 +81,20 @@ export default function Profilepage() {
                 />
               </div>
             </div>
-            <button className="profile-edit-menu-btn" onClick={userprofileLoad}>
-              <IconContext.Provider value={{ size: "30px" }}>
-                <div className="profile-edit-cnt">
-                  <BiCog />
-                </div>
-              </IconContext.Provider>
-            </button>
+            {loggedUsername === username ? (
+              <button
+                className="profile-edit-menu-btn"
+                onClick={userprofileLoad}
+              >
+                <IconContext.Provider value={{ size: "30px" }}>
+                  <div className="profile-edit-cnt">
+                    <BiCog />
+                  </div>
+                </IconContext.Provider>
+              </button>
+            ) : (
+              ""
+            )}
             <div className="profile-edit-name">
               <h1>{user.name}</h1>
             </div>
@@ -117,11 +129,9 @@ export default function Profilepage() {
                         </div>
                         <div className="badge-desc-cnt">
                           <div className="badge-description">
-                            <p>Description: {icon.description}</p>
+                            <p>Beskrivelse: {icon.description}</p>
                           </div>
-                          <div className="badge-points">
-                            <p>Points needed: {icon.points_needed}</p>
-                          </div>
+                          
                         </div>
                       </div>
                     ) : (

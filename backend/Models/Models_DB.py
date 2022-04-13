@@ -231,7 +231,7 @@ class VideoSchema(Schema):
 
 class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.String(150), nullable=False)
     level = db.Column(db.Integer, nullable=False)
     picture = db.Column(db.String(250), unique=True, nullable=False)

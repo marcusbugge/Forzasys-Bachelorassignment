@@ -6,30 +6,25 @@ import SelectTeam from "./SelectTeam";
 import soccerfan from "../../../assets/images/soccer-fan.jpg";
 
 export default function CreateUser() {
-  const [fname, setFname] = useState("");
-  const [lname, setLname] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState("");
+
   const [team, setTeam] = useState("");
-  const [password, setPassword] = useState("");
-  const [cpassword, setCpassword] = useState("");
 
   const [errorPassword, setErrorPassword] = useState(true);
 
   async function signup(e) {
     e.preventDefault();
 
-    if (password !== "" && password === cpassword) {
+    if (e.target.password.value !== "" && e.target.password.value === e.target.cpassword.value) {
       setErrorPassword(true);
       const userdata = {
-        password: password,
-        given_name: fname,
-        family_name: lname,
-        age: age,
-        email: email,
-        club_id: localStorage.getItem("team"),
+        password: e.target.password.value,
+        given_name: e.target.fname.value,
+        family_name: e.target.lname.value,
+        age: e.target.age.value,
+        email: e.target.email.value,
+        club_id: team,
         role: 'user',
-        username: fname + 123
+        username: e.target.username.value
       };
       console.log(userdata);
 
@@ -71,14 +66,25 @@ export default function CreateUser() {
               >
                 <div className="form-group">
                   <label htmlFor="name"></label>
+                  <p>Brukernavn</p>
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    autoComplete="off"
+                    required="true"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="name"></label>
                   <p>First Name</p>
                   <input
                     type="text"
                     name="fname"
                     id="fname"
-                    onChange={(e) => setFname(e.target.value)}
                     autoComplete="off"
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
@@ -89,8 +95,8 @@ export default function CreateUser() {
                     name="lname"
                     id="lname"
                     autoComplete="off"
-                    onChange={(e) => setLname(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
@@ -101,20 +107,20 @@ export default function CreateUser() {
                     name="email"
                     id="email"
                     autoComplete="off"
-                    onChange={(e) => setEmail(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="age"></label>
                   <p>Age</p>
                   <input
-                    type="text"
+                    type="number"
                     name="age"
                     id="age"
                     autoComplete="off"
-                    onChange={(e) => setAge(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
@@ -125,8 +131,8 @@ export default function CreateUser() {
                     name="password"
                     id="password"
                     autoComplete="off"
-                    onChange={(e) => setPassword(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
@@ -137,15 +143,15 @@ export default function CreateUser() {
                     name="cpassword"
                     id="cpassword"
                     autoComplete="off"
-                    onChange={(e) => setCpassword(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                   <h5 className="error" hidden={errorPassword}>
                     Passwords don't match
                   </h5>
                 </div>
 
                 <div className="testest">
-                  <SelectTeam setTeam={setTeam} />
+                  <SelectTeam setTeam={setTeam} team={team} />
                 </div>
 
                 <div className="form-button">

@@ -129,7 +129,14 @@ export default function Navbar() {
             <h1>PROFIL</h1>
             <div className="links">
               <div className="rank-nav-cnt">
-                <NavLink to={path}>Profil</NavLink>
+                <NavLink
+                  to={path}
+                  onClick={() => {
+                    setTimeout(() => {window.location.reload(true);}, 10)
+                  }}
+                >
+                  Profil
+                </NavLink>
               </div>
             </div>
           </div>

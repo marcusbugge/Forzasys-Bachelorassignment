@@ -13,25 +13,25 @@
   align-items: center;
 }
 
-.trivia-text{
+.trivia-text {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.question-cnt{
+.question-cnt {
   width: 70%;
   margin-left: 15%;
 }
 
-.trivia-data-holder{
+.trivia-data-holder {
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.trivia-data-info{
+.trivia-data-info {
   width: 60%;
   margin-left: 5%;
 }
@@ -133,25 +133,25 @@
   margin-bottom: 100px;
 }
 
-.prev-next-button{
+.prev-next-button {
   width: 70%;
   margin-left: 15%;
   display: flex;
 }
 
-.previous-button{
+.previous-button {
   justify-content: flex-start;
 }
 
-.overview-button{
+.overview-button {
   margin-left: auto;
 }
 
-.next-button{
+.next-button {
   margin-left: auto;
 }
 
-.prev-next-button button{
+.prev-next-button button {
   width: 200px;
   height: 40px;
   background-color: var(--primary);
@@ -159,11 +159,11 @@
   border-style: none;
 }
 
-.prev-next-button button:hover{
+.prev-next-button button:hover {
   background-color: var(--hover-blue);
 }
 
-.quiz-overview{
+.quiz-overview {
   width: 70%;
   margin-left: 15%;
   display: flex;
@@ -172,8 +172,86 @@
   align-items: center;
 }
 
-.quiz-overview-cnt{
-  width:100%;
+.quiz-overview-cnt {
+  width: 100%;
   align-items: center;
   height: 50px;
+}
+
+/** --------- QUIZ-TABLE ---------*/
+
+.quiz-table {
+  width: 70%;
+  margin-left: 15%;
+}
+
+.quiz-table-head {
+  color: var(--secondary);
+  display: flex;
+  background-color: var(--primary);
+  width: 100%;
+  height: 50px;
+  align-items: center;
+
+}
+
+.qth-rank,
+.qth-name,
+.qth-participations,
+.qth-maxScore{
+  width: 24%;
+  margin-left: 1%;
+  color: white;
+}
+
+.qtb-row{
+  padding: 15px 0;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  background-color: var(--lightgray);
+  border-bottom: 1px solid lightgray;
+  align-items: center;
+  justify-content: center;
+}
+
+.qtb-row-active{
+  padding: 15px 0;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  background-color: rgb(224, 224, 224);
+  border-bottom: 1px solid lightgray;
+  align-items: center;
+  justify-content: center;
+}
+
+.qtb-row:hover,
+.qtb-row-active:hover{
+  background-color: var(--secondary);
+}
+
+.qtb-rank,
+.qtb-name,
+.qtb-participations,
+.qtb-maxScore{
+  width: 24%;
+  margin-left: 1%;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-table button{
+  background-color: var(--secondary);
+  color: var(--black);
+  border-radius: 10px;
+  margin: 20px 45% ;
+  padding: 8px 20px;
+  border: 2px var(--secondary) solid;
+  cursor: pointer;
+}
+
+.quiz-table button:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 2px var(--secondary) solid;
 }
