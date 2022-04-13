@@ -8,6 +8,7 @@ import { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import Login from "../../pages/login/Login";
+import MobileNav from "./MobileNavHandler";
 
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
@@ -23,34 +24,16 @@ export default function Navbar() {
     path = "/" + loggedUser.username;
   }
 
+  console.log(loggedUser);
+
   function logout(e) {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
     setRefresh(true);
   }
 
-  const [triviaStatus, setTriviaStatus] = useState(false);
-
-  useEffect(() => {
-    checkTriviaStatus();
-  }, [triviaStatus]);
-
-  async function checkTriviaStatus() {
-    try {
-      await axios
-        .get("http://localhost:5000/api/trivia/data/" + loggedUser.id)
-        .then((response) => {
-          if (response.status === 200) {
-            setTriviaStatus(true);
-          }
-        });
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
-
   return (
-    <div className="nav">
+    <div className="mob-nav">
       <div className="nav-header"></div>
       {localStorage.getItem("loggedIn") ? (
         <div className="welcome-nav">
@@ -94,14 +77,7 @@ export default function Navbar() {
               splitLocation[1] === "weeklytrivia" ? "active" : "rank-nav-cnt"
             }
           >
-            <div className="trivia-cnt-nav">
-              <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
-              {triviaStatus ? (
-                <div className="circle-nav-trivia-ok"></div>
-              ) : (
-                <div className="circle-nav-trivia"></div>
-              )}
-            </div>
+            <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
           </div>
           <div
             className={
@@ -129,14 +105,7 @@ export default function Navbar() {
             <h1>PROFIL</h1>
             <div className="links">
               <div className="rank-nav-cnt">
-                <NavLink
-                  to={path}
-                  onClick={() => {
-                    setTimeout(() => {window.location.reload(true);}, 10)
-                  }}
-                >
-                  Profil
-                </NavLink>
+                <NavLink to={path}>Profil</NavLink>
               </div>
             </div>
           </div>

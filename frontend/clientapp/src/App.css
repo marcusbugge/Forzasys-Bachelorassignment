@@ -21,6 +21,10 @@
   --gray3: #acb5bd;
 }
 
+.shadow {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
 body {
   overflow-x: hidden; /* Hide scrollbars */
   scroll-behavior: smooth;
@@ -54,4 +58,47 @@ a:hover {
   background-color: var(--primary);
 }
 
+.mobilenav {
+  display: none;
+}
+
 /** RESPONSIVE **/
+
+@media only screen and (max-width: 1100px) {
+  .nav {
+    display: none;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .mobilenav {
+    display: block;
+  }
+
+  .shownav-btn {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+  }
+
+  .mobile-nav-cnt {
+    background-color: var(--primary);
+    animation: navanimation 0.5s forwards ease-in-out;
+    display: block;
+    position: fixed;
+    top: 0;
+    width: 0%;
+  }
+
+  @keyframes navanimation {
+    from {
+      width: 0px;
+    }
+    to {
+      width: 250px;
+    }
+  }
+}
