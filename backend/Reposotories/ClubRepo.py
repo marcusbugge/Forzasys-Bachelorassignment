@@ -1,7 +1,6 @@
 from flask import jsonify
 from Models.Models_DB import Club, User
 from Models.Models_api import Leaderboard, LeaderboardSchema, LeaderboardClub, LeaderboardClubSchema, SupporterChallenge, SupporterChallengeSchema
-from db import db
 
 def get_leaderboard(start, end):
     users = User.get_all()

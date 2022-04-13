@@ -180,6 +180,8 @@ export default function Weeklytrivia() {
     await axios.post(url, data, config).then((res) => {
       console.log(res.status);
       console.log(res);
+      fetchQuizParticipations();
+      fetchQuizPoints();
     });
   }
 
@@ -247,43 +249,80 @@ export default function Weeklytrivia() {
             userTry = answer.content;
           }
         })}
-        {value ? <p>Svar: {userTry}</p> : <p>Svar: Ikke besvart</p>}
+        {value ? (
+          <p>Svar: {userTry}</p>
+        ) : (
+          <p style={{ color: "var(--red)" }}>Svar: Ikke besvart</p>
+        )}
       </div>
     );
   };
 
   const QuizAnswers = () => {
     return (
-      <div>
+      <div className="pre-submit-overview">
         <h3>Dine svar</h3>
-        {triviaData.map((quiz, index) => (
-          <div
-            key={index}
-            className="quiz-overview-cnt"
-            onClick={() => setQCounter(index)}
-          >
-            <p>Spørsmål: {quiz.question}</p>
-            <div className="quiz-answer-overview-cnt">
-              <AnsweredByUser quiz={quiz} />
+        <div>
+          {triviaData.map((quiz, index) => (
+            <div className="quiz-answer-cnt">
+              <div key={index} className="quiz-overview-cnt">
+                <p style={{ color: "var(--gray1)" }}>
+                  Spørsmål: {quiz.question}
+                </p>
+                <div className="quiz-answer-overview-cnt">
+                  <AnsweredByUser quiz={quiz} />
+                </div>
+              </div>
+              <div className="quiz-answer-btn">
+                <button onClick={() => setQCounter(index)}>Endre</button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   };
 
+  function submittedQuizPoints() {
+    let counter = 0;
+    let points = 0;
+    solution.map((element) => {
+      element.answers.map((elm) => {
+        if (elm.clicked === elm.correct) {
+          counter++;
+          points += 2;
+        }
+      });
+    });
+    if (counter === triviaData.length) points += 5;
+    return points;
+  }
+
   const Solution = () => {
     return (
-      <div>
+      <div className="quiz-solution">
+        <p className="quiz-solution-element">
+          Dine poeng denne uken: {submittedQuizPoints()}
+        </p>
         {solution.map((element, index) => (
-          <div key={index}>
-            <p>{element.question}</p>
+          <div key={index} className="quiz-solution-element">
+            <div>
+              <p style={{color:"var(--gray1)"}}>{element.question}</p>
+            </div>
             {element.answers.map((answer, index) => (
               <div key={index}>
                 {answer.clicked !== "" ? (
-                  <p>Du svarte: {answer.clicked}</p>
+                  <p
+                    style={
+                      answer.clicked === answer.correct
+                        ? { color: "#79ca00" }
+                        : { color: "var(--red)" }
+                    }
+                  >
+                    Du svarte: {answer.clicked}
+                  </p>
                 ) : (
-                  <p>Du svarte ikke</p>
+                  <p style={{color: "var(--red)"}}>Du svarte ikke</p>
                 )}
                 <p>Riktig svar: {answer.correct}</p>
               </div>
@@ -308,9 +347,10 @@ export default function Weeklytrivia() {
           <QuizAnswers />
         </div>
       );
-    } else if (submitted) {
+    } else if (submitted && triviaData.length > 0) {
       return <Solution />;
     }
+    return "";
   };
 
   if (!loading) {
@@ -360,7 +400,7 @@ export default function Weeklytrivia() {
         {!loading ? <RenderQuiz /> : ""}
         <div className="prev-next-button">
           {qCounter === 0 || qCounter === triviaData.length || submitted ? (
-            ""
+            <div className="previous-button" />
           ) : (
             <div className="previous-button">
               <button onClick={() => setQCounter(qCounter - 1)}>
@@ -433,11 +473,11 @@ export default function Weeklytrivia() {
               <div>
                 {quizScoresParticipations.map((element, index) => (
                   <div
-                  className={
-                    loggedUser.name === element.name
-                      ? "qtb-row-active"
-                      : "qtb-row"
-                  }
+                    className={
+                      loggedUser.name === element.name
+                        ? "qtb-row-active"
+                        : "qtb-row"
+                    }
                     onClick={() => navigate("/" + element.username)}
                   >
                     <div className="qtb-rank">{index + 1}</div>

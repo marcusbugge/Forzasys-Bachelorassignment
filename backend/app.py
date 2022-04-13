@@ -1,20 +1,21 @@
+import asyncio
 from flask import request, jsonify
 from flask_cors import CORS
 from db import db, app
 from Models.Models_DB import User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
-from Reposotories import UserRepo, BadgeRepo, ClubRepo, QuizRepo
+from Reposotories import UserRepo, BadgeRepo, ClubRepo, QuizRepo, VideoRepo
 
 CORS(app)
 
 #<------------------------------ USERS ------------------------------>
 
 @app.route('/api/login', methods=['POST'])
-def login():
+async def login():
     return UserRepo.login(request.json)
     
 
 @app.route('/api/users', methods=['GET'])
-def get_all_users():
+async def get_all_users():
     users = User.get_all()
     serializer = UserSchema(many=True)
     result = serializer.dump(users)
@@ -22,7 +23,7 @@ def get_all_users():
 
 
 @app.route('/api/user', methods=['POST'])
-def create_user():
+async def create_user():
     data = request.json
     newUser = User(
         password=data['password'],
@@ -45,7 +46,7 @@ def create_user():
 
 
 @app.route('/api/user/<int:id>', methods=['GET'])
-def get_user(id):
+async def get_user(id):
     user = User.get_by_id(id)
     serializer = UserSchema()
     result = serializer.dump(user)
@@ -54,7 +55,7 @@ def get_user(id):
 
 
 @app.route('/api/user/<int:id>', methods=['PUT'])
-def update_user(id):
+async def update_user(id):
     data = request.json
     user_to_uptdate = User.get_by_id(id)
     if 'name' in data:
@@ -84,8 +85,8 @@ def update_user(id):
     return jsonify(result), 200
     
 
-@app.route('/api/user<int:id>', methods=['DELETE'])
-def delete_user(id):
+@app.route('/api/user/<int:id>', methods=['DELETE'])
+async def delete_user(id):
     user_to_delete = User.get_by_id(id)
     user_to_delete.delete()
 
@@ -95,14 +96,14 @@ def delete_user(id):
 
 
 @app.route('/api/user/<string:username>', methods=['GET'])
-def get_user_by_username(username):
+async def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
     users = User.get_all()
     return UserRepo.get_idividual_score(user, users)
 
 
 @app.route('/api/user/follow/<int:id>', methods=['PUT'])
-def follow_user(id):
+async def follow_user(id):
     user_to_follow = User.get_by_id(id)
     data = request.json
     user_following = User.get_by_id(data['user_id'])
@@ -113,16 +114,24 @@ def follow_user(id):
 
 
 @app.route('/api/followers/<int:id>', methods=['GET'])
-def follow_table(id):
+async def follow_table(id):
     return UserRepo.follow_table(id)
     
+
+@app.route('/api/user/like_video/<int:user_id>', methods=['POST'])
+async def like_video(user_id):
+    data = request.json
+    if VideoRepo.like_video(user_id, data['video_url']):
+        return jsonify({'message' : 'Video liked'}), 200
+    else:
+        return jsonify({'message' : 'There is a problem'}), 500
 
 
 #<------------------------------ CLUBS ------------------------------>
 
 
 @app.route('/api/clubs', methods=['GET'])
-def get_all_clubs():
+async def get_all_clubs():
     clubs = Club.get_all()
     serializer = ClubSchema(many=True)
     result = serializer.dump(clubs)
@@ -130,7 +139,7 @@ def get_all_clubs():
 
 
 @app.route('/api/club', methods=['POST'])
-def create_club():
+async def create_club():
     data = request.json
     newClub = Club(
         name=data['name'],
@@ -144,7 +153,7 @@ def create_club():
 
 
 @app.route('/api/club/<int:id>', methods=['GET'])
-def get_one_club(id):
+async def get_one_club(id):
     club = Club.get_by_id(id)
     serializer = ClubSchema()
     result = serializer.dump(club)
@@ -152,7 +161,7 @@ def get_one_club(id):
 
 
 @app.route('/api/club/<int:id>', methods=['PUT'])
-def update_club(id):
+async def update_club(id):
     club_to_uptdate = Club.get_by_id(id)
     data = request.json
 
@@ -171,7 +180,7 @@ def update_club(id):
 
 
 @app.route('/api/club/<int:id>', methods=['DELETE'])
-def delete_club(id):
+async def delete_club(id):
     club_to_delete = Club.get_by_id(id)
     club_to_delete.delete()
 
@@ -181,22 +190,22 @@ def delete_club(id):
 
 
 @app.route('/api/leaderboard/<int:start>/<int:end>')
-def get_leaderboard(start, end):
+async def get_leaderboard(start, end):
     return ClubRepo.get_leaderboard(start, end)
 
 
 @app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
-def supporter_leaderboard(club_id):
+async def supporter_leaderboard(club_id):
     return ClubRepo.supporter_leaderboard(club_id)
 
 
 @app.route('/api/leaderboard/sortbyclub/<int:start>/<int:end>', methods=['GET'])
-def leaderboard_clubs(start, end):
+async def leaderboard_clubs(start, end):
     return ClubRepo.leaderboard_clubs(start, end)
 
 
 @app.route('/api/most_supporters', methods=['GET'])
-def most_supporters():
+async def most_supporters():
     return ClubRepo.most_supporters()
 
 
@@ -213,19 +222,15 @@ def get_all_videos():
 
 
 @app.route('/api/video', methods=['POST'])
-def create_video():
+async def create_video():
     data = request.json
     newVideo = Video(
-        user_id=data['user_id'],
-        video=data['video'],
-        caption=data['caption'],
-        likes=0,
-        views=0
+        video=data['video']
     )
 
     newVideo.save()
 
-    return jsonify(success=True)
+    return jsonify(success=True), 201
 
 
 @app.route('/api/video/<int:id>', methods=['GET'])
@@ -293,12 +298,19 @@ def delete_video(id):
     }), 204
 
 
+@app.route('/api/videos/user/<int:user_id>', methods=['GET'])
+async def get_users_videos(user_id):
+    user = User.get_by_id(user_id)
+    serializer = VideoSchema(many=True)
+    result = serializer.dump(user.videos)
+    return jsonify(result), 200
+
 
 #<------------------------------ BADGES ------------------------------>
 
 
 @app.route('/api/badges', methods=['GET'])
-def get_all_badges():
+async def get_all_badges():
     badges = Badge.get_all()
     serializer = BadgeSchema(many=True)
     result = serializer.dump(badges)
@@ -306,7 +318,7 @@ def get_all_badges():
 
 
 @app.route('/api/badge', methods=['POST'])
-def create_badge():
+async def create_badge():
     data = request.json
     newBadge = Badge(
         name=data['name'],
@@ -326,7 +338,7 @@ def create_badge():
 
 
 @app.route('/api/badge/<int:id>', methods=['GET'])
-def get_badge(id):
+async def get_badge(id):
     badge = Badge.get_by_id(id)
     serializer = BadgeSchema()
     result = serializer.dump(badge)
@@ -633,8 +645,8 @@ def db_data():
                 email='feppe@TAE.no', club_id=11, total_points=49, role="user",username="TaeFeppe")
     user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=28, 
                 email='jr.Neymar@PSG.com', club_id=7, total_points=32, profile_pic='neymar-pic.png', role="user",username="NeyNeyBrazil")
-    user20 = User(password='TestP', given_name='Vladimir', family_name='Putin', age=68, 
-                email='putin@crazy.com', club_id=8, total_points=1000, profile_pic = 'putin-pic.png', role="user",username="PutinTheGreat")
+    user20 = User(password='TestP', given_name='Gandalf', family_name='The White', age=104, 
+                email='gandalf@LOTR.com', club_id=8, total_points=932, profile_pic = 'gandalf-pic.png', role="user",username="GandalfTheWhite")
     user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
                 email='biden@whitehouse.com', club_id=3, total_points=1, profile_pic='biden-pic.png', role="user",username="SleepyJoe")
     user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
@@ -670,7 +682,6 @@ def db_data():
     user21.follow(20)
 
 
-    Video(caption='Funny video', likes=0, views=0,video='Random Video', user_id=21).save()
 
     Question(question='Hvem vant Allsvenskan i år 2000?').save()
     Answer(content='Halmstad', question_id=1, correct=True).save()
@@ -708,8 +719,39 @@ def db_data():
     Answer(content='AIK', question_id=6, correct=False).save()
     Answer(content='IFK Göteborg', question_id=6, correct=False).save()
 
+
+    users = User.get_all()
+    for user in users:
+        BadgeRepo.give_user_badge("points", user.total_points, user.id)
+
     print('Added data to database')
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(login())
+    loop.run_until_complete(get_all_users())
+    loop.run_until_complete(get_user())
+    loop.run_until_complete(update_user())
+    loop.run_until_complete(create_user())
+    loop.run_until_complete(get_user_by_username())
+    loop.run_until_complete(delete_user())
+    loop.run_until_complete(follow_user())
+    loop.run_until_complete(follow_table())
+    loop.run_until_complete(like_video())
+    loop.run_until_complete(get_all_clubs())
+    loop.run_until_complete(create_club())
+    loop.run_until_complete(get_one_club())
+    loop.run_until_complete(update_club())
+    loop.run_until_complete(delete_club())
+    loop.run_until_complete(get_leaderboard())
+    loop.run_until_complete(supporter_leaderboard())
+    loop.run_until_complete(leaderboard_clubs())
+    loop.run_until_complete(most_supporters())
+    loop.run_until_complete(create_video())
+    loop.run_until_complete(get_users_videos())
+    loop.run_until_complete(get_all_badges())
+    loop.run_until_complete(create_badge())
+    loop.run_until_complete(get_badge())
+    loop.close()
