@@ -1,7 +1,6 @@
 from flask import jsonify
-from Models.Models_DB import User, Club
+from Models.Models_DB import User, Club, Video
 from Models.Models_api import PersonalScore, PersonalScoreSchema, Followlist, FollowlistSchema
-from db import db
 
 
 def login(data):
@@ -64,4 +63,10 @@ def follow_table(id):
     serializer = FollowlistSchema(many=True)
     result = serializer.dump(followers)
     return jsonify(result), 200
+
+def like_video(id, video_url):
+    video = Video.query.filter_by(video=video_url).first()
+    user = User.get_by_id(id)
+    user.like_video(video)
+    return jsonify({'message': 'Video liked'}), 200
 

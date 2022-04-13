@@ -1,5 +1,5 @@
+from enum import unique
 from marshmallow import Schema, fields
-from xml.dom import ValidationErr
 from db import db
 
 earned_badges = db.Table('earned_badges',
@@ -20,18 +20,11 @@ question_answer = db.Table('question_answer',
                          db.Column('answer_id', db.Integer, 
                                 db.ForeignKey('answer.id'))
                          )
-
-videos_liked = db.Table('videos_liked',
-                         db.Column('user_id', db.Integer,
-                                db.ForeignKey('user.id')),
-                         db.Column('video_id', db.Integer, 
-                                db.ForeignKey('video.id'))
-                         )
-
-
-class FollowerSchema(Schema):
-    follower_id = fields.Integer()
-    followed_id = fields.Integer()
+            
+saved_videos = db.Table('liked_videos',
+                        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+                        db.Column('video_id', db.Integer, db.ForeignKey('video.id'))
+                        )
 
 
 class User(db.Model):
@@ -52,10 +45,8 @@ class User(db.Model):
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
-    videos = db.relationship('Video', backref=db.backref(
-        'user', lazy='joined'), lazy='select')
-    liked_videos = db.relationship(
-        'Video', secondary=videos_liked, backref='database', lazy='select')
+    videos = db.relationship(
+        'Video', secondary=saved_videos, backref='database', lazy='select')
     badges = db.relationship(
         'Badge', secondary=earned_badges, backref='database', lazy='select')
     role = db.Column(db.String(10), nullable=False)
@@ -111,7 +102,7 @@ class User(db.Model):
         db.session.commit()
 
     def like_video(self, video):
-        self.liked_videos.append(video)
+        self.videos.append(video)
         db.session.commit()
 
     def is_following(self, user):
@@ -135,9 +126,8 @@ class UserSchema(Schema):
     club_id = fields.Integer()
     total_points = fields.Integer()
     followed = fields.List(fields.String())
-    videos = fields.List(fields.String())
+    saved_videos = fields.List(fields.String())
     badges = fields.List(fields.String())
-    liked_videos = fields.List(fields.String())
     role = fields.String()
     username = fields.String()
 
@@ -180,13 +170,7 @@ class ClubSchema(Schema):
 
 class Video(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    video = db.Column(db.String(500), nullable=False)
-    caption = db.Column(db.String(50))
-    likes = db.Column(db.Integer)
-    views = db.Column(db.Integer)
-    comments = db.relationship('Comment', backref=db.backref(
-        'database', lazy='joined'), lazy='select')
+    video = db.Column(db.String(500), nullable=False, unique=True)
 
     def __repr__(self):
         return f'{self.id}'
@@ -208,25 +192,10 @@ class Video(db.Model):
         db.session.commit()
 
 
-class BytesField(fields.Field):
-    def _validate(self, value):
-        if not isinstance(value, bytes):
-            raise ValidationErr('Invalid input type.')
-
-        if value is None or value == b'':
-            raise ValidationErr('Invalid value')
-
 
 class VideoSchema(Schema):
     id = fields.Integer()
-    user_id = fields.String()
     video = fields.String()
-    #video = BytesField(required=True)
-    caption = fields.String()
-    views = fields.Integer()
-    likes = fields.Integer()
-    comments = fields.List(fields.String())
-
 
 
 class Badge(db.Model):
@@ -466,21 +435,3 @@ class SubmittedQuizSchema(Schema):
     questions = fields.Integer()
     correct = fields.Integer()
     points = fields.Integer()
-
-class Image(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(25))
-    data = db.Column(db.LargeBinary)
-
-    @classmethod
-    def get_all(cls):
-        return cls.query.all()
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-class ImageSchema(Schema):
-    id = fields.Integer()
-    filename = fields.String()
-    data = BytesField(required=True)

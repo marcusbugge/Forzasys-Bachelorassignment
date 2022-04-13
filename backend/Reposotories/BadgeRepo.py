@@ -1,7 +1,5 @@
 from flask import jsonify
 from Models.Models_DB import Badge, BadgeSchema, User
-from Models.Models_api import Trivia
-from db import db
 
 def get_users_badges(id):
     badges = Badge.get_all()

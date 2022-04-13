@@ -1,7 +1,6 @@
 from flask import jsonify
 from Models.Models_DB import Question, SubmittedQuiz, SubmittedQuizSchema, Club, User
 from Models.Models_api import Trivia, TriviaSchema, QuizLeaderboard, QuizLeaderboardSchema
-from db import db
 from sqlalchemy import desc
 from datetime import datetime, timedelta, time
 from Reposotories.BadgeRepo import give_user_badge

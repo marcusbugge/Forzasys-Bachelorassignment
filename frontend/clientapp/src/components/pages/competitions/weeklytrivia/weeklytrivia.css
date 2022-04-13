@@ -133,6 +133,14 @@
   margin-bottom: 100px;
 }
 
+.submit-button-cnt button:hover {
+  width: 400px;
+  height: 50px;
+  background-color: var(--lightgray);
+  color: var(--black);
+  margin-bottom: 100px;
+}
+
 .prev-next-button {
   width: 70%;
   margin-left: 15%;
@@ -140,7 +148,7 @@
 }
 
 .previous-button {
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .overview-button {
@@ -166,16 +174,63 @@
 .quiz-overview {
   width: 70%;
   margin-left: 15%;
+  margin-top: 15px;
+  padding: 50px 0;
+  background-color: var(--lightgray);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.quiz-overview-cnt {
+.quiz-answer-cnt{
   width: 100%;
+  display: flex;
+  border-bottom: 1px var(--gray3) solid;
+  margin-top: 5px;
+}
+
+.quiz-overview-cnt {
+  width: 70%;
   align-items: center;
-  height: 50px;
+  margin-bottom: 10px;
+  
+}
+
+.quiz-answer-cnt{
+  width: 100%;
+}
+
+.quiz-answer-btn{
+  width: 30%;
+}
+
+.quiz-answer-btn button{
+  background-color: var(--primary);
+  color: white;
+  height: 30px;
+  width: 60px;
+  border-style: none;
+  margin-top: 10px;
+}
+
+.quiz-answer-btn button:hover{
+  background-color: var(--secondary);
+  color: black;
+}
+
+.quiz-solution{
+  width: 70%;
+  margin-left: 15%;
+  margin-top: 15px;
+  padding: 15px 0;
+  background-color: var(--lightgray);
+}
+
+.quiz-solution-element{
+  margin-left: 5%;
+  margin-top: 15px;
+  width: 100%;
 }
 
 /** --------- QUIZ-TABLE ---------*/
