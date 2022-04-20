@@ -12,4 +12,3 @@ def like_video(user_id, video_url):
         video = Video.query.filter_by(video = video_url).first()
         user.like_video(video)
         return True
-    return False

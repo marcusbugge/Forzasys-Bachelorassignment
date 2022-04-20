@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../../parts/Loading";
+import MostSupporters from "./MostSupporters";
 
 export default function TeamTable(props) {
   const [filter, setFilter] = useState([0, 9]);
@@ -32,6 +33,7 @@ export default function TeamTable(props) {
       .get(url)
       .then((response) => {
         setStand(response.data);
+        console.log(response.data);
         setLoading(false);
       })
       .catch(() => {
@@ -81,7 +83,7 @@ export default function TeamTable(props) {
               {stand.map((post, index) => (
                 <div
                   className={
-                    loggedUser.name === post.name
+                    loggedUser.club_id === post.club_id
                       ? "table-element-active"
                       : "table-element"
                   }
@@ -133,75 +135,6 @@ export default function TeamTable(props) {
     );
   };
 
-  const SupporterTable = () => {
-    return (
-      <div className="club-sort">
-        <div className="club-rank">
-          <h1>Most Supporters</h1>
-        </div>
-        <div className="table-header">
-          <div className="name">Club</div>
-          <div className="club">Supporters</div>
-        </div>
-        {loading ? (
-          <div className="loading-standing">
-            <Loading className="loading-signup" />
-          </div>
-        ) : (
-          <div>
-            <div className="table-content">
-              {stand.map((post, index) => (
-                <div
-                  className={
-                    loggedUser.name === post.name
-                      ? "table-element-active"
-                      : "table-element"
-                  }
-                  onClick={() => userprofileLoad(post.name)}
-                  key={index}
-                >
-                  <div className="img-club">
-                    <img
-                      src={require("../../../../assets/teamLogos/" +
-                        post.club_logo)}
-                      alt="logo"
-                    />
-                    <p>{post.club_name}</p>
-                  </div>
-                  <p className="supporters">100</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="step-buttons">
-              {filter[0] >= 2 ? (
-                <button
-                  onClick={() => {
-                    nextAndPrevPage(filter[0] - 10, filter[1] - 10);
-                  }}
-                  className="prev-btn"
-                >
-                  Prev
-                </button>
-              ) : (
-                ""
-              )}
-
-              <button
-                disabled={disabled}
-                onClick={() => {
-                  nextAndPrevPage(filter[0] + 10, filter[1] + 10);
-                }}
-                className="next-btn"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="team-tables">
@@ -209,7 +142,7 @@ export default function TeamTable(props) {
         <MainTable />
       </div>
       <div className="supporter-table">
-        <SupporterTable />
+        <MostSupporters />
       </div>
     </div>
   );
