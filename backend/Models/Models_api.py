@@ -34,7 +34,7 @@ class TriviaSchema(Schema):
 
 class PersonalScore(object):
     def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name,
-                club_logo, club_rank, total_points, role, username, badges, age, email):
+                club_logo, club_rank, total_points, role, username, badges, age, email, videos):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -49,6 +49,7 @@ class PersonalScore(object):
         self.badges = badges
         self.age = age
         self.email = email
+        self.videos = videos
 
 class PersonalScoreSchema(Schema):
     id = fields.Integer()
@@ -65,6 +66,7 @@ class PersonalScoreSchema(Schema):
     badges = fields.List(fields.String())
     age = fields.Integer()
     email = fields.String()
+    videos = fields.List(fields.String())
 
 
 class LeaderboardClub(object):
@@ -87,7 +89,7 @@ class LeaderboardClubSchema(Schema):
 
 
 class Followlist(object):
-    def __init__(self, id, name, profile_pic, total_points, overall_rank, club_id, club_name, club_rank, club_logo, badges, badge_count):
+    def __init__(self, id, name, profile_pic, total_points, overall_rank, club_id, club_name, club_rank, club_logo, badges, badge_count, username):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -99,6 +101,7 @@ class Followlist(object):
         self.club_logo = club_logo
         self.badges = badges
         self.badge_count = badge_count
+        self.username = username
 
 class FollowlistSchema(Schema):
     id = fields.Integer()
@@ -112,6 +115,7 @@ class FollowlistSchema(Schema):
     club_logo = fields.String()
     badges = fields.List(fields.String())
     badge_count = fields.Integer()
+    username = fields.String()
     
 
 class SupporterChallenge(object):

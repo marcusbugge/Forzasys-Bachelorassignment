@@ -1,382 +1,13 @@
-from flask import request, jsonify
-from flask_cors import CORS
+import asyncio
+from flask import jsonify
 from db import db, app
-from Models.Models_DB import User, UserSchema, Club, ClubSchema, Video, VideoSchema, Badge, BadgeSchema, Comment, CommentSchema, Reply, ReplySchema, Question, QuestionSchema, Answer, AnswerSchema
-from Reposotories import UserRepo, BadgeRepo, ClubRepo, QuizRepo
-
-CORS(app)
-
-#<------------------------------ USERS ------------------------------>
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    return UserRepo.login(request.json)
-    
-
-@app.route('/api/users', methods=['GET'])
-def get_all_users():
-    users = User.get_all()
-    serializer = UserSchema(many=True)
-    result = serializer.dump(users)
-    return jsonify(result), 200
-
-
-@app.route('/api/user', methods=['POST'])
-def create_user():
-    data = request.json
-    newUser = User(
-        password=data['password'],
-        given_name=data['given_name'],
-        family_name=data['family_name'],
-        total_points=0,
-        age=data['age'],
-        email=data['email'],
-        club_id=data['club_id'],
-        role = data['role'],
-        username = data['username']
-    )
-
-    newUser.save()
-
-    serializer = UserSchema()
-    result = serializer.dump(newUser)
-
-    return jsonify(result), 201
-
-
-@app.route('/api/user/<int:id>', methods=['GET'])
-def get_user(id):
-    user = User.get_by_id(id)
-    serializer = UserSchema()
-    result = serializer.dump(user)
-
-    return jsonify(result), 200
-
-
-@app.route('/api/user/<int:id>', methods=['PUT'])
-def update_user(id):
-    data = request.json
-    user_to_uptdate = User.get_by_id(id)
-    if 'name' in data:
-        name = data['name']
-        words = name.split()
-        if len(words) == 2:
-            user_to_uptdate.given_name = words[0]
-            user_to_uptdate.family_name = words[1]
-        else:
-            user_to_uptdate.given_name = ""
-            for i in range(len(words) - 1):
-                user_to_uptdate.given_name += words[i] + " "
-                user_to_uptdate.family_name = words[len(words) - 1]
-    if 'password' in data:
-        user_to_uptdate.password = data['password']
-    if 'age' in data:
-        user_to_uptdate.age = data['age']
-    if 'club_id' in data:
-        user_to_uptdate.club_id = data['club_id']
-    if 'email' in data:
-        user_to_uptdate.email = data['email']
-
-    db.session.commit()
-
-    serializer = UserSchema()
-    result = serializer.dump(user_to_uptdate)
-    return jsonify(result), 200
-    
-
-@app.route('/api/user<int:id>', methods=['DELETE'])
-def delete_user(id):
-    user_to_delete = User.get_by_id(id)
-    user_to_delete.delete()
-
-    return jsonify({
-        'message': 'deleted'
-    }), 204
-
-
-@app.route('/api/user/<string:username>', methods=['GET'])
-def get_user_by_username(username):
-    user = User.query.filter_by(username=username).first()
-    users = User.get_all()
-    return UserRepo.get_idividual_score(user, users)
-
-
-@app.route('/api/user/follow/<int:id>', methods=['PUT'])
-def follow_user(id):
-    user_to_follow = User.get_by_id(id)
-    data = request.json
-    user_following = User.get_by_id(data['user_id'])
-    user_following.follow(user_to_follow)
-    return jsonify({
-        'message': 'Following'
-    }), 200
-
-
-@app.route('/api/followers/<int:id>', methods=['GET'])
-def follow_table(id):
-    return UserRepo.follow_table(id)
-    
-
-
-#<------------------------------ CLUBS ------------------------------>
-
-
-@app.route('/api/clubs', methods=['GET'])
-def get_all_clubs():
-    clubs = Club.get_all()
-    serializer = ClubSchema(many=True)
-    result = serializer.dump(clubs)
-    return jsonify(result), 200
-
-
-@app.route('/api/club', methods=['POST'])
-def create_club():
-    data = request.json
-    newClub = Club(
-        name=data['name'],
-        nationality=data['nationality'],
-        logo=data['logo']
-    )
-    newClub.save()
-    serializer = ClubSchema()
-    result = serializer.dump(newClub)
-    return jsonify(result), 201
-
-
-@app.route('/api/club/<int:id>', methods=['GET'])
-def get_one_club(id):
-    club = Club.get_by_id(id)
-    serializer = ClubSchema()
-    result = serializer.dump(club)
-    return jsonify(result), 200
-
-
-@app.route('/api/club/<int:id>', methods=['PUT'])
-def update_club(id):
-    club_to_uptdate = Club.get_by_id(id)
-    data = request.json
-
-    if 'name' in data and data['name'] != "":
-        club_to_uptdate.name = data['name']
-    if 'nationality' in data and data['nationality'] != "":
-        club_to_uptdate.nationality = data['nationality']
-    if 'logo' in data and data['logo'] != "":
-        club_to_uptdate.logo = data['logo']
-
-    db.session.commit()
-
-    serializer = ClubSchema()
-    result = serializer.dump(club_to_uptdate)
-    return jsonify(result), 200
-
-
-@app.route('/api/club/<int:id>', methods=['DELETE'])
-def delete_club(id):
-    club_to_delete = Club.get_by_id(id)
-    club_to_delete.delete()
-
-    return jsonify({
-        'message': 'deleted'
-    }), 204
-
-
-@app.route('/api/leaderboard/<int:start>/<int:end>')
-def get_leaderboard(start, end):
-    return ClubRepo.get_leaderboard(start, end)
-
-
-@app.route('/api/leaderboard/<int:club_id>', methods=['GET'])
-def supporter_leaderboard(club_id):
-    return ClubRepo.supporter_leaderboard(club_id)
-
-
-@app.route('/api/leaderboard/sortbyclub/<int:start>/<int:end>', methods=['GET'])
-def leaderboard_clubs(start, end):
-    return ClubRepo.leaderboard_clubs(start, end)
-
-
-@app.route('/api/most_supporters', methods=['GET'])
-def most_supporters():
-    return ClubRepo.most_supporters()
-
-
-
-#<------------------------------ VIDEOS ------------------------------>
-
-
-@app.route('/api/videos', methods=['GET'])
-def get_all_videos():
-    videos = Video.get_all()
-    serializer = VideoSchema(many=True)
-    result = serializer.dump(videos)
-    return jsonify(result), 200
-
-
-@app.route('/api/video', methods=['POST'])
-def create_video():
-    data = request.json
-    newVideo = Video(
-        user_id=data['user_id'],
-        video=data['video'],
-        caption=data['caption'],
-        likes=0,
-        views=0
-    )
-
-    newVideo.save()
-
-    return jsonify(success=True)
-
-
-@app.route('/api/video/<int:id>', methods=['GET'])
-def get_video(id):
-    video = Video.get_by_id(id)
-    serializer = VideoSchema()
-    result = serializer.dump(video)
-
-    return jsonify(result), 200
-
-
-@app.route('/api/video/<int:id>', methods=['PUT'])
-def update_video(id):
-    video_to_uptdate = Video.get_by_id(id)
-    data = request.json
-
-    if 'user_id' in data and data['user_id'] != "":
-        video_to_uptdate.user_id = data['user_id']
-    if 'caption' in data and data['caption'] != "":
-        video_to_uptdate.caption = data['caption']
-    if 'likes' in data and data['likes'] != "":
-        video_to_uptdate.likes = data['likes']
-    if 'views' in data and data['views'] != "":
-        video_to_uptdate.views = data['views']
-
-    db.session.commit()
-
-    serializer = VideoSchema()
-    result = serializer.dump(video_to_uptdate)
-    return jsonify(result), 200
-
-
-@app.route('/api/video/view/<int:id>', methods=['PUT'])
-def view_a_video(id):
-    video_to_uptdate = Video.get_by_id(id)
-    video_to_uptdate.views += 1
-
-    db.session.commit()
-
-    serializer = VideoSchema()
-    result = serializer.dump(video_to_uptdate)
-    return jsonify(result), 200
-
-
-@app.route('/api/video/like/<int:user_id>/<int:video_id>', methods=['PUT'])
-def like_a_video(user_id, video_id):
-    video_to_uptdate = Video.get_by_id(video_id)
-    video_to_uptdate.likes += 1
-    user = User.get_by_id(user_id)
-    user.like_video(video_to_uptdate)
-    db.session.commit()
-
-    serializer = VideoSchema()
-    result = serializer.dump(video_to_uptdate)
-    return jsonify(result), 200
-
-
-@app.route('/api/video/<int:id>', methods=['DELETE'])
-def delete_video(id):
-    video_to_delete = Video.get_by_id(id)
-    video_to_delete.delete()
-
-    return jsonify({
-        'message': 'deleted'
-    }), 204
-
-
-
-#<------------------------------ BADGES ------------------------------>
-
-
-@app.route('/api/badges', methods=['GET'])
-def get_all_badges():
-    badges = Badge.get_all()
-    serializer = BadgeSchema(many=True)
-    result = serializer.dump(badges)
-    return jsonify(result), 200
-
-
-@app.route('/api/badge', methods=['POST'])
-def create_badge():
-    data = request.json
-    newBadge = Badge(
-        name=data['name'],
-        description=data['description'],
-        level=data['level'],
-        picture=data['picture'],
-        category=data['category'],
-        points_needed=data['points_needed']
-    )
-
-    newBadge.save()
-
-    serializer = BadgeSchema()
-    result = serializer.dump(newBadge)
-
-    return jsonify(result), 201
-
-
-@app.route('/api/badge/<int:id>', methods=['GET'])
-def get_badge(id):
-    badge = Badge.get_by_id(id)
-    serializer = BadgeSchema()
-    result = serializer.dump(badge)
-
-    return jsonify(result), 200
-
-
-@app.route('/api/badges/user/<int:id>', methods=['GET'])
-def get_users_badges(id):
-    return BadgeRepo.get_users_badges(id)
-
-
-@app.route('/api/badge/<int:id>', methods=['PUT'])
-def update_badge(id):
-    badge_to_uptdate = Badge.get_by_id(id)
-    data = request.json
-
-    if 'name' in data and data['name'] != "":
-        badge_to_uptdate.name = data['name']
-    if 'description' in data and data['description'] != "":
-        badge_to_uptdate.description = data['description']
-    if 'level' in data and data['level'] != "":
-        badge_to_uptdate.level = data['level']
-    if 'picture' in data and data['picture'] != "":
-        badge_to_uptdate.picture = data['picture']
-    if 'category' in data and data['category'] != "":
-        badge_to_uptdate.category = data['category']
-    if 'points_needed' in data and data['points_needed'] != "":
-        badge_to_uptdate.points_needed = data['points_needed']
-
-    db.session.commit()
-    badges = Badge.get_all()
-    serializer = BadgeSchema(many=True)
-    result = serializer.dump(badges)
-    return jsonify(result), 200
-
-
-@app.route('/api/badge/<int:id>', methods=['DELETE'])
-def delete_badge(id):
-    badge_to_delete = Badge.get_by_id(id)
-    badge_to_delete.delete()
-
-    return jsonify({
-        'message': 'deleted'
-    }), 204
-
+from Models.Models_DB import User, Club, Badge, Question, Answer
+from Repositories import BadgeRepo
+from Controllers import UserController, ClubController, BadgeController, QuizController, LeaderboardController
 
 
 #<------------------------------ COMMENTS? ------------------------------>
-
+"""
 @app.route('/api/comment', methods=['GET'])
 def get_all_comments():
     comments = Comment.get_all()
@@ -416,115 +47,14 @@ def reply_a_comment(comment_id):
     serializer = ReplySchema()
     result = serializer.dump(reply)
     return jsonify(result), 200
-
-
-
-#<------------------------------ QUIZ/ TRIVIA ------------------------------>
-
-@app.route('/api/trivia/data/<int:user_id>', methods=['GET'])
-def get_questions(user_id):
-    return QuizRepo.get_questions(user_id)
-
-
-@app.route('/api/quizes', methods=['GET'])
-def all_questions():
-    questions = Question.get_all()
-    serializer = QuestionSchema(many=True)
-    result = serializer.dump(questions)
-
-    return  jsonify(result), 200
-
-
-@app.route('/api/submitQuiz/<int:user_id>', methods=['POST'])
-def submit_quiz(user_id):
-    return QuizRepo.submit_quiz(user_id, request.json)
-
-
-@app.route('/api/question', methods=['POST'])
-def create_question():
-    data = request.json
-    newQuestion = Question(
-        question=data['question'],
-    )
-    newQuestion.save()
-
-    for answer in data['answers']:
-        newAnswer = Answer(
-            question_id = newQuestion.id,
-            content = answer['content'],
-            correct = answer['correct']
-        )
-        newAnswer.save()
-
-    return jsonify({'message': 'Question made'}), 200
-
-
-@app.route('/api/question/<int:id>', methods=['DELETE'])
-def delete_question(id):
-    question = Question.get_by_id(id)
-    question.delete()
-
-    return jsonify({
-        'message': 'deleted'
-    }), 204
-
-
-@app.route('/api/question/<int:id>', methods=['PUT'])
-def edit_question(id):
-    question_to_update = Question.get_by_id(id)
-    data = request.json
-
-    if 'question' in data and data['question'] != "":
-        question_to_update.question = data['question']
-    db.session.commit()
-
-    questions = Question.get_all()
-    serializer = QuestionSchema(many=True)
-    result = serializer.dump(questions)
-
-    return jsonify(result), 201
-    
-
-@app.route('/api/answers', methods=['GET'])
-def get_answers():
-    answers = Answer.get_all()
-    serializer = AnswerSchema(many=True)
-    result = serializer.dump(answers)
-    return jsonify(result), 200
-
-@app.route('/api/answers/<int:question_id>', methods=['PUT'])
-def edit_answers(question_id):
-    data = request.json
-    question = Question.get_by_id(question_id)
-    answers = question.answers
-    i = 0
-    while i < 4:
-        answer = Answer.get_by_id(answers[i].id)
-        if data[i]['content'] != "":
-            answer.content = data[i]['content']
-        answer.correct = data[i]['correct']
-        db.session.commit()
-        i+=1
-
-    return jsonify({'message': 'Answers updated'}), 201
-
-
-@app.route('/api/quiz/leaderboard/points', methods=['GET'])
-def get_quiz_leaderboard_points():
-    return QuizRepo.get_quiz_leaderboard_points()
-
-
-@app.route('/api/quiz/leaderboard/participations', methods=['GET'])
-def get_quiz_leaderboard_participations():
-    return QuizRepo.get_quiz_leaderboard_participations()
-
+"""
 
 @app.route('/api/')
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({'message': 'Resource not found'}), 404
 
-
+@app.route('/api/')
 @app.errorhandler(500)
 def internal_server(error):
     return jsonify({'message': 'There is a problem'}), 500
@@ -633,8 +163,8 @@ def db_data():
                 email='feppe@TAE.no', club_id=11, total_points=49, role="user",username="TaeFeppe")
     user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=28, 
                 email='jr.Neymar@PSG.com', club_id=7, total_points=32, profile_pic='neymar-pic.png', role="user",username="NeyNeyBrazil")
-    user20 = User(password='TestP', given_name='Vladimir', family_name='Putin', age=68, 
-                email='putin@crazy.com', club_id=8, total_points=1000, profile_pic = 'putin-pic.png', role="user",username="PutinTheGreat")
+    user20 = User(password='TestP', given_name='Gandalf', family_name='The White', age=104, 
+                email='gandalf@LOTR.com', club_id=8, total_points=932, profile_pic = 'gandalf-pic.png', role="user",username="GandalfTheWhite")
     user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
                 email='biden@whitehouse.com', club_id=3, total_points=1, profile_pic='biden-pic.png', role="user",username="SleepyJoe")
     user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
@@ -670,7 +200,6 @@ def db_data():
     user21.follow(20)
 
 
-    Video(caption='Funny video', likes=0, views=0,video='Random Video', user_id=21).save()
 
     Question(question='Hvem vant Allsvenskan i år 2000?').save()
     Answer(content='Halmstad', question_id=1, correct=True).save()
@@ -708,8 +237,49 @@ def db_data():
     Answer(content='AIK', question_id=6, correct=False).save()
     Answer(content='IFK Göteborg', question_id=6, correct=False).save()
 
+
+    users = User.get_all()
+    for user in users:
+        BadgeRepo.give_user_badge("points", user.total_points, user.id)
+
     print('Added data to database')
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(UserController.login())
+    loop.run_until_complete(UserController.get_all_users())
+    loop.run_until_complete(UserController.get_user())
+    loop.run_until_complete(UserController.update_user())
+    loop.run_until_complete(UserController.create_user())
+    loop.run_until_complete(UserController.get_user_by_username())
+    loop.run_until_complete(UserController.delete_user())
+    loop.run_until_complete(UserController.follow_user())
+    loop.run_until_complete(UserController.follow_table())
+    loop.run_until_complete(UserController.like_video())
+    loop.run_until_complete(ClubController.get_all_clubs())
+    loop.run_until_complete(ClubController.create_club())
+    loop.run_until_complete(ClubController.get_one_club())
+    loop.run_until_complete(ClubController.update_club())
+    loop.run_until_complete(ClubController.delete_club())
+    loop.run_until_complete(ClubController.get_leaderboard())
+    loop.run_until_complete(ClubController.supporter_leaderboard())
+    loop.run_until_complete(ClubController.leaderboard_clubs())
+    loop.run_until_complete(ClubController.most_supporters())
+    loop.run_until_complete(BadgeController.get_all_badges())
+    loop.run_until_complete(BadgeController.create_badge())
+    loop.run_until_complete(BadgeController.get_badge())
+    loop.run_until_complete(BadgeController.update_badge())
+    loop.run_until_complete(BadgeController.delete_badge())
+    loop.run_until_complete(QuizController.get_questions())
+    loop.run_until_complete(QuizController.all_questions())
+    loop.run_until_complete(QuizController.submit_quiz())
+    loop.run_until_complete(QuizController.create_question())
+    loop.run_until_complete(QuizController.delete_question())
+    loop.run_until_complete(QuizController.edit_question())
+    loop.run_until_complete(QuizController.get_answers())
+    loop.run_until_complete(QuizController.edit_answers())
+    loop.run_until_complete(QuizController.get_quiz_leaderboard_points())
+    loop.run_until_complete(QuizController.get_quiz_leaderboard_participations())
+    loop.close()
