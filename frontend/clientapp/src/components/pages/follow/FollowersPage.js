@@ -26,7 +26,7 @@ export default function FollowersPage() {
   }
 
   function profilePageLoad(e) {
-    navigate("/profil/" + e);
+    navigate("/" + e);
   }
 
   return (
@@ -42,7 +42,7 @@ export default function FollowersPage() {
 
       <div className="follow-holder">
         {followers.map((obj, index) => (
-          <div className="follow-cnt" onClick={() => profilePageLoad(obj.name)}>
+          <div className="follow-cnt" onClick={() => profilePageLoad(obj.username)}>
             <div className="profilepic">
               <img
                 src={require("../../../assets/profilepic/" + obj.profile_pic)}

@@ -1,4 +1,3 @@
-from enum import unique
 from marshmallow import Schema, fields
 from db import db
 
@@ -13,13 +12,6 @@ followers = db.Table('followers',
                      db.Column('followed_id', db.Integer,
                                db.ForeignKey('user.id'))
                      )
-
-question_answer = db.Table('question_answer',
-                         db.Column('question_id', db.Integer,
-                                db.ForeignKey('question.id')),
-                         db.Column('answer_id', db.Integer, 
-                                db.ForeignKey('answer.id'))
-                         )
             
 saved_videos = db.Table('liked_videos',
                         db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
