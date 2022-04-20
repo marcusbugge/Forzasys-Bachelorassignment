@@ -103,25 +103,6 @@ export default function Navbar() {
               )}
             </div>
           </div>
-          <div
-            className={
-              splitLocation[1] === "mostpopularvideo"
-                ? "active"
-                : "rank-nav-cnt"
-            }
-          >
-            <NavLink to="/mostpopularvideo">Most popular video</NavLink>
-          </div>
-
-          <div
-            className={
-              splitLocation[1] === "mostpopularclubsong"
-                ? "active"
-                : "rank-nav-cnt"
-            }
-          >
-            <NavLink to="/mostpopularclubsong">Most popular clubsong</NavLink>
-          </div>
         </div>
 
         {localStorage.getItem("loggedIn") ? (
@@ -132,7 +113,9 @@ export default function Navbar() {
                 <NavLink
                   to={path}
                   onClick={() => {
-                    setTimeout(() => {window.location.reload(true);}, 10)
+                    setTimeout(() => {
+                      window.location.reload(true);
+                    }, 10);
                   }}
                 >
                   Profil
