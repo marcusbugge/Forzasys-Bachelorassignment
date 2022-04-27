@@ -1,6 +1,9 @@
 from flask import jsonify
-from Models.Models_DB import Club, ClubSchema, User
-from Models.Models_api import Leaderboard, LeaderboardSchema, LeaderboardClub, LeaderboardClubSchema, SupporterChallenge, SupporterChallengeSchema
+from models.UserModel import User
+from models.ClubModel import Club
+from services._SchemasDB import ClubSchema
+from models.API_Models import Leaderboard, LeaderboardClub, SupporterChallenge
+from services._SchemasAPI import LeaderboardSchema, LeaderboardClubSchema, SupporterChallengeSchema
 from db import db
 
 

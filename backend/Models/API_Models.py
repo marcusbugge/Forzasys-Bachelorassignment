@@ -1,5 +1,3 @@
-from marshmallow import Schema, fields
-
 class Leaderboard(object):
     def __init__(self, user_id, rank, name, club, club_logo, points, username):
         self.user_id = user_id
@@ -10,26 +8,11 @@ class Leaderboard(object):
         self.points = points
         self.username = username
 
-class LeaderboardSchema(Schema):
-    user_id = fields.Integer()
-    rank = fields.Integer()
-    name = fields.String()
-    club = fields.String()
-    club_logo = fields.String()
-    points = fields.Integer()
-    username = fields.String()
-
-
 class Trivia(object):
     def __init__(self, question, answers, correct):
         self.question = question
         self.answers = answers
         self.correct = correct
-
-class TriviaSchema(Schema):
-    question = fields.String()
-    answers = fields.List(fields.String())
-    correct = fields.String()
 
 
 class PersonalScore(object):
@@ -51,41 +34,16 @@ class PersonalScore(object):
         self.email = email
         self.videos = videos
 
-class PersonalScoreSchema(Schema):
-    id = fields.Integer()
-    name = fields.String()
-    profile_pic = fields.String()
-    overall_rank = fields.Integer()
-    club_id = fields.Integer()
-    club_name = fields.String()
-    club_logo = fields.String()
-    club_rank = fields.Integer()
-    total_points = fields.Integer()
-    role = fields.String()
-    username = fields.String()
-    badges = fields.List(fields.String())
-    age = fields.Integer()
-    email = fields.String()
-    videos = fields.List(fields.String())
-
 
 class LeaderboardClub(object):
-    def __init__(self, club_id, club_name, club_logo, club_points, club_rank, top_supporter_name):
+    def __init__(self, club_id, club_name, club_logo, club_points, club_rank, top_supporter_name, username):
         self.club_id = club_id
         self.club_name = club_name
         self.club_logo = club_logo
         self.club_points = club_points
         self.club_rank = club_rank
         self.top_supporter_name = top_supporter_name
-
-class LeaderboardClubSchema(Schema):
-    club_id = fields.Integer()
-    club_name = fields.String()
-    club_logo = fields.String()
-    club_points = fields.Integer()
-    club_rank = fields.Integer()
-    top_supporter_name = fields.String()
-
+        self.username = username
 
 
 class Followlist(object):
@@ -102,21 +60,7 @@ class Followlist(object):
         self.badges = badges
         self.badge_count = badge_count
         self.username = username
-
-class FollowlistSchema(Schema):
-    id = fields.Integer()
-    name = fields.String()
-    profile_pic = fields.String()
-    total_points = fields.Integer()
-    overall_rank = fields.Integer()
-    club_id = fields.Integer()
-    club_name = fields.String()
-    club_rank = fields.Integer()
-    club_logo = fields.String()
-    badges = fields.List(fields.String())
-    badge_count = fields.Integer()
-    username = fields.String()
-    
+  
 
 class SupporterChallenge(object):
     def __init__(self, id, club_name, club_logo, supporter_count):
@@ -124,13 +68,6 @@ class SupporterChallenge(object):
         self.club_name = club_name
         self.club_logo = club_logo
         self.supporter_count = supporter_count
-
-
-class SupporterChallengeSchema(Schema):
-    id = fields.Integer()
-    club_name = fields.String()
-    club_logo = fields.String()
-    supporter_count = fields.Integer()
 
 
 class QuizLeaderboard(object):
@@ -142,14 +79,4 @@ class QuizLeaderboard(object):
         self.club_name = club_name
         self.club_logo = club_logo
         self.username = username
-
-
-class QuizLeaderboardSchema(Schema):
-    id = fields.Integer()
-    participations = fields.Integer()
-    total_quiz_points = fields.Integer()
-    name = fields.String()
-    club_name = fields.String()
-    club_logo = fields.String()
-    username = fields.String()
-        
+    

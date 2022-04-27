@@ -1,6 +1,9 @@
 from flask import jsonify
-from Models.Models_DB import Club, User
-from Models.Models_api import Leaderboard, LeaderboardSchema, LeaderboardClub, LeaderboardClubSchema, SupporterChallenge, SupporterChallengeSchema
+from models.UserModel import User
+from models.ClubModel import Club
+from models.API_Models import Leaderboard, LeaderboardClub, SupporterChallenge
+from services._SchemasAPI import LeaderboardClubSchema, LeaderboardSchema, SupporterChallengeSchema
+
 
 
 def get_leaderboard(start, end):
@@ -65,8 +68,14 @@ def leaderboard_clubs(start, end):
     clubs = Club.get_all()
     clubs_sorted_by_points = []
     for club in clubs:
-        clubs_sorted_by_points.append(LeaderboardClub(club_id=club.id,club_name=club.name,club_logo=club.logo,
-                            club_points=total_points_club(club.id),club_rank=None,top_supporter_name=top_supporter(club.id)))
+        clubs_sorted_by_points.append(LeaderboardClub(club_id=club.id,
+                                                      club_name=club.name,
+                                                      club_logo=club.logo,
+                                                      club_points=total_points_club(club.id),
+                                                      club_rank=None,
+                                                      top_supporter_name=top_supporter(club.id),
+                                                      username=top_supporter_username(club.id)
+                                                      ))
     clubs_sorted_by_points.sort(key=lambda x: x.club_points, reverse=True)
     i = 1
     for club in clubs_sorted_by_points:
@@ -102,6 +111,13 @@ def top_supporter(club_id):
     if len(supporters) > 0:
         supporters.sort(key=lambda x: x.total_points, reverse=True)
         return supporters[0].given_name + " " + supporters[0].family_name
+    return None
+
+def top_supporter_username(club_id):
+    supporters = Club.get_by_id(club_id).supporters
+    if len(supporters) > 0:
+        supporters.sort(key=lambda x: x.total_points, reverse=True)
+        return supporters[0].username
     return None
 
 def most_supporters(start, end):

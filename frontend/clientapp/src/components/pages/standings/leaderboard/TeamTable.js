@@ -33,7 +33,7 @@ export default function TeamTable(props) {
       .get(url)
       .then((response) => {
         setStand(response.data);
-        console.log(response.data);
+        console.log("test",response.data);
         setLoading(false);
       })
       .catch(() => {
@@ -87,7 +87,7 @@ export default function TeamTable(props) {
                       ? "table-element-active"
                       : "table-element"
                   }
-                  onClick={() => userprofileLoad(post.name)}
+                  onClick={() => userprofileLoad(post.username)}
                   key={index}
                 >
                   <p className="rank-table">{post.club_rank}</p>
