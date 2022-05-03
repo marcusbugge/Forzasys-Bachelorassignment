@@ -9,9 +9,7 @@ export default function LikedVideos() {
 
   useEffect(() => {
     axios
-      .get(
-        "https://api.forzasys.com/eliteserien/playlist/?filters=%5B%22official%22%5D&tags=%5B%7B%22action%22:%22goal%22%7D%5D&orderby=date&count=20&from=0"
-      )
+      .get("/api/user/like_video/" + localStorage.getItem)
       .then((response) => {
         setVideoData(response.data.playlists);
 
