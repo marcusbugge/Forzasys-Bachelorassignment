@@ -1,42 +1,24 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Video from "../../parts/Video";
+import Alerts from "../../parts/Alerts";
 import "./likedvideos.css";
 
 export default function LikedVideos() {
-  const array = [
-    {
-      name: "Kyser Kyser",
-      rank: "1",
-      club_rank: "1",
-      total_points: "1000",
-      badges: "4",
-      club_name: "AIK",
-    },
-    {
-      name: "Feppe Haha",
-      rank: "2",
-      club_rank: "1",
-      total_points: "100",
-      badges: "2",
-      club_name: "AIK",
-    },
-    {
-      name: "Brede HBK",
-      rank: "3",
-      club_rank: "2",
-      total_points: "10",
-      badges: "1",
-      club_name: "Hacken",
-    },
-    {
-      name: "Henke Star Wars",
-      rank: "22",
-      club_rank: "10",
-      badges: "10",
-      total_points: "1",
-      club_name: "Malmo",
-    },
-  ];
+  const [videoData, setVideoData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/api/user/like_video/" + localStorage.getItem)
+      .then((response) => {
+        setVideoData(response.data.playlists);
+
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  }, []);
 
   return (
     <div className="follow-page">
@@ -46,7 +28,7 @@ export default function LikedVideos() {
       </div>
       <div className="stroke-video"></div>
       <div className="video-feed">
-        {array.map((obj, index) => (
+        {videoData.map((obj, index) => (
           <Video obj={obj} />
         ))}
       </div>
