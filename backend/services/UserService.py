@@ -5,6 +5,7 @@ from models.VideoModel import Video
 from services._SchemasDB import UserSchema
 from models.API_Models import PersonalScore, Followlist
 from services._SchemasAPI import PersonalScoreSchema, FollowlistSchema
+from services._SchemasDB import VideoSchema
 from db import db
 
 
@@ -54,7 +55,7 @@ def get_user(id):
 
 def update_user(id, data):
     user_to_uptdate = User.get_by_id(id)
-    if 'name' in data:
+    if 'name' in data and data['name'] != "":
         name = data['name']
         words = name.split()
         if len(words) == 2:
@@ -65,20 +66,21 @@ def update_user(id, data):
             for i in range(len(words) - 1):
                 user_to_uptdate.given_name += words[i] + " "
                 user_to_uptdate.family_name = words[len(words) - 1]
-    if 'password' in data:
+    if 'password' in data and data['password'] != "":
         user_to_uptdate.password = data['password']
-    if 'age' in data:
+    if 'age' in data and data['age'] != "":
         user_to_uptdate.age = data['age']
-    if 'club_id' in data:
+    if 'club_id' in data and data['club_id'] != "":
         user_to_uptdate.club_id = data['club_id']
-    if 'email' in data:
+    if 'email' in data and data['email'] != "":
         user_to_uptdate.email = data['email']
+    if 'username' in data and data['username'] != "":
+        user_to_uptdate.username = data['username']
 
     db.session.commit()
-
-    serializer = UserSchema()
-    result = serializer.dump(user_to_uptdate)
-    return jsonify(result), 200
+    users = User.get_all()
+    return get_idividual_score(user_to_uptdate, users)
+    
 
 def delete_user(id):
     user_to_delete = User.get_by_id(id)
@@ -175,14 +177,28 @@ def follow_table(id):
 def like_video(user_id, data):
     user = User.get_by_id(user_id)
     video_url = data['video_url']
-    try:
-        video = Video(video = video_url).save()
+    video_thumbnail = data['video_thumbnail']
+    video_description = data['video_description']
+    video = Video.query.filter_by(video_url = video_url).first()
+    if video != None:
         user.like_video(video)
-        user.like_video(user_id, data['video_url'])
-    except:
-        video = Video.query.filter_by(video = video_url).first()
-        user.like_video(video)
-        user.like_video(user_id, data['video_url'])
+    else:
+        newVideo = Video(video_url = video_url, video_thumbnail=video_thumbnail, video_description=video_description)
+        newVideo.save()
+        user.like_video(newVideo)
 
     return jsonify({'message' : 'Video liked'}), 200
 
+def dislike_video(id, data):
+    user = User.get_by_id(id)
+    video = Video.query.filter_by(video_url = data['video_url']).first()
+    user.dislike_video(video)
+    return jsonify({'message' : 'Video disliked'}), 200
+
+
+def get_liked_videos(id):
+    user = User.get_by_id(id)
+    videos = user.videos
+    serializer = VideoSchema(many=True)
+    result = serializer.dump(videos)
+    return jsonify(result), 200

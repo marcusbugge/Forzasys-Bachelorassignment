@@ -49,11 +49,11 @@ export default function MostSupporters() {
   return (
     <div className="club-sort">
       <div className="club-rank">
-        <h1>Most Supporters</h1>
+        <h1>Flest Supportere</h1>
       </div>
       <div className="table-header">
-        <div className="name">Club</div>
-        <div className="club">Supporters</div>
+        <div className="name">Klubb</div>
+        <div className="club">Supportere</div>
       </div>
       {loading ? (
         <div className="loading-standing">
@@ -92,7 +92,7 @@ export default function MostSupporters() {
                 }}
                 className="prev-btn"
               >
-                Prev
+                Forrige
               </button>
             ) : (
               ""
@@ -105,7 +105,7 @@ export default function MostSupporters() {
               }}
               className="next-btn"
             >
-              Next
+              Neste
             </button>
           </div>
         </div>

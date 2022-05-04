@@ -5,8 +5,10 @@ import "./createuser.css";
 import SelectTeam from "./SelectTeam";
 import soccerfan from "../../../assets/images/soccer-fan.jpg";
 import Alerts from "../../parts/Alerts";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateUser() {
+  let navigate = useNavigate();
   const [team, setTeam] = useState("");
 
   const [errorPassword, setErrorPassword] = useState(true);
@@ -39,8 +41,9 @@ export default function CreateUser() {
 
       await axios
         .post(url, userdata, config)
-        .then((response) => {
+        .then(() => {
           setRender(true);
+          handleLogin(userdata.email, userdata.password);
         })
         .catch((e) => console.log("something went wrong :(", e));
     } else {
@@ -48,10 +51,29 @@ export default function CreateUser() {
     }
   }
 
+  async function handleLogin(username, password) {
+    const user = {
+      email: username,
+      password: password,
+    };
+
+    axios
+      .post("http://localhost:5000/api/login", user)
+      .then((response) => {
+        localStorage.setItem("loggedIn", true);
+        localStorage.setItem("user", JSON.stringify(response.data));
+        setTimeout(() => {}, 100);
+        navigate("/");
+      })
+      .catch((e) => {
+        console.log("something went wrong :(", e);
+      });
+  }
+
   return (
     <div>
       <div className="signup">
-        {render ? <Alerts message="User created!" /> : ""}
+        {render ? <Alerts message="Bruker opprettet!" /> : ""}
         <div className="imgholder-fan">
           <img src={soccerfan} alt="soccerfan" />
         </div>
@@ -60,7 +82,7 @@ export default function CreateUser() {
           <div className="signup-content">
             <div className="signup-form">
               <div className="signup-header-cnt">
-                <h1 className="form-title">Sign up</h1>
+                <h1 className="form-title">Lag bruker</h1>
               </div>
 
               <form
@@ -81,7 +103,7 @@ export default function CreateUser() {
                 </div>
                 <div className="form-group">
                   <label htmlFor="name"></label>
-                  <p>First Name</p>
+                  <p>Fornavn</p>
                   <input
                     type="text"
                     name="fname"
@@ -93,7 +115,7 @@ export default function CreateUser() {
 
                 <div className="form-group">
                   <label htmlFor="name"></label>
-                  <p>Surname</p>
+                  <p>Etternavn</p>
                   <input
                     type="text"
                     name="lname"
@@ -105,7 +127,7 @@ export default function CreateUser() {
 
                 <div className="form-group">
                   <label htmlFor="email"></label>
-                  <p>Email</p>
+                  <p>Epost</p>
                   <input
                     type="text"
                     name="email"
@@ -117,7 +139,7 @@ export default function CreateUser() {
 
                 <div className="form-group">
                   <label htmlFor="age"></label>
-                  <p>Age</p>
+                  <p>Alder</p>
                   <input
                     type="number"
                     name="age"
@@ -129,7 +151,7 @@ export default function CreateUser() {
 
                 <div className="form-group">
                   <label htmlFor="password"></label>
-                  <p>Password</p>
+                  <p>Passord</p>
                   <input
                     type="password"
                     name="password"
@@ -141,7 +163,7 @@ export default function CreateUser() {
 
                 <div className="form-group">
                   <label htmlFor="cpassword"></label>
-                  <p>Confirm Your Password</p>
+                  <p>Gjenta passord</p>
                   <input
                     type="password"
                     name="cpassword"
@@ -150,7 +172,7 @@ export default function CreateUser() {
                     required="true"
                   />
                   <h5 className="error" hidden={errorPassword}>
-                    Passwords don't match
+                    Passordene stemmer ikke overens
                   </h5>
                 </div>
 
@@ -163,7 +185,7 @@ export default function CreateUser() {
                     Register
                   </button>
                   <NavLink to="/login" className="signup-image-link">
-                    Do you already have a account? Click here!
+                    Har allerede laget bruker? Trykk her!
                   </NavLink>
                 </div>
               </form>

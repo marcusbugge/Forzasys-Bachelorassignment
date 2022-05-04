@@ -35,7 +35,7 @@ export function FollowLiked() {
           </IconContext.Provider>
         </div>
         <div className="like">
-          <Link to="/highlights">Highlights</Link>
+          <Link to="/highlights">Høydepunkter</Link>
         </div>
       </div>
       <div
@@ -56,7 +56,7 @@ export function FollowLiked() {
           </IconContext.Provider>
         </div>
         <div className="like">
-          <Link to="/">Standings</Link>
+          <Link to="/">Rangering</Link>
         </div>
       </div>
       <div
@@ -79,7 +79,7 @@ export function FollowLiked() {
           </IconContext.Provider>
         </div>
         <div className="like">
-          <Link to="/following">Following</Link>
+          <Link to="/following">Følgere</Link>
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export function FollowLiked() {
           </IconContext.Provider>
         </div>
         <div className="like">
-          <Link to="/likedvideos">Liked videos</Link>
+          <Link to="/likedvideos">Likte høydepunkter</Link>
         </div>
       </div>
     </div>

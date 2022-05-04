@@ -127,6 +127,7 @@
   height: 10px;
   background-color: var(--lightgreen);
   border-radius: 1em;
+  margin-left: 30%;
 }
 
 .circle-nav-trivia {
@@ -134,6 +135,7 @@
   height: 10px;
   background-color: var(--red);
   border-radius: 1em;
+  margin-left: 30%;
 }
 
 .trivia-cnt-nav a {

@@ -307,7 +307,7 @@ export default function Weeklytrivia() {
         {solution.map((element, index) => (
           <div key={index} className="quiz-solution-element">
             <div>
-              <p style={{color:"var(--gray1)"}}>{element.question}</p>
+              <p style={{ color: "var(--gray1)" }}>{element.question}</p>
             </div>
             {element.answers.map((answer, index) => (
               <div key={index}>
@@ -322,7 +322,7 @@ export default function Weeklytrivia() {
                     Du svarte: {answer.clicked}
                   </p>
                 ) : (
-                  <p style={{color: "var(--red)"}}>Du svarte ikke</p>
+                  <p style={{ color: "var(--red)" }}>Du svarte ikke</p>
                 )}
                 <p>Riktig svar: {answer.correct}</p>
               </div>
@@ -353,11 +353,79 @@ export default function Weeklytrivia() {
     return "";
   };
 
+  const LeaderboardQuiz = () => {
+    return (
+      <div className="quiz-table">
+        <div className="quiz-table-head">
+          <div className="qth-rank">Rangering</div>
+          <div className="qth-name">Navn</div>
+          <div className="qth-participations">Deltatt</div>
+          <div className="qth-maxScore">Totale quiz poeng</div>
+        </div>
+        <div className="quiz-table-body">
+          {quizTable === "points" ? (
+            <div>
+              {quizScoresPoints.map((element, index) => (
+                <div
+                  className={
+                    loggedUser.name === element.name
+                      ? "qtb-row-active"
+                      : "qtb-row"
+                  }
+                  onClick={() => navigate("/" + element.username)}
+                >
+                  <div className="qtb-rank">{index + 1}</div>
+                  <div className="qtb-name">{element.name}</div>
+                  <div className="qtb-participations">
+                    {element.participations}
+                  </div>
+                  <div className="qtb-maxScore">
+                    {element.total_quiz_points}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              {quizScoresParticipations.map((element, index) => (
+                <div
+                  className={
+                    loggedUser.name === element.name
+                      ? "qtb-row-active"
+                      : "qtb-row"
+                  }
+                  onClick={() => navigate("/" + element.username)}
+                >
+                  <div className="qtb-rank">{index + 1}</div>
+                  <div className="qtb-name">{element.name}</div>
+                  <div className="qtb-participations">
+                    {element.participations}
+                  </div>
+                  <div className="qtb-maxScore">
+                    {element.total_quiz_points}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {quizTable === "points" ? (
+          <button onClick={() => setQuizTable("participations")}>
+            Deltatt
+          </button>
+        ) : (
+          <button onClick={() => setQuizTable("points")}>Poeng</button>
+        )}
+      </div>
+    );
+  };
+
   if (!loading) {
     return (
       <div className="quizpage">
         <div className="header">
-          <h1>Weekly Trivia</h1>
+          <h1>Ukentlig quiz</h1>
         </div>
         <div className="trivia-info">
           <div
@@ -439,69 +507,7 @@ export default function Weeklytrivia() {
             ""
           )}
         </div>
-        <div className="quiz-table">
-          <div className="quiz-table-head">
-            <div className="qth-rank">Rangering</div>
-            <div className="qth-name">Navn</div>
-            <div className="qth-participations">Deltatt</div>
-            <div className="qth-maxScore">Totale quiz poeng</div>
-          </div>
-          <div className="quiz-table-body">
-            {quizTable === "points" ? (
-              <div>
-                {quizScoresPoints.map((element, index) => (
-                  <div
-                    className={
-                      loggedUser.name === element.name
-                        ? "qtb-row-active"
-                        : "qtb-row"
-                    }
-                    onClick={() => navigate("/" + element.username)}
-                  >
-                    <div className="qtb-rank">{index + 1}</div>
-                    <div className="qtb-name">{element.name}</div>
-                    <div className="qtb-participations">
-                      {element.participations}
-                    </div>
-                    <div className="qtb-maxScore">
-                      {element.total_quiz_points}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div>
-                {quizScoresParticipations.map((element, index) => (
-                  <div
-                    className={
-                      loggedUser.name === element.name
-                        ? "qtb-row-active"
-                        : "qtb-row"
-                    }
-                    onClick={() => navigate("/" + element.username)}
-                  >
-                    <div className="qtb-rank">{index + 1}</div>
-                    <div className="qtb-name">{element.name}</div>
-                    <div className="qtb-participations">
-                      {element.participations}
-                    </div>
-                    <div className="qtb-maxScore">
-                      {element.total_quiz_points}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {quizTable === "points" ? (
-            <button onClick={() => setQuizTable("participations")}>
-              Deltatt
-            </button>
-          ) : (
-            <button onClick={() => setQuizTable("points")}>Poeng</button>
-          )}
-        </div>
+        <LeaderboardQuiz />
       </div>
     );
   } else {
@@ -509,6 +515,9 @@ export default function Weeklytrivia() {
       <div className="quizpage">
         <div className="header">
           <h1>Weekly Trivia</h1>
+        </div>
+        <div className="space-quizpage">
+          <LeaderboardQuiz />
         </div>
       </div>
     );

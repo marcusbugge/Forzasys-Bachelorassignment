@@ -101,7 +101,7 @@ export default function Profilepage() {
 
             <div className="badges-cnt">
               <div className="badges-cnt-title">
-                <h1>Dine Badges</h1>
+                {loggedUsername == username ? (<h1>Dine Badges</h1>) : (<h1>{user.name}s Badges</h1>)}
               </div>
               <div className="badges-cnt-badges">
                 {badges.map((icon, index) => (

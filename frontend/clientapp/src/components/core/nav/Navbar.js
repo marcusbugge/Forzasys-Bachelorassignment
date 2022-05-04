@@ -4,7 +4,8 @@ import "./navbar.css";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import Welcome from "../../pages/welcome/Welcome";
 import { useState } from "react";
-
+import { IconContext } from "react-icons/lib";
+import { MdOutlineLeaderboard } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import Login from "../../pages/login/Login";
@@ -57,7 +58,7 @@ export default function Navbar() {
           {" "}
           <h1>{loggedUser.name}</h1>
           <button className="logout-btn" onClick={logout}>
-            Log out
+            Logg ut
           </button>
         </div>
       ) : (
@@ -70,7 +71,7 @@ export default function Navbar() {
         {localStorage.getItem("loggedIn") ? (
           <div>
             <FollowLiked />
-            <h1>LEADERBOARD</h1>
+            <h1>POENGTAVLE</h1>
             <div className="links">
               <div className="rank-nav-cnt-">
                 <Link to="/">Allsvenskan</Link>
@@ -84,10 +85,33 @@ export default function Navbar() {
             </div>
           </div>
         ) : (
-          ""
+          <div
+            className={
+              splitLocation[1] === ""
+                ? "active-cnt-elem-active"
+                : "active-cnt-elem"
+            }
+            style={{ marginTop: "2em" }}
+          >
+            <div>
+              <IconContext.Provider
+                value={{
+                  color: "white",
+                  size: "20px",
+                }}
+              >
+                <div className="star-icon">
+                  <MdOutlineLeaderboard />
+                </div>
+              </IconContext.Provider>
+            </div>
+            <div className="like">
+              <Link to="/">Rangering</Link>
+            </div>
+          </div>
         )}
 
-        <h1>COMPETITIONS</h1>
+        <h1>KONKURANSER</h1>
         <div className="links">
           <div
             className={
@@ -95,7 +119,7 @@ export default function Navbar() {
             }
           >
             <div className="trivia-cnt-nav">
-              <NavLink to="/weeklytrivia">Weekly trivia</NavLink>
+              <NavLink to="/weeklytrivia">Quiz</NavLink>
               {triviaStatus ? (
                 <div className="circle-nav-trivia-ok"></div>
               ) : (

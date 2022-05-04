@@ -64,14 +64,14 @@ export default function Login() {
         <div className="loginform">
           <div className="login-part2">
             <div className="loginheader-cnt">
-              <h1>Welcome back!</h1>
+              <h1>Velkommen tilbake!</h1>
             </div>
 
             <form onSubmit={handleLogin}>
               <div className="label-cnt">
                 <div className="input">
                   <input className="input-field" name="email" type="text" />
-                  <label className="input-label">Email</label>
+                  <label className="input-label">Epost</label>
                 </div>
                 <div className="input">
                   <input
@@ -79,17 +79,17 @@ export default function Login() {
                     name="password"
                     type="password"
                   />
-                  <label className="input-label">Password</label>
+                  <label className="input-label">Passord</label>
                 </div>
 
                 {hidden ? (
                   <div>""</div>
                 ) : (
-                  <div className="failed-login">Wrong email or password</div>
+                  <div className="failed-login">Feil epost eller passord</div>
                 )}
 
                 <div className="signup-link">
-                  <Link to="/signup">Dont have a user? Sign up now!</Link>
+                  <Link to="/signup">Har ikke registrert bruker enda? Registrer deg her!</Link>
                 </div>
               </div>
 

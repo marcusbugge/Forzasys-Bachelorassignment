@@ -4,6 +4,7 @@ import axios from "axios";
 import { IconContext } from "react-icons";
 import { FiInfo } from "react-icons/fi";
 import { BsKey } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 export default function Editprofile() {
   const loggedUser = JSON.parse(localStorage.getItem("user"));
@@ -23,6 +24,7 @@ export default function Editprofile() {
   const [display1, setDisplay1] = useState("edit-choice-button");
   const [display2, setDisplay2] = useState("edit-choice-button");
   const [display3, setDisplay3] = useState("edit-choice-button");
+  let navigate = useNavigate();
 
   const page1Visible = () => {
     setDisplay1("edit-choice-button-displayed");
@@ -69,18 +71,18 @@ export default function Editprofile() {
     if (email !== "" || name !== "" || uname !== "") {
       const userdata = {
         name: name,
-        uname: uname,
+        username: uname,
         email: email,
       };
-      console.log(userdata);
+      console.log("userdata", userdata);
 
       let url = "http://localhost:5000/api/user/" + loggedUser.id;
 
-      axios
+      await axios
         .put(url, userdata)
         .then((response) => {
-          console.log(response.status);
-          console.log(response.data);
+          localStorage.setItem("user", JSON.stringify(response.data));
+          navigate("/" + response.data.username);
         })
         .catch((e) => console.log("something went wrong :(", e));
     }
@@ -116,7 +118,7 @@ export default function Editprofile() {
   return (
     <div>
       <div className="editprofile-header">
-        <h1>Editing profile</h1>
+        <h1>Endre på profil</h1>
       </div>
       <div className="edit-cnt">
         <div className="edit-choice-cnt">
@@ -140,12 +142,6 @@ export default function Editprofile() {
               </div>
             </IconContext.Provider>
             Passord
-          </button>
-
-          <div className="separator-horizontal"></div>
-
-          <button className={display3} onClick={() => page3Visible()}>
-            Lorem Ipsum
           </button>
 
           <div className="separator-horizontal"></div>

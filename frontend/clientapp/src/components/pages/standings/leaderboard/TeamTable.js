@@ -65,13 +65,13 @@ export default function TeamTable(props) {
     return (
       <div className="club-sort">
         <div className="club-rank">
-          <h1>Club Ranking</h1>
+          <h1>klubbrangering</h1>
         </div>
         <div className="table-header">
-          <div className="rank">Rank</div>
-          <div className="name">Club</div>
-          <div className="club">Top Supporter</div>
-          <div className="points">Points</div>
+          <div className="rank">Rangering</div>
+          <div className="name">Klubb</div>
+          <div className="club">Ledende supporter</div>
+          <div className="points">Poeng</div>
         </div>
         {loading ? (
           <div className="loading-standing">
@@ -113,7 +113,7 @@ export default function TeamTable(props) {
                   }}
                   className="prev-btn"
                 >
-                  Prev
+                  Forrige
                 </button>
               ) : (
                 ""
@@ -126,7 +126,7 @@ export default function TeamTable(props) {
                 }}
                 className="next-btn"
               >
-                Next
+                Neste
               </button>
             </div>
           </div>

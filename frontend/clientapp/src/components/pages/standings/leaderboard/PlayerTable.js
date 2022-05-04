@@ -55,13 +55,13 @@ export default function PlayerTable(props) {
     return (
       <div className="player-sort">
         <div className="club-rank">
-          <h1>Player Ranking</h1>
+          <h1>Spillerrangering</h1>
         </div>
         <div className="table-header">
-          <div className="rank">Rank</div>
-          <div className="name">Name</div>
-          <div className="club">Club</div>
-          <div className="points">Points</div>
+          <div className="rank">Rangering</div>
+          <div className="name">Navn</div>
+          <div className="club">Klubb</div>
+          <div className="points">Poeng</div>
         </div>
         {loading ? (
           <div className="loading-standing">
@@ -104,7 +104,7 @@ export default function PlayerTable(props) {
                   }}
                   className="prev-btn"
                 >
-                  Prev
+                  Forrige
                 </button>
               ) : (
                 ""
@@ -117,7 +117,7 @@ export default function PlayerTable(props) {
                 }}
                 className="next-btn"
               >
-                Next
+                Neste
               </button>
             </div>
           </div>
