@@ -1,9 +1,13 @@
 import asyncio
 from flask import jsonify
 from db import db, app
-from Models.Models_DB import User, Club, Badge, Question, Answer
-from Repositories import BadgeRepo
-from Controllers import UserController, ClubController, BadgeController, QuizController, LeaderboardController
+from models.UserModel import User
+from models.ClubModel import Club
+from models.BadgeModel import Badge
+from models.QuestionModel import Question
+from models.AnswerModel import Answer
+from services import BadgeService
+from controllers import UserController, ClubController, BadgeController, QuizController, LeaderboardController
 
 
 #<------------------------------ COMMENTS? ------------------------------>
@@ -240,7 +244,7 @@ def db_data():
 
     users = User.get_all()
     for user in users:
-        BadgeRepo.give_user_badge("points", user.total_points, user.id)
+        BadgeService.give_user_badge("points", user.total_points, user.id)
 
     print('Added data to database')
 
@@ -263,10 +267,10 @@ if __name__ == '__main__':
     loop.run_until_complete(ClubController.get_one_club())
     loop.run_until_complete(ClubController.update_club())
     loop.run_until_complete(ClubController.delete_club())
-    loop.run_until_complete(ClubController.get_leaderboard())
-    loop.run_until_complete(ClubController.supporter_leaderboard())
-    loop.run_until_complete(ClubController.leaderboard_clubs())
-    loop.run_until_complete(ClubController.most_supporters())
+    loop.run_until_complete(LeaderboardController.get_leaderboard())
+    loop.run_until_complete(LeaderboardController.supporter_leaderboard())
+    loop.run_until_complete(LeaderboardController.leaderboard_clubs())
+    loop.run_until_complete(LeaderboardController.most_supporters())
     loop.run_until_complete(BadgeController.get_all_badges())
     loop.run_until_complete(BadgeController.create_badge())
     loop.run_until_complete(BadgeController.get_badge())

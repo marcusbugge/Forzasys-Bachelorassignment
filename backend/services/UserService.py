@@ -1,8 +1,11 @@
 from flask import jsonify
-from Models.Models_DB import User, UserSchema, Club
-from Models.Models_api import PersonalScore, PersonalScoreSchema, Followlist, FollowlistSchema
+from models.UserModel import User
+from models.ClubModel import Club
+from models.VideoModel import Video
+from services._SchemasDB import UserSchema
+from models.API_Models import PersonalScore, Followlist
+from services._SchemasAPI import PersonalScoreSchema, FollowlistSchema
 from db import db
-from Repositories import VideoRepo
 
 
 def get_all_users():
@@ -12,6 +15,17 @@ def get_all_users():
     return jsonify(result), 200
 
 def create_user(data):
+    UserSchema().validate({
+        'password' : data['password'],
+        'given_name' : data['given_name'],
+        'family_name': data['family_name'],
+        'total_points' : 0,
+        'age': data['age'],
+        'email': data['email'],
+        'club_id': data['club_id'],
+        'role' : data['role'],
+        'username' : data['username']
+        })
     newUser = User(
         password=data['password'],
         given_name=data['given_name'],
@@ -159,6 +173,16 @@ def follow_table(id):
     return jsonify(result), 200
 
 def like_video(user_id, data):
-    VideoRepo.like_video(user_id, data['video_url'])
+    user = User.get_by_id(user_id)
+    video_url = data['video_url']
+    try:
+        video = Video(video = video_url).save()
+        user.like_video(video)
+        user.like_video(user_id, data['video_url'])
+    except:
+        video = Video.query.filter_by(video = video_url).first()
+        user.like_video(video)
+        user.like_video(user_id, data['video_url'])
+
     return jsonify({'message' : 'Video liked'}), 200
 

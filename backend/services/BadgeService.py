@@ -1,5 +1,7 @@
 from flask import jsonify
-from Models.Models_DB import Badge, BadgeSchema, User
+from models.UserModel import User
+from models.BadgeModel import Badge
+from services._SchemasDB import BadgeSchema
 from db import db
 
 

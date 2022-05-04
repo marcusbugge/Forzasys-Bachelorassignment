@@ -1,9 +1,15 @@
 from flask import jsonify
-from Models.Models_DB import Question, SubmittedQuiz, SubmittedQuizSchema, Club, User, QuestionSchema, Answer, AnswerSchema
-from Models.Models_api import Trivia, TriviaSchema, QuizLeaderboard, QuizLeaderboardSchema
+from models.QuestionModel import Question
+from models.SubmittetQuizModel import SubmittedQuiz
+from models.ClubModel import Club
+from models.UserModel import User
+from models.AnswerModel import Answer
+from services._SchemasDB import SubmittedQuizSchema, QuestionSchema, AnswerSchema
+from models.API_Models import Trivia, QuizLeaderboard
+from services._SchemasAPI import TriviaSchema, QuizLeaderboardSchema
 from sqlalchemy import desc
 from datetime import datetime, timedelta, time
-from Repositories.BadgeRepo import give_user_badge
+from services.BadgeService import give_user_badge
 from db import db
 
 def get_questions(user_id):
