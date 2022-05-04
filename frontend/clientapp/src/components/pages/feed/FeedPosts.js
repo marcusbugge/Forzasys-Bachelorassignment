@@ -7,19 +7,17 @@ import VideoInput from "./VideoInput";
 import { IconContext } from "react-icons/lib";
 
 export default function FeedPosts() {
-  function shareButton(actiontype, post) {
-    const action = {
-      user: post.owner,
-      actiontype: actiontype,
-      video: post.url,
-    };
+  const loggedUser = JSON.parse(localStorage.getItem("user"));
 
-    console.log(action);
+  function likeButton(actiontype, post) {
+    const video_id = "";
+
+    console.log(video_id);
     console.log(post);
+    console.log(loggedUser.id);
+    let url = "/api/user/like_video/" + loggedUser.id;
 
-    let url = "/api/actions";
-
-    axios.post(url, action).then((response) => {
+    axios.post(url, video_id).then((response) => {
       console.log(response);
     });
   }
@@ -83,10 +81,13 @@ export default function FeedPosts() {
               <h1>{item.description}</h1>
               <p className="views-count">Visninger: {item.view_count}</p>
             </div>
-            <div className="video-actions">
+            <div
+              onClick={() => likeButton(item.video_url)}
+              className="video-actions"
+            >
               <IconContext.Provider
                 value={{
-                  color: "var(--primary",
+                  color: "var(--primary)",
                   size: "30px",
                 }}
               >

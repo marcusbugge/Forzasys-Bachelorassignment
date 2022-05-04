@@ -4,17 +4,21 @@ import { NavLink } from "react-router-dom";
 import "./createuser.css";
 import SelectTeam from "./SelectTeam";
 import soccerfan from "../../../assets/images/soccer-fan.jpg";
+import Alerts from "../../parts/Alerts";
 
 export default function CreateUser() {
-
   const [team, setTeam] = useState("");
 
   const [errorPassword, setErrorPassword] = useState(true);
+  const [render, setRender] = useState(false);
 
   async function signup(e) {
     e.preventDefault();
 
-    if (e.target.password.value !== "" && e.target.password.value === e.target.cpassword.value) {
+    if (
+      e.target.password.value !== "" &&
+      e.target.password.value === e.target.cpassword.value
+    ) {
       setErrorPassword(true);
       const userdata = {
         password: e.target.password.value,
@@ -23,8 +27,8 @@ export default function CreateUser() {
         age: e.target.age.value,
         email: e.target.email.value,
         club_id: team,
-        role: 'user',
-        username: e.target.username.value
+        role: "user",
+        username: e.target.username.value,
       };
       console.log(userdata);
 
@@ -36,8 +40,7 @@ export default function CreateUser() {
       await axios
         .post(url, userdata, config)
         .then((response) => {
-          console.log(response.status);
-          console.log(response.data);
+          setRender(true);
         })
         .catch((e) => console.log("something went wrong :(", e));
     } else {
@@ -48,6 +51,7 @@ export default function CreateUser() {
   return (
     <div>
       <div className="signup">
+        {render ? <Alerts message="User created!" /> : ""}
         <div className="imgholder-fan">
           <img src={soccerfan} alt="soccerfan" />
         </div>

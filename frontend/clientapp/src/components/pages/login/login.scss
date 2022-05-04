@@ -177,7 +177,7 @@ select:-webkit-autofill {
   margin-bottom: -20px;
 }
 
-.failed-login{
+.failed-login {
   color: rgb(255, 114, 114);
 }
 
@@ -187,8 +187,9 @@ select:-webkit-autofill {
   position: fixed;
 
   right: 0;
-  margin-top: 100px;
-  margin: 0 100px 40px 0;
+  top: 0;
+  margin-top: 20px;
+
   background: var(--darkgreen);
   height: 60px;
   width: 250px;
