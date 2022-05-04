@@ -2,7 +2,9 @@ from db import db
 
 class Video(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    video = db.Column(db.String(500), nullable=False, unique=True)
+    video_url = db.Column(db.String(500), unique=True, nullable=False)
+    video_thumbnail = db.Column(db.String(500), unique=True, nullable=False)
+    video_description = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
         return f'{self.id}'

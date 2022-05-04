@@ -13,9 +13,8 @@ export default function FollowersPage() {
   useEffect(() => {
     if (followers.length == 0) {
       requestAPI(url);
-    }
-    else{
-      console.log("followers ", followers)
+    } else {
+      console.log("followers ", followers);
     }
   }, [followers]);
 
@@ -32,7 +31,7 @@ export default function FollowersPage() {
   return (
     <div className="follow-page">
       <div className="header-followpage-cnt">
-        <h1>Your friends</h1>
+        <h1>Dine følgere</h1>
         <p>
           Her kan du se dine venners aktivitet, og hvordan de gjør det i
           fan-ligaen!
@@ -42,7 +41,10 @@ export default function FollowersPage() {
 
       <div className="follow-holder">
         {followers.map((obj, index) => (
-          <div className="follow-cnt" onClick={() => profilePageLoad(obj.username)}>
+          <div
+            className="follow-cnt"
+            onClick={() => profilePageLoad(obj.username)}
+          >
             <div className="profilepic">
               <img
                 src={require("../../../assets/profilepic/" + obj.profile_pic)}
@@ -58,23 +60,22 @@ export default function FollowersPage() {
 
             <div className="follow-data">
               <div className="ranking">
-                <p>Overall rank</p>
+                <p>Total rangering</p>
                 <p className="score-follow">{obj.overall_rank}.</p>
               </div>
               <div className="clubrank">
-                <p>Clubrank</p>
+                <p>Klubbrangering</p>
                 <p className="score-follow">{obj.club_rank}.</p>
               </div>
               <div className="totalpoints">
-                <p>Total points</p>
+                <p>Poeng</p>
                 <p className="score-follow">{obj.total_points}</p>
               </div>
             </div>
 
             <div className="club-follow">
               <img
-                src={require("../../../assets/teamLogos/" +
-                  obj.club_logo)}
+                src={require("../../../assets/teamLogos/" + obj.club_logo)}
                 alt={obj.club_name}
               />
               <p>{obj.club_name}</p>

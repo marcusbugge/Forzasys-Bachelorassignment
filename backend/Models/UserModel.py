@@ -84,6 +84,10 @@ class User(db.Model):
     def like_video(self, video):
         self.videos.append(video)
         db.session.commit()
+    
+    def dislike_video(self, video):
+        self.videos.remove(video)
+        db.session.commit()
 
     def is_following(self, user):
         return self.followed.filter(

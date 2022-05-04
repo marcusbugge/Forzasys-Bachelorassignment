@@ -50,3 +50,10 @@ async def follow_table(id):
 async def like_video(id):
     return UserService.like_video(id, request.json)
 
+@app.route('/api/user/dislike_video/<int:id>', methods=['POST'])
+async def dislike_video(id):
+    return UserService.dislike_video(id, request.json)
+
+@app.route('/api/user/liked_videos/<int:id>', methods=['GET'])
+async def get_liked_videos(id):
+    return UserService.get_liked_videos(id)

@@ -45,12 +45,12 @@ export default function MainStandPage() {
   return (
     <div>
       <div className="header">
-        <h1>Standings</h1>
+        <h1>Rangering</h1>
       </div>
 
       <div className="tables">
         <div className="filtering">
-          <h1>Sort by</h1>
+          <h1>Sorter etter</h1>
           <div className="sort-buttons">
             {localStorage.getItem("loggedIn") ? (
               <button onClick={(e) => sortByYourClub()}>
@@ -59,7 +59,7 @@ export default function MainStandPage() {
             ) : null}
 
             <button onClick={() => sortByPlayers()}>
-              Total points by players
+              Spillere
             </button>
           </div>
         </div>

@@ -11,7 +11,7 @@ class UserSchema(Schema):
     club_id = fields.Integer()
     total_points = fields.Integer()
     followed = fields.List(fields.String())
-    saved_videos = fields.List(fields.String())
+    videos = fields.List(fields.String())
     badges = fields.List(fields.String())
     role = fields.String()
     username = fields.String()
@@ -28,7 +28,10 @@ class ClubSchema(Schema):
 
 class VideoSchema(Schema):
     id = fields.Integer()
-    video = fields.String()
+    video_url = fields.String()
+    video_thumbnail = fields.String()
+    video_description = fields.String()
+    video_description = fields.String()
 
 
 class BadgeSchema(Schema):
