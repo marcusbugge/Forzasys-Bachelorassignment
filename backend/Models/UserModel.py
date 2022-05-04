@@ -4,15 +4,18 @@ from models.BadgeModel import Badge
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    password = db.Column(db.String(40), nullable=False)
     given_name = db.Column(db.String(50), nullable=False)
     family_name = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    password = db.Column(db.String(40), nullable=False)
     total_points = db.Column(db.Integer, nullable=False)
     club_id = db.Column(db.Integer, db.ForeignKey('club.id'), nullable=False)
     profile_pic = db.Column(db.String(30), nullable=False, default='default-profilepic.png')
+    role = db.Column(db.String(10), nullable=False)
 
+    #attribute for other users one instance of userobject is following
     #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
     followed = db.relationship(
         'User', secondary=followers,
@@ -20,12 +23,14 @@ class User(db.Model):
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
+    #attribute for videos an instance of userobject has liked
     videos = db.relationship(
         'Video', secondary=saved_videos, backref='database', lazy='select')
+    
+    #attribute for badges earned by an instance of userobject
     badges = db.relationship(
         'Badge', secondary=earned_badges, backref='database', lazy='select')
-    role = db.Column(db.String(10), nullable=False)
-    username = db.Column(db.String(20), unique=True, nullable=False)
+
 
     def __repr__(self):
         return f'id={self.id}, score={self.total_points}'

@@ -8,11 +8,12 @@ class Leaderboard(object):
         self.points = points
         self.username = username
 
-class Trivia(object):
-    def __init__(self, question, answers, correct):
-        self.question = question
-        self.answers = answers
-        self.correct = correct
+class SupporterChallenge(object):
+    def __init__(self, id, club_name, club_logo, supporter_count):
+        self.id = id
+        self.club_name = club_name
+        self.club_logo = club_logo
+        self.supporter_count = supporter_count
 
 
 class PersonalScore(object):
@@ -46,6 +47,13 @@ class LeaderboardClub(object):
         self.username = username
 
 
+
+class Trivia(object):
+    def __init__(self, question, answers, correct):
+        self.question = question
+        self.answers = answers
+        self.correct = correct
+
 class Followlist(object):
     def __init__(self, id, name, profile_pic, total_points, overall_rank, club_id, club_name, club_rank, club_logo, badges, badge_count, username):
         self.id = id
@@ -61,13 +69,6 @@ class Followlist(object):
         self.badge_count = badge_count
         self.username = username
   
-
-class SupporterChallenge(object):
-    def __init__(self, id, club_name, club_logo, supporter_count):
-        self.id = id
-        self.club_name = club_name
-        self.club_logo = club_logo
-        self.supporter_count = supporter_count
 
 
 class QuizLeaderboard(object):
