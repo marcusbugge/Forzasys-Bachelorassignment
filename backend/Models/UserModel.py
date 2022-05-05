@@ -1,12 +1,13 @@
 from db import db
 from models.Joined_tables import followers, saved_videos, earned_badges
 from models.BadgeModel import Badge
+import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     given_name = db.Column(db.String(50), nullable=False)
     family_name = db.Column(db.String(50), nullable=False)
-    age = db.Column(db.Integer, nullable=False)
+    age = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(40), nullable=False)
@@ -33,7 +34,7 @@ class User(db.Model):
 
 
     def __repr__(self):
-        return f'id={self.id}, score={self.total_points}'
+        return f'{self.id}'
 
     @classmethod
     def get_all(cls):
@@ -67,6 +68,10 @@ class User(db.Model):
             self.followed.remove(user)
             db.session.commit()
 
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
     def add_badge(self, badge_id, category):
         new_badge = Badge.get_by_id(badge_id)
         new_category = True
@@ -88,10 +93,6 @@ class User(db.Model):
     def dislike_video(self, video):
         self.videos.remove(video)
         db.session.commit()
-
-    def is_following(self, user):
-        return self.followed.filter(
-            followers.c.followed_id == user.id).count() > 0
 
     def is_authenticated(self, email, password):
         if email.lower() == self.email.lower() and password == self.password:

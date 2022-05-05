@@ -111,7 +111,6 @@
 
 .profile-edit-name {
   margin-top: 100px;
-  margin-bottom: 50px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -136,6 +135,45 @@
   transition: transform 1s;
 }
 
+.follow-button{
+  margin-top: 25px;
+  background-color: var(--primary);
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.unfollow-button{
+  margin-top: 25px;
+  background-color: var(--secondary);
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.follow-button:hover{
+  background-color: var(--secondary);
+  cursor: pointer;
+}
+
+.unfollow-button:hover{
+  background-color: var(--primary);
+  cursor: pointer;
+}
+
+.follow-button h3{
+  color: white;
+  margin-top: 2%;
+  margin-left: 30%;
+}
+
+.unfollow-button h3{
+  color: white;
+  margin-top: 2%;
+  margin-left: 22%;
+}
+
+
 /** BAGDES **/
 
 .badges-cnt {
@@ -147,6 +185,7 @@
   width: 70%;
   border-radius: 10px;
   flex-direction: column;
+  margin-top: 50px;
 }
 
 .badge {

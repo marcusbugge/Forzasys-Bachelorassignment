@@ -60,6 +60,7 @@ export default function FeedPosts() {
       .then((response) => {
         setLikedVideos(response.data);
         console.log(response.data);
+        console.log("Status", response.status)
       })
       .catch((error) => {
         console.error("There was an error!", error);

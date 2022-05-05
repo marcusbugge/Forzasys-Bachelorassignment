@@ -30,9 +30,10 @@ class PersonalScoreSchema(Schema):
     role = fields.String()
     username = fields.String()
     badges = fields.List(fields.String())
-    age = fields.Integer()
+    age = fields.String()
     email = fields.String()
     videos = fields.List(fields.String())
+    following = fields.List(fields.String())
 
 
 class LeaderboardClubSchema(Schema):

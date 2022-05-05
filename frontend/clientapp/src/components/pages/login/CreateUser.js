@@ -13,8 +13,12 @@ export default function CreateUser() {
 
   const [errorPassword, setErrorPassword] = useState(true);
   const [render, setRender] = useState(false);
+  const [hiddenEmail, setHiddenEmail] = useState(true);
+  const [hiddenUsername, setHiddenUsername] = useState(true);
 
   async function signup(e) {
+    setHiddenEmail(true);
+    setHiddenUsername(true);
     e.preventDefault();
 
     if (
@@ -45,7 +49,15 @@ export default function CreateUser() {
           setRender(true);
           handleLogin(userdata.email, userdata.password);
         })
-        .catch((e) => console.log("something went wrong :(", e));
+        .catch((e) => {
+          console.log("something went wrong :(", e);
+          if (e.response.data.message === 'email'){
+            setHiddenEmail(false);
+          }else if(e.response.data.message === 'username'){
+            setHiddenUsername(false);
+          }
+      });
+
     } else {
       setErrorPassword(false);
     }
@@ -64,6 +76,7 @@ export default function CreateUser() {
         localStorage.setItem("user", JSON.stringify(response.data));
         setTimeout(() => {}, 100);
         navigate("/");
+        window.location.reload(true);
       })
       .catch((e) => {
         console.log("something went wrong :(", e);
@@ -82,7 +95,7 @@ export default function CreateUser() {
           <div className="signup-content">
             <div className="signup-form">
               <div className="signup-header-cnt">
-                <h1 className="form-title">Lag bruker</h1>
+                <h1 className="form-title">Registrer bruker</h1>
               </div>
 
               <form
@@ -100,7 +113,9 @@ export default function CreateUser() {
                     autoComplete="off"
                     required="true"
                   />
+                  <p style={{color: "red"}} hidden={hiddenUsername}>Brukernavnet er opptatt, velg et annet!</p>
                 </div>
+
                 <div className="form-group">
                   <label htmlFor="name"></label>
                   <p>Fornavn</p>
@@ -135,13 +150,13 @@ export default function CreateUser() {
                     autoComplete="off"
                     required="true"
                   />
+                  <p style={{color: "red"}} hidden={hiddenEmail}>Eposten er allerede i bruk, velg en annen epost!</p>
                 </div>
-
                 <div className="form-group">
                   <label htmlFor="age"></label>
-                  <p>Alder</p>
+                  <p>Født</p>
                   <input
-                    type="number"
+                    type="date"
                     name="age"
                     id="age"
                     autoComplete="off"
@@ -172,7 +187,7 @@ export default function CreateUser() {
                     required="true"
                   />
                   <h5 className="error" hidden={errorPassword}>
-                    Passordene stemmer ikke overens
+                    Passordene er ikke like
                   </h5>
                 </div>
 

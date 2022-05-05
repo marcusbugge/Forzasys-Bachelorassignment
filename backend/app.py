@@ -8,6 +8,7 @@ from models.QuestionModel import Question
 from models.AnswerModel import Answer
 from services import BadgeService
 from controllers import UserController, ClubController, BadgeController, QuizController, LeaderboardController
+import datetime
 
 
 #<------------------------------ COMMENTS? ------------------------------>
@@ -127,51 +128,53 @@ def db_data():
                     picture='quizExpert-diamond.png', category='quizExpert', points_needed=100).save()
 
 
-    user1 = User(password='TestP', given_name='Forzasys', family_name='Admin', age=25, 
+    date = datetime.date(2000, 1, 1)
+
+    user1 = User(password='TestP', given_name='Forzasys', family_name='Admin', age=date, 
                 email='admin@forzasys.no', club_id=1, total_points=0, role="admin", username="adminUser")
-    user2 = User(password='TestP', given_name='Forzasys', family_name='User2', age=25, 
+    user2 = User(password='TestP', given_name='Forzasys', family_name='User2', age=date, 
                 email='test2@forzasys.no', club_id=13, total_points=11, role="user", username="test2")
-    user3 = User(password='TestP', given_name='Forzasys', family_name='User3', age=25, 
+    user3 = User(password='TestP', given_name='Forzasys', family_name='User3', age=date, 
                 email='test3@forzasys.no', club_id=1, total_points=25, role="user",username="test3")
-    user4 = User(password='TestP', given_name='Forzasys', family_name='User4', age=25, 
+    user4 = User(password='TestP', given_name='Forzasys', family_name='User4', age=date, 
                 email='test4@forzasys.no', club_id=9, total_points=37, role="user",username="test4")
-    user5 = User(password='TestP', given_name='Forzasys', family_name='User5', age=25, 
+    user5 = User(password='TestP', given_name='Forzasys', family_name='User5', age=date, 
                 email='test5@forzasys.no', club_id=2, total_points=69, role="user", username="test5")
-    user6 = User(password='TestP', given_name='Harry', family_name='Potter', age=20, 
+    user6 = User(password='TestP', given_name='Harry', family_name='Potter', age=date, 
                 email='harry.potter@trollmann.com', club_id=14, total_points=40, profile_pic='potter-pic.png', role="user", username="GuttenSomOverlevde")
-    user8 = User(password='TestP', given_name='Ronny', family_name='Wiltersen', age=20, 
+    user8 = User(password='TestP', given_name='Ronny', family_name='Wiltersen', age=date, 
                 email='ronny.wiltersen@trollmann.com', club_id=2, total_points=13, profile_pic='ronny-pic.png', role="user", username="Drømmeprinsen69")
-    user7 = User(password='TestP', given_name='Nilus', family_name='Langballe', age=20, 
+    user7 = User(password='TestP', given_name='Nilus', family_name='Langballe', age=date, 
                 email='nilus.langballe@trollmann.com', club_id=7, total_points=6, profile_pic='langballe-pic.png', role="user",username="Langballe.N")
-    user9 = User(password='TestP', given_name='Frodo', family_name='Baggins', age=20, 
+    user9 = User(password='TestP', given_name='Frodo', family_name='Baggins', age=date, 
                 email='frodo.baggins@LOTR.com', club_id=7, total_points=100, profile_pic='frodo-pic.png', role="user",username="HobbitKing")
-    user10 = User(password='TestP', given_name='Bilbo', family_name='Baggins', age=20, 
+    user10 = User(password='TestP', given_name='Bilbo', family_name='Baggins', age=date, 
                 email='bilbo.baggins@LOTR.com', club_id=11, total_points=1, profile_pic='bilbo-pic.png', role="user",username="LoveTheRing")
-    user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=20, 
+    user11 = User(password='TestP', given_name='Tony', family_name='Stark', age=date, 
                 email='iron.man@marvel.com', club_id=2, total_points=400, profile_pic='ironman-pic.png', role="user",username="IronMan")
-    user12 = User(password='TestP', given_name='Jon', family_name='Snow', age=20, 
+    user12 = User(password='TestP', given_name='Jon', family_name='Snow', age=date, 
                 email='jon.snow@bastard.com', club_id=3, total_points=1, profile_pic='snow-pic.png', role="user",username="JonSnow")
-    user13 = User(password='TestP', given_name='Ned', family_name='Stark', age=20, 
+    user13 = User(password='TestP', given_name='Ned', family_name='Stark', age=date, 
                 email='ned.stark@winterfell.com', club_id=8, total_points=70, profile_pic='nedstark-pic.png', role="user",username="WinterIsComing")
-    user14 = User(password='TestP', given_name='Henke', family_name='Madsen', age=20, 
+    user14 = User(password='TestP', given_name='Henke', family_name='Madsen', age=date, 
                 email='henkem@DNB.no', club_id=12, total_points=65, role="user",username="HenkeFraTønsberg")
-    user15 = User(password='TestP', given_name='Peter', family_name='Parker', age=20, 
+    user15 = User(password='TestP', given_name='Peter', family_name='Parker', age=date, 
                 email='peter.parker@spiderman.com', club_id=15, total_points=14, profile_pic='peterparker-pic.png', role="user",username="NotSpiderman")
-    user16 = User(password='TestP', given_name='Cristiano', family_name='Ronaldo', age=37, 
+    user16 = User(password='TestP', given_name='Cristiano', family_name='Ronaldo', age=date, 
                 email='cristiano.ronaldo7@sui.com', club_id=1, total_points=50, profile_pic='cr7-pic.png', role="user",username="CristoRonaldoSui")
-    user17 = User(password='TestP', given_name='Lionel', family_name='Messi', age=36, 
+    user17 = User(password='TestP', given_name='Lionel', family_name='Messi', age=date, 
                 email='messi10@PSG.com', club_id=6, total_points=51, profile_pic='messi-pic.png', role="user",username="LeoMessi10")
-    user18 = User(password='TestP', given_name='Marcus', family_name='Bugge', age=22, 
+    user18 = User(password='TestP', given_name='Marcus', family_name='Bugge', age=date, 
                 email='buggemann@TAE.no', club_id=4, total_points=47, role="user",username="TaeBugge")
-    user19 = User(password='TestP', given_name='Fredrik', family_name='Brinch', age=18, 
+    user19 = User(password='TestP', given_name='Fredrik', family_name='Brinch', age=date, 
                 email='feppe@TAE.no', club_id=11, total_points=49, role="user",username="TaeFeppe")
-    user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=28, 
+    user19 = User(password='TestP', given_name='Neymar', family_name='Jr', age=date, 
                 email='jr.Neymar@PSG.com', club_id=7, total_points=32, profile_pic='neymar-pic.png', role="user",username="NeyNeyBrazil")
-    user20 = User(password='TestP', given_name='Gandalf', family_name='The White', age=104, 
+    user20 = User(password='TestP', given_name='Gandalf', family_name='The White', age=date, 
                 email='gandalf@LOTR.com', club_id=8, total_points=932, profile_pic = 'gandalf-pic.png', role="user",username="GandalfTheWhite")
-    user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=103, 
+    user21 = User(password='TestP', given_name='Joe', family_name='Biden', age=date, 
                 email='biden@whitehouse.com', club_id=3, total_points=1, profile_pic='biden-pic.png', role="user",username="SleepyJoe")
-    user22 = User(password='TestP', given_name='Bat', family_name='Man', age=20, 
+    user22 = User(password='TestP', given_name='Bat', family_name='Man', age=date, 
                 email='batman@penger.no', club_id=11, total_points=12, profile_pic='batman-pic.png', role="user",username="I'mBatman")
 
     user1.save()
@@ -260,6 +263,7 @@ if __name__ == '__main__':
     loop.run_until_complete(UserController.get_user_by_username())
     loop.run_until_complete(UserController.delete_user())
     loop.run_until_complete(UserController.follow_user())
+    loop.run_until_complete(UserController.unfollow_user())
     loop.run_until_complete(UserController.follow_table())
     loop.run_until_complete(UserController.like_video())
     loop.run_until_complete(UserController.get_liked_videos())

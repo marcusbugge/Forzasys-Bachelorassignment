@@ -36,10 +36,13 @@ async def get_user_by_username(username):
     return UserService.get_user_by_username(username)
 
 
-@app.route('/api/user/follow/<int:id>', methods=['PUT'])
+@app.route('/api/user/follow/<int:id>', methods=['POST'])
 async def follow_user(id):
     return UserService.follow_user(id, request.json)
 
+@app.route('/api/user/unfollow/<int:id>', methods=['POST'])
+async def unfollow_user(id):
+    return UserService.unfollow_user(id, request.json)
 
 @app.route('/api/followers/<int:id>', methods=['GET'])
 async def follow_table(id):

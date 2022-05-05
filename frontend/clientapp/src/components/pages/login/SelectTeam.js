@@ -40,7 +40,7 @@ export default function SelectTeam(props) {
         <Loading className="loading-signup" />
       ) : (
         <div>
-          <h1 className="chooseteamh1">Choose your favorite team!</h1>
+          <h1 className="chooseteamh1">Velg din favoritt klubb!</h1>
           <div className="chooseteam-cnt">
             {teams.map((item) => (
               <div

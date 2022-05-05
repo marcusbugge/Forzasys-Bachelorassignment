@@ -16,42 +16,45 @@ def get_all_users():
     return jsonify(result), 200
 
 def create_user(data):
-    UserSchema().validate({
-        'password' : data['password'],
-        'given_name' : data['given_name'],
-        'family_name': data['family_name'],
-        'total_points' : 0,
-        'age': data['age'],
-        'email': data['email'],
-        'club_id': data['club_id'],
-        'role' : data['role'],
-        'username' : data['username']
-        })
-    newUser = User(
-        password=data['password'],
-        given_name=data['given_name'],
-        family_name=data['family_name'],
-        total_points=0,
-        age=data['age'],
-        email=data['email'],
-        club_id=data['club_id'],
-        role = data['role'],
-        username = data['username']
-    )
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({"message" : "email"}), 409
+    elif User.query.filter_by(username=data['username']).first():
+        return jsonify({'message' : 'username'}), 409
+    else:
+        UserSchema().validate({
+            'password' : data['password'],
+            'given_name' : data['given_name'],
+            'family_name': data['family_name'],
+            'total_points' : 0,
+            'age': data['age'],
+            'email': data['email'],
+            'club_id': data['club_id'],
+            'role' : data['role'],
+            'username' : data['username']
+            })
+        newUser = User(
+            password=data['password'],
+            given_name=data['given_name'],
+            family_name=data['family_name'],
+            total_points=0,
+            age=data['age'],
+            email=data['email'],
+            club_id=data['club_id'],
+            role = data['role'],
+            username = data['username']
+        )
 
-    newUser.save()
+        newUser.save()
 
-    serializer = UserSchema()
-    result = serializer.dump(newUser)
+        serializer = UserSchema()
+        result = serializer.dump(newUser)
 
-    return jsonify(result), 201
+        return jsonify(result), 201
 
 def get_user(id):
     user = User.get_by_id(id)
-    serializer = UserSchema()
-    result = serializer.dump(user)
-
-    return jsonify(result), 200
+    users = User.get_all()
+    return get_individual_score(user, users)
 
 def update_user(id, data):
     user_to_uptdate = User.get_by_id(id)
@@ -79,7 +82,7 @@ def update_user(id, data):
 
     db.session.commit()
     users = User.get_all()
-    return get_idividual_score(user_to_uptdate, users)
+    return get_individual_score(user_to_uptdate, users)
     
 
 def delete_user(id):
@@ -93,7 +96,7 @@ def delete_user(id):
 def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
     users = User.get_all()
-    return get_idividual_score(user, users)
+    return get_individual_score(user, users)
 
 def login(data):
     email = data['email']
@@ -101,12 +104,12 @@ def login(data):
     users = User.get_all()
     for user in users:
         if user.is_authenticated(email, password):
-            return get_idividual_score(user, users)
+            return get_individual_score(user, users)
     return jsonify({
         'error': 'Wrong email and/ or password'
     }), 404
 
-def get_idividual_score(loggedin_user, users):
+def get_individual_score(loggedin_user, users):
     club = Club.get_by_id(loggedin_user.club_id)
     club_supporters = club.supporters
     club_supporters.sort(key=lambda x: x.total_points, reverse=True)
@@ -125,7 +128,8 @@ def get_idividual_score(loggedin_user, users):
                         badges=loggedin_user.badges,
                         age = loggedin_user.age,
                         email = loggedin_user.email,
-                        videos = loggedin_user.videos
+                        videos = loggedin_user.videos,
+                        following=loggedin_user.followed
                         )
     serializer = PersonalScoreSchema()
     result = serializer.dump(user)
@@ -142,12 +146,17 @@ def get_rank_club(user, club):
     return supporters.index(user) + 1
 
 def follow_user(id, data):
-    user_to_follow = User.get_by_id(id)
     user_following = User.get_by_id(data['user_id'])
-    user_following.follow(user_to_follow)
+    user_following.follow(id)
     return jsonify({
         'message': 'Following'
     }), 200
+
+def unfollow_user(id, data):
+    user_following = User.get_by_id(data['user_id'])
+    user_to_unfollow = User.get_by_id(id)
+    user_following.unfollow(user_to_unfollow)
+    return jsonify({'message' : 'Unfollowed'}), 200
 
 def follow_table(id):
     users = User.get_all()

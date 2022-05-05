@@ -6,7 +6,7 @@ class UserSchema(Schema):
     given_name = fields.String()
     family_name = fields.String()
     profile_pic = fields.String()
-    age = fields.Integer()
+    age = fields.String()
     email = fields.String()
     club_id = fields.Integer()
     total_points = fields.Integer()
