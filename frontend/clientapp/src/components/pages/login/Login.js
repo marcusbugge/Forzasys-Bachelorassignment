@@ -27,12 +27,13 @@ export default function Login() {
       password: password,
     };
 
-    axios
+    await axios
       .post("http://localhost:5000/api/login", user)
       .then((response) => {
         localStorage.setItem("loggedIn", true);
         localStorage.setItem("user", JSON.stringify(response.data));
         navigate("/");
+        window.location.reload(true);
       })
       .catch((e) => {
         console.log("something went wrong :(", e);
@@ -89,18 +90,20 @@ export default function Login() {
                 )}
 
                 <div className="signup-link">
-                  <Link to="/signup">Har ikke registrert bruker enda? Registrer deg her!</Link>
+                  <Link to="/signup">
+                    Har ikke registrert bruker enda? Registrer deg her!
+                  </Link>
                 </div>
               </div>
 
               <div>
                 {localStorage.getItem("loggedIn") ? (
                   <button onClick={logout} className="login-btn">
-                    <p>Sign out</p>
+                    <p>Logg ut</p>
                   </button>
                 ) : (
                   <button className="login-btn" type="submit">
-                    <p>Sign in</p>
+                    <p>Logg inn</p>
                   </button>
                 )}
               </div>

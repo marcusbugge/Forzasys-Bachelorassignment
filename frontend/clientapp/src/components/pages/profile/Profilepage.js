@@ -16,6 +16,7 @@ export default function Profilepage() {
   const [loading, setLoading] = useState();
   const [display, setDisplay] = useState("badge-info-cnt-notdisplayed");
   const [hoveredBadge, setHoveredBadge] = useState(-1);
+  const [isFollowing, setIsFollowing] = useState();
   const usertest = "";
 
   const showBadge = (index) => {
@@ -24,16 +25,19 @@ export default function Profilepage() {
   };
   let navigate = useNavigate();
 
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
+  let loggedUser = JSON.parse(localStorage.getItem("user"));
+  let followList = loggedUser.following;
 
   let loggedUsername = " ";
   if (JSON.parse(localStorage.getItem("user"))) {
     loggedUsername = loggedUser.username;
   }
+  useEffect(() => {
+    loggedUser = JSON.parse(localStorage.getItem("user"));
+    followList = loggedUser.following;
+  }, [isFollowing]);
 
   const { username } = useParams();
-
-  console.log("test", { username });
 
   const hideBadge = () => {
     setHoveredBadge(-1);
@@ -47,13 +51,14 @@ export default function Profilepage() {
         setUser(response.data);
         setLoading(true);
         getBadges(response.data.id);
-        console.log(response.data);
       });
   }
 
   useEffect(() => {
-    getUser();
-  }, []);
+    if (user === undefined) {
+      getUser();
+    } else followCheck();
+  }, [user]);
 
   async function getBadges(e) {
     const henticon = await axios.get(
@@ -66,6 +71,55 @@ export default function Profilepage() {
   const userprofileLoad = async () => {
     navigate("/editprofil");
   };
+
+  async function follow() {
+    if (isFollowing) {
+      const url = "http://localhost:5000/api/user/unfollow/" + user.id;
+      const data = {
+        user_id: loggedUser.id,
+      };
+
+      const headers = { "header-name": "value" };
+      const config = { headers };
+
+      await axios
+        .post(url, data, config)
+        .then((response) => {
+          console.log(response.data);
+          console.log(response.status);
+          setIsFollowing(false);
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    } else {
+      const url = "http://localhost:5000/api/user/follow/" + user.id;
+      const data = {
+        user_id: loggedUser.id,
+      };
+      const headers = { "header-name": "value" };
+      const config = { headers };
+
+      await axios
+        .post(url, data, config)
+        .then((response) => {
+          console.log(response.data);
+          console.log(response.status);
+          setIsFollowing(true);
+        })
+        .catch((e) => console.log("something went wrong :(", e));
+    }
+  }
+
+  function followCheck() {
+    let bool = false;
+    if (followList !== undefined && user !== undefined) {
+      followList.map((element) => {
+        if (element == user.id) {
+          bool = true;
+        }
+      });
+    }
+    setIsFollowing(bool);
+  }
 
   return (
     <div className="profile-cnt">
@@ -98,10 +152,23 @@ export default function Profilepage() {
             <div className="profile-edit-name">
               <h1>{user.name}</h1>
             </div>
-
+            {loggedUsername !== username ? (
+              <div
+                onClick={() => follow()}
+                className={isFollowing ? "unfollow-button" : "follow-button"}
+              >
+                {isFollowing ? <h3>Følger</h3> : <h3>Følg</h3>}
+              </div>
+            ) : (
+              ""
+            )}
             <div className="badges-cnt">
               <div className="badges-cnt-title">
-                {loggedUsername == username ? (<h1>Dine Badges</h1>) : (<h1>{user.name}s Badges</h1>)}
+                {loggedUsername == username ? (
+                  <h1>Dine Badges</h1>
+                ) : (
+                  <h1>{user.name}s Badges</h1>
+                )}
               </div>
               <div className="badges-cnt-badges">
                 {badges.map((icon, index) => (
@@ -129,9 +196,8 @@ export default function Profilepage() {
                         </div>
                         <div className="badge-desc-cnt">
                           <div className="badge-description">
-                            <p>Beskrivelse: {icon.description}</p>
+                            <p>{icon.description}</p>
                           </div>
-                          
                         </div>
                       </div>
                     ) : (

@@ -65,7 +65,7 @@ export default function TeamTable(props) {
     return (
       <div className="club-sort">
         <div className="club-rank">
-          <h1>klubbrangering</h1>
+          <h1>Klubbrangering</h1>
         </div>
         <div className="table-header">
           <div className="rank">Rangering</div>

@@ -17,8 +17,8 @@ class SupporterChallenge(object):
 
 
 class PersonalScore(object):
-    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name,
-                club_logo, club_rank, total_points, role, username, badges, age, email, videos):
+    def __init__(self, id, name, profile_pic, overall_rank, club_id, club_name,club_logo, 
+                club_rank, total_points, role, username, badges, age, email, videos, following):
         self.id = id
         self.name = name
         self.profile_pic = profile_pic
@@ -34,6 +34,7 @@ class PersonalScore(object):
         self.age = age
         self.email = email
         self.videos = videos
+        self.following = following
 
 
 class LeaderboardClub(object):

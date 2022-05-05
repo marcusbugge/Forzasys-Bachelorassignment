@@ -514,7 +514,7 @@ export default function Weeklytrivia() {
     return (
       <div className="quizpage">
         <div className="header">
-          <h1>Weekly Trivia</h1>
+          <h1>Ukentlig quiz</h1>
         </div>
         <div className="space-quizpage">
           <LeaderboardQuiz />

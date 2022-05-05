@@ -9,6 +9,7 @@ import { MdOutlineLeaderboard } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import axios from "axios";
 import Login from "../../pages/login/Login";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [refresh, setRefresh] = useState(false);
@@ -16,6 +17,7 @@ export default function Navbar() {
   const location = useLocation();
   const { pathname } = location;
   const splitLocation = pathname.split("/");
+  let navigate = useNavigate();
 
   var loggedUser = "";
   var path = "";
@@ -28,13 +30,29 @@ export default function Navbar() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
     setRefresh(true);
+    navigate("/");
+    window.location.reload(true);
   }
 
   const [triviaStatus, setTriviaStatus] = useState(false);
 
   useEffect(() => {
     checkTriviaStatus();
+    getLoggedUser();
+    console.log("navbar-test")
   }, [triviaStatus]);
+
+  async function getLoggedUser(){
+    await axios
+      .get("http://localhost:5000/api/user/" + loggedUser.id)
+      .then((response) => {
+        localStorage.setItem("loggedIn", true);
+        localStorage.setItem("user", JSON.stringify(response.data));
+      })
+      .catch((e) => {
+        console.log("something went wrong :(", e);
+      });
+  }
 
   async function checkTriviaStatus() {
     try {
@@ -63,7 +81,7 @@ export default function Navbar() {
         </div>
       ) : (
         <Link to="/login">
-          <button className="loginbtn-nav">Login</button>
+          <button className="loginbtn-nav">Logg inn</button>
         </Link>
       )}
 
