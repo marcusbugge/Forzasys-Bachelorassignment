@@ -24,6 +24,7 @@ import Admin from "../src/components/pages/admin/Admin";
 import { useContext } from "react";
 import Editprofile from "./components/pages/editprofile/EditProfile";
 import MobileNavHandler from "./components/core/nav/MobileNavHandler";
+import FollowingPage from "./components/pages/follow/FollowingPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,6 +71,7 @@ function App() {
               <Route path="/highlights" element={<FeedPosts />} />
               <Route path="/signup" element={<CreateUser />} />
               <Route path="/following" element={<FollowersPage />} />
+              <Route path="/followers" element={<FollowingPage />} />
               <Route path="/likedvideos" element={<LikedVideos />} />
               <Route path="/weeklytrivia" element={<Weeklytrivia />} />
               <Route path="/mostpopularvideo" element={<MainStandPage />} />

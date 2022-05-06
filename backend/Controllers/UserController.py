@@ -48,6 +48,9 @@ async def unfollow_user(id):
 async def follow_table(id):
     return UserService.follow_table(id)
     
+@app.route('/api/following/<int:id>', methods=['GET'])
+async def following_table(id):
+    return UserService.following_table(id)
 
 @app.route('/api/user/like_video/<int:id>', methods=['POST'])
 async def like_video(id):

@@ -85,6 +85,30 @@ export function FollowLiked() {
 
       <div
         className={
+          splitLocation[1] === "followers"
+            ? "active-cnt-elem-active"
+            : "active-cnt-elem"
+        }
+      >
+        <div>
+          <IconContext.Provider
+            value={{
+              color: "white",
+              size: "20px",
+            }}
+          >
+            <div className="star-icon">
+              <RiUserFollowFill />
+            </div>
+          </IconContext.Provider>
+        </div>
+        <div className="like">
+          <Link to="/followers">Følger</Link>
+        </div>
+      </div>
+
+      <div
+        className={
           splitLocation[1] === "likedvideos"
             ? "active-cnt-elem-active"
             : "active-cnt-elem"

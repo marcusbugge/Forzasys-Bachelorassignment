@@ -265,6 +265,7 @@ if __name__ == '__main__':
     loop.run_until_complete(UserController.follow_user())
     loop.run_until_complete(UserController.unfollow_user())
     loop.run_until_complete(UserController.follow_table())
+    loop.run_until_complete(UserController.following_table())
     loop.run_until_complete(UserController.like_video())
     loop.run_until_complete(UserController.get_liked_videos())
     loop.run_until_complete(UserController.dislike_video())
