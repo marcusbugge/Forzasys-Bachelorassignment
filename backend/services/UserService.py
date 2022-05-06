@@ -183,6 +183,32 @@ def follow_table(id):
     result = serializer.dump(followers)
     return jsonify(result), 200
 
+def following_table(id):
+    user = User.get_by_id(id)
+    followers = user.followed
+    follow_list = []
+    for f in followers:
+        user_following = User.get_by_id(f.id)
+        club = Club.get_by_id(f.club_id)
+        follow_list.append(Followlist(id = f.id,
+                                        name = f.given_name + " " + f.family_name,
+                                        profile_pic=f.profile_pic,
+                                        total_points = f.total_points,
+                                        overall_rank = get_rank_total(f),
+                                        club_rank = get_rank_club(f, club),
+                                        club_logo = club.logo, 
+                                        club_id = club.id, 
+                                        club_name = club.name, 
+                                        badges = f.badges, 
+                                        badge_count = len(f.badges),
+                                        username = f.username
+                                        ))
+    follow_list.sort(key=lambda x: x.total_points, reverse=True)
+    serializer = FollowlistSchema(many=True)
+    result = serializer.dump(follow_list)
+    return jsonify(result), 200
+
+
 def like_video(user_id, data):
     user = User.get_by_id(user_id)
     video_url = data['video_url']

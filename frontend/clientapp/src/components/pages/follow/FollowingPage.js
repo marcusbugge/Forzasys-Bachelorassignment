@@ -8,7 +8,7 @@ export default function FollowersPage() {
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   let navigate = useNavigate();
 
-  let url = "http://localhost:5000/api/followers/" + loggedUser.id;
+  let url = "http://localhost:5000/api/following/" + loggedUser.id;
 
   useEffect(() => {
     if (followers.length == 0) {
@@ -31,9 +31,9 @@ export default function FollowersPage() {
   return (
     <div className="follow-page">
       <div className="header-followpage-cnt">
-        <h1>Dine følgere</h1>
+        <h1>Du følger</h1>
         <p>
-          Her kan du se dine følgeres aktivitet, og hvordan de gjør det i
+          Her kan du venner du følger sin aktivitet, og hvordan de gjør det i
           fan-ligaen!
         </p>
         <div className="stroke"></div>
