@@ -1,0 +1,184 @@
+"""class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    filename = db.Column(db.String(25))
+    data = db.Column(db.LargeBinary)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+class ImageSchema(Schema):
+    id = fields.Integer()
+    filename = fields.String()
+    data = BytesField(required=True)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    password = db.Column(db.String(40), nullable=False)
+    given_name = db.Column(db.String(50), nullable=False)
+    family_name = db.Column(db.String(50), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    total_points = db.Column(db.Integer, nullable=False)
+    club_id = db.Column(db.Integer, db.ForeignKey('club.id'), nullable=False)
+    profile_pic = db.Column(db.Integer, db.ForeignKey('profile_pic.id'))
+
+    #https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-viii-followers
+    followed = db.relationship(
+        'User', secondary=followers,
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+
+    videos = db.relationship('Video', backref=db.backref(
+        'user', lazy='joined'), lazy='select')
+    liked_videos = db.relationship(
+        'Video', secondary=videos_liked, backref='database', lazy='select')
+    badges = db.relationship(
+        'Badge', secondary=earned_badges, backref='database', lazy='select')
+    role = db.Column(db.String(10), nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'id={self.id}, score={self.total_points}'
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        self.badges.append(Badge.get_by_id(1))
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            db.session.commit()
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            db.session.commit()
+
+    def add_badge(self, badge):
+        self.badges.append(badge)
+        db.session.commit()
+
+    def like_video(self, video):
+        self.liked_videos.append(video)
+        db.session.commit()
+
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
+    def is_authenticated(self, email, password):
+        if email.lower() == self.email.lower() and password == self.password:
+            return True
+        return False
+        """
+
+"""
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
+    content = db.Column(db.String(150), nullable=False)
+    upvotes = db.Column(db.Integer)
+    downvotes = db.Column(db.Integer)
+    reply = db.relationship('Reply', backref=db.backref(
+        'database', lazy='joined'), lazy='select')
+
+    def __repr__(self):
+        return f'{self.id}'
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def comment(self, comment):
+        self.comments.append(comment)
+        db.session.commit()
+
+    def delete_comment(self, comment):
+        self.comments.remove(comment)
+        db.session.commit()
+
+class CommentSchema(Schema):
+    id = fields.Integer()
+    user_id = fields.Integer()
+    video_id = fields.String()
+    content = fields.String()
+    upvotes = fields.Integer()
+    downvotes = fields.Integer()
+    answers = fields.List(fields.String())
+
+class Reply(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=False)
+    content = db.Column(db.String(150), nullable=False)
+    upvotes = db.Column(db.Integer)
+    downvotes = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'{self.id}'
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.get_or_404(id)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def reply(self, comment):
+        self.comments.append(comment)
+        db.session.commit()
+
+    def delete_answers(self, comment):
+        self.comments.remove(comment)
+        db.session.commit()
+
+class ReplySchema(Schema):
+    id = fields.Integer()
+    user_id = fields.Integer()
+    comment_id = fields.Integer()
+    content = fields.String()
+    upvotes = fields.Integer()
+    downvotes = fields.Integer()
+"""

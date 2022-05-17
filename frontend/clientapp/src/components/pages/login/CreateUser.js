@@ -4,30 +4,37 @@ import { NavLink } from "react-router-dom";
 import "./createuser.css";
 import SelectTeam from "./SelectTeam";
 import soccerfan from "../../../assets/images/soccer-fan.jpg";
+import Alerts from "../../parts/Alerts";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateUser() {
-  const [fname, setFname] = useState("");
-  const [lname, setLname] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState("");
+  let navigate = useNavigate();
   const [team, setTeam] = useState("");
-  const [password, setPassword] = useState("");
-  const [cpassword, setCpassword] = useState("");
 
   const [errorPassword, setErrorPassword] = useState(true);
+  const [render, setRender] = useState(false);
+  const [hiddenEmail, setHiddenEmail] = useState(true);
+  const [hiddenUsername, setHiddenUsername] = useState(true);
 
   async function signup(e) {
+    setHiddenEmail(true);
+    setHiddenUsername(true);
     e.preventDefault();
 
-    if (password !== "" && password === cpassword) {
+    if (
+      e.target.password.value !== "" &&
+      e.target.password.value === e.target.cpassword.value
+    ) {
       setErrorPassword(true);
       const userdata = {
-        password: password,
-        given_name: fname,
-        family_name: lname,
-        age: age,
-        email: email,
-        team_id: localStorage.getItem("team"),
+        password: e.target.password.value,
+        given_name: e.target.fname.value,
+        family_name: e.target.lname.value,
+        age: e.target.age.value,
+        email: e.target.email.value,
+        club_id: team,
+        role: "user",
+        username: e.target.username.value,
       };
       console.log(userdata);
 
@@ -36,21 +43,50 @@ export default function CreateUser() {
       const headers = { "header-name": "value" };
       const config = { headers };
 
-      axios
+      await axios
         .post(url, userdata, config)
-        .then((response) => {
-          console.log(response.status);
-          console.log(response.data);
+        .then(() => {
+          setRender(true);
+          handleLogin(userdata.email, userdata.password);
         })
-        .catch((e) => console.log("something went wrong :(", e));
+        .catch((e) => {
+          console.log("something went wrong :(", e);
+          if (e.response.data.message === 'email'){
+            setHiddenEmail(false);
+          }else if(e.response.data.message === 'username'){
+            setHiddenUsername(false);
+          }
+      });
+
     } else {
       setErrorPassword(false);
     }
   }
 
+  async function handleLogin(username, password) {
+    const user = {
+      email: username,
+      password: password,
+    };
+
+    axios
+      .post("http://localhost:5000/api/login", user)
+      .then((response) => {
+        localStorage.setItem("loggedIn", true);
+        localStorage.setItem("user", JSON.stringify(response.data));
+        setTimeout(() => {}, 100);
+        navigate("/");
+        window.location.reload(true);
+      })
+      .catch((e) => {
+        console.log("something went wrong :(", e);
+      });
+  }
+
   return (
     <div>
       <div className="signup">
+        {render ? <Alerts message="Bruker opprettet!" /> : ""}
         <div className="imgholder-fan">
           <img src={soccerfan} alt="soccerfan" />
         </div>
@@ -59,7 +95,7 @@ export default function CreateUser() {
           <div className="signup-content">
             <div className="signup-form">
               <div className="signup-header-cnt">
-                <h1 className="form-title">Sign up</h1>
+                <h1 className="form-title">Registrer bruker</h1>
               </div>
 
               <form
@@ -69,81 +105,94 @@ export default function CreateUser() {
               >
                 <div className="form-group">
                   <label htmlFor="name"></label>
-                  <p>First Name</p>
+                  <p>Brukernavn</p>
                   <input
                     type="text"
-                    name="fname"
-                    id="fname"
-                    onChange={(e) => setFname(e.target.value)}
+                    name="username"
+                    id="username"
                     autoComplete="off"
-                  ></input>
+                    required="true"
+                  />
+                  <p style={{color: "red"}} hidden={hiddenUsername}>Brukernavnet er opptatt, velg et annet!</p>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="name"></label>
-                  <p>Surname</p>
+                  <p>Fornavn</p>
+                  <input
+                    type="text"
+                    name="fname"
+                    id="fname"
+                    autoComplete="off"
+                    required="true"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="name"></label>
+                  <p>Etternavn</p>
                   <input
                     type="text"
                     name="lname"
                     id="lname"
                     autoComplete="off"
-                    onChange={(e) => setLname(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="email"></label>
-                  <p>Email</p>
+                  <p>Epost</p>
                   <input
                     type="text"
                     name="email"
                     id="email"
                     autoComplete="off"
-                    onChange={(e) => setEmail(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
+                  <p style={{color: "red"}} hidden={hiddenEmail}>Eposten er allerede i bruk, velg en annen epost!</p>
                 </div>
-
                 <div className="form-group">
                   <label htmlFor="age"></label>
-                  <p>Age</p>
+                  <p>Født</p>
                   <input
-                    type="text"
+                    type="date"
                     name="age"
                     id="age"
                     autoComplete="off"
-                    onChange={(e) => setAge(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="password"></label>
-                  <p>Password</p>
+                  <p>Passord</p>
                   <input
                     type="password"
                     name="password"
                     id="password"
                     autoComplete="off"
-                    onChange={(e) => setPassword(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="cpassword"></label>
-                  <p>Confirm Your Password</p>
+                  <p>Gjenta passord</p>
                   <input
                     type="password"
                     name="cpassword"
                     id="cpassword"
                     autoComplete="off"
-                    onChange={(e) => setCpassword(e.target.value)}
-                  ></input>
+                    required="true"
+                  />
                   <h5 className="error" hidden={errorPassword}>
-                    Passwords don't match
+                    Passordene er ikke like
                   </h5>
                 </div>
 
                 <div className="testest">
-                  <SelectTeam setTeam={setTeam} />
+                  <SelectTeam setTeam={setTeam} team={team} />
                 </div>
 
                 <div className="form-button">
@@ -151,7 +200,7 @@ export default function CreateUser() {
                     Register
                   </button>
                   <NavLink to="/login" className="signup-image-link">
-                    Do you already have a account? Click here!
+                    Har allerede laget bruker? Trykk her!
                   </NavLink>
                 </div>
               </form>

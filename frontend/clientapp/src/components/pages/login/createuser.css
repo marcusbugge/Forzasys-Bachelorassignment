@@ -114,6 +114,19 @@ input {
   padding: 5px 12px;
 }
 
+.selectedTeam{
+  color: rgb(73, 73, 73);
+  background-color: white;
+  border: solid 1px var(--secondary);
+  border-radius: 1em;
+  margin-right: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 5px 12px;
+}
+
 .chooseteam-cnt h1 {
   font-size: 13px;
 }
@@ -123,7 +136,8 @@ input {
   border: solid 1px var(--secondary);
 }
 
-.team img {
+.team img,
+.selectedTeam img {
   max-width: 80%;
   max-height: 80%;
 }

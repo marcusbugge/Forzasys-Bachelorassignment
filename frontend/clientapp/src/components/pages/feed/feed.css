@@ -1,110 +1,44 @@
 .feed {
   margin-top: 100px;
   margin: auto;
-  width: 800px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  padding-top: 100px;
+}
+.video-js {
+  max-width: 600px;
+}
+.video-cont {
+  margin: 20px;
+  max-width: 600px;
 }
 
-.feed-element {
-  width: 640px;
-  height: 360px;
+.video-data {
   background-color: var(--lightgray);
-  margin: 20px 50px;
+  max-width: 100%;
+  padding: 20px 0px 0px 30px;
+}
+
+.video-data h1 {
+  max-width: 80%;
+  font-size: 1rem;
+}
+
+.header-video p {
+  color: var(--gray);
+  font-size: 0.8rem;
+}
+
+.video-actions {
+  height: 90px;
+  width: 95%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.buttons {
-  display: flex;
-}
-
-.buttons button {
-  width: 100px;
-}
-
-.VideoInput_footer {
-  margin-bottom: 50px;
-}
-
-.VideoInput {
-  display: flex;
-  flex-direction: column;
- 
-}
-
-.VideoInput_input {
-  
-}
-
-.VideoInput_box {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.VideoInput_buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.VideoUpload {
-  background-color: var(--lightgray);
-  width: 640px;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 50px;
-  margin-top: 50px;
-  display: flex;
-  flex-direction: column;
-}
-
-.VideoUpload button {
-  width: 100px;
-  height: 53.3333px;
-  margin: 5px;
-  border-style: none;
+.video-stroke {
+  height: 5px;
+  width: 100%;
   background-color: var(--primary);
-  color: white;
 }
-
-.VideoUpload button:hover {
-  background-color: var(--hover-blue);
-}
-
-input[type="file"] {
-  border:0;
-  clip: rect(0,0,0,0);
-  height:1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
-
-
-[type="file"] + label {
-  color: white;
-  height: 20px;
-  width: 100px;
-  background-color: var(--primary);
-  cursor:pointer;
-  display: inline-block;
-  height: 4rem;
-  line-height: 4rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
-[type="file"]:focus + label,
-[type="file"] + label:hover {
-  background-color: var(--hover-blue);
-}
-

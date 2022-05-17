@@ -1,0 +1,424 @@
+.admin-buttons {
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+.admin-buttons button {
+  width: 400px;
+  height: 50px;
+  margin-left: 1.5%;
+  background-color: var(--secondary);
+  color: var(--black);
+  border-style: none;
+  margin-bottom: 20px;
+}
+
+.admin-buttons button:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 2px var(--secondary) solid;
+}
+
+input {
+  border-radius: 10px;
+}
+
+/** ADMIN BADGES **/
+
+.admin-badge-page {
+  width: 100%;
+}
+
+.table-badges {
+  width: 90%;
+}
+
+.badges-head {
+  color: var(--secondary);
+  display: flex;
+  background-color: var(--primary);
+  padding: 0 50px;
+  width: 100%;
+  height: 50px;
+  margin-left: 1%;
+  margin-right: 1%;
+  align-items: center;
+}
+
+.badge-name {
+  width: 20%;
+}
+
+.badge-desc {
+  width: 30%;
+}
+.badge-level {
+  width: 10%;
+}
+
+.badge-cat {
+  width: 5%;
+}
+
+.badge-points {
+  width: 20%;
+}
+
+.badge-edit,
+.badge-delete {
+  width: 7.5%;
+}
+
+.body-row {
+  padding: 15px 50px;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  background-color: var(--lightgray);
+  border-bottom: 1px solid lightgray;
+  margin-right: 1%;
+  margin-left: 1%;
+}
+
+.badge-pic-content {
+  width: 3%;
+}
+
+.badge-name-content {
+  width: 17%;
+}
+
+.badge-desc-content {
+  width: 30%;
+}
+
+.badge-level-content {
+  width: 10%;
+}
+
+.badge-cat-content {
+  width: 15%;
+}
+
+.badge-points-content {
+  width: 10%;
+}
+
+.badge-edit-content,
+.badge-delete-content {
+  width: 7.5%;
+}
+
+.badge-img {
+  width: 25px;
+  margin-top: -3px;
+}
+
+.change-box-badge {
+  width: 100%;
+}
+
+.change-area-badge {
+  width: 108.5%;
+  height: 80px;
+  display: flex;
+  border-bottom: 1px solid lightgray;
+  margin-left: 1%;
+}
+
+.form-area-badge {
+  width: 100%;
+  background-color: white;
+}
+
+.badge-info {
+  width: 100%;
+  display: flex;
+  margin-top: 5px;
+}
+
+.badge-info p {
+  width: 17.9%;
+}
+
+.p-name {
+  margin-left: 0.2%;
+}
+
+.form-badge-content form {
+  width: 100%;
+  display: flex;
+  padding: 5px black;
+}
+
+.form-badge-content input {
+  width: 17.5%;
+  text-align: left;
+}
+
+.button-edit,
+.button-delete,
+.button-submit {
+  width: 50px;
+  height: 20px;
+  color: var(--black);
+  margin-top: 5px;
+  border-style: none;
+  border-radius: 5px;
+}
+
+.form-badge-content button {
+  width: 3%;
+  margin-left: 1%;
+}
+
+.button-edit {
+  background-color: var(--secondary);
+}
+
+.button-edit:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 1px var(--secondary) solid;
+}
+
+.button-delete {
+  background-color: rgb(255, 142, 142);
+}
+
+.button-delete:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 1px rgb(255, 142, 142) solid;
+}
+
+.button-submit {
+  background-color: rgb(221, 255, 170);
+}
+
+.button-submit:hover {
+  background-color: rgba(255, 0, 0, 0);
+  border: 1px rgb(221, 255, 170) solid;
+}
+
+.add-badge-area {
+  width: 50%;
+  margin-left: 1%;
+}
+
+/** ADMIN CLUBS **/
+
+.admin-club-page {
+  width: 100%;
+  display: flex;
+}
+
+.table-clubs {
+  width: 30%;
+}
+
+.clubs-head {
+  color: var(--secondary);
+  display: flex;
+  background-color: var(--primary);
+  padding: 0 50px;
+  width: 100%;
+  height: 50px;
+  margin-left: 1%;
+  margin-right: 1%;
+  align-items: center;
+}
+
+.club-logo {
+  width: 15%;
+}
+
+.club-name {
+  width: 35%;
+}
+
+.club-nat {
+  width: 25%;
+}
+
+.club-edit {
+  width: 10%;
+  margin-left: 15%;
+}
+
+.body-row {
+  padding: 15px 50px;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  background-color: var(--lightgray);
+  border-bottom: 1px solid lightgray;
+  margin-right: 1%;
+  margin-left: 1%;
+}
+
+.club-logo-content,
+.club-edit-content {
+  width: 10%;
+}
+
+.club-name-content {
+  width: 40%;
+}
+
+.club-nat-content {
+  width: 37%;
+}
+
+.club-img {
+  width: 25px;
+}
+
+.change-box {
+  width: 100%;
+}
+
+.change-area-club {
+  width: 126%;
+  height: 75px;
+  background-color: white;
+  margin-top: -5px;
+  border-bottom: 1px solid lightgray;
+  margin-left: 1%;
+}
+
+.clubChange-headers {
+  width: 100%;
+  display: flex;
+  margin-top: 5px;
+  margin-left: 1%;
+}
+
+.clubChange-headers p {
+  width: 40%;
+}
+
+.form-clubs {
+  width: 100%;
+}
+
+.form-clubs input {
+  width: 38%;
+  margin-left: 1%;
+}
+
+.form-clubs button {
+  width: 9%;
+  margin-left: 1%;
+}
+
+.addClub-form {
+  width: 50%;
+  margin-left: 10%;
+}
+
+/**ADMIN QUIZ*/
+
+.admin-quiz-page {
+  width: 100%;
+  display: flex;
+}
+
+.table-quiz {
+  width: 40%;
+}
+
+.quiz-head {
+  color: var(--secondary);
+  display: flex;
+  background-color: var(--primary);
+  padding: 0 50px;
+  width: 100%;
+  height: 50px;
+  margin-left: 1%;
+  margin-right: 1%;
+  align-items: center;
+}
+
+.quiz-question {
+  width: 60%;
+}
+
+.quiz-edit,
+.quiz-answers,
+.quiz-delete {
+  width: 13.33%;
+}
+
+.body-row {
+  padding: 15px 50px;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  background-color: var(--lightgray);
+  border-bottom: 1px solid lightgray;
+  margin-left: 1%;
+}
+
+.quiz-question-content {
+  width: 60%;
+}
+
+.button-edit-quiz,
+.button-answer-quiz,
+.button-delete-quiz {
+  width: 13.3%;
+}
+
+.change-area-quiz {
+  width: 106.7%;
+  display: flex;
+  background-color: var(--lightgray);
+  border-bottom: 1px solid lightgray;
+  margin-left: 1%;
+}
+
+.change-area-quiz form {
+  width: 100%;
+}
+
+.form-quiz button {
+  width: 50px;
+  height: 20px;
+  margin-left: 10%;
+  background-color: var(--secondary);
+  color: var(--black);
+  margin-top: 5px;
+}
+
+.form-quiz input {
+  width: 20%;
+}
+
+.addquiz-form {
+  width: 50%;
+  margin-left: 10%;
+}
+
+.add-question {
+  width: 40%;
+  margin-left: 10%;
+}
+
+.add-question input {
+  border: 1px black solid;
+  border-radius: 10px;
+}
+.answers-view {
+  width: 100%;
+  margin-left: 1%;
+  display: flex;
+}
+.answer-box {
+  width: 100%;
+}
+
+.answer-box label {
+  width: 100%;
+}
+
+.answer-box input {
+  width: 90%;
+}

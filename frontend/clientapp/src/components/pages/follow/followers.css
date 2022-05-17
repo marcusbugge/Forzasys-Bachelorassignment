@@ -1,0 +1,104 @@
+.follow-page {
+  min-height: 100vh;
+}
+
+.header-followpage-cnt {
+  padding: 100px 150px;
+  margin-bottom: -75px;
+  margin-top: -50px;
+}
+
+.header-followpage-cnt h1 {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+.stroke {
+  width: 300px;
+  height: 20px;
+  background-color: var(--secondary);
+  margin-top: 30px;
+}
+
+.follow-holder {
+  margin-left: 150px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 100px;
+}
+
+.follow-cnt {
+  padding-top: 20px;
+  margin-right: 30px;
+  margin-top: 50px;
+  width: 250px;
+  height: 375px;
+  background-color: var(--hover-blue);
+}
+
+.profilepic {
+  padding: 20px 0;
+  text-align: center;
+}
+
+.profilepic img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.div-name {
+  text-align: center;
+  margin-top: 10px;
+}
+.name-head {
+  color: var(--lightgray);
+  font-size: 1rem;
+}
+
+.picture-icon-cnt {
+  background-color: var(--hover-blue);
+  margin: auto;
+}
+
+.stroke-follow {
+  margin-top: 15px;
+  height: 1px;
+  width: 90%;
+  margin-left: 5%;
+  background-color: var(--secondary);
+}
+
+.follow-data {
+  padding-top: 20px;
+}
+
+.ranking,
+.clubrank,
+.totalpoints {
+  color: var(--secondary);
+  padding: 5px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.score-follow {
+  color: white;
+  font-weight: 800;
+}
+
+.club-follow {
+  text-align: center;
+  padding-top: 20px;
+}
+
+.club-follow img {
+  width: 35px;
+}
+.club-follow p{
+  color: white;
+}
+
+.follow-cnt:hover {
+  background-color: var(--primary);
+}

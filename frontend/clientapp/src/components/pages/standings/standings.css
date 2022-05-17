@@ -6,6 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 .header h1 {
@@ -15,8 +16,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 600px;
-  height: 100px;
+  min-width: 600px;
+  min-height: 100px;
 }
 
 /** LEADERBOARD **/
@@ -106,9 +107,14 @@
 .rank,
 .name,
 .club,
-.points {
+.points,
+.fans {
   padding: 10px 5px;
   text-align: center;
+}
+
+.fans {
+  width: 10%;
 }
 
 .rank,
@@ -144,9 +150,23 @@
 .table-element {
   padding: 15px 50px;
   display: flex;
-
+  cursor: pointer;
   background-color: var(--lightgray);
   border-bottom: 1px solid lightgray;
+}
+
+.table-element-active {
+  padding: 15px 50px;
+  display: flex;
+  cursor: pointer;
+  background-color: rgb(224, 224, 224);
+  color: black;
+  border-bottom: 1px solid lightgray;
+}
+
+.table-element:hover,
+.table-element-active:hover {
+  background-color: var(--secondary);
 }
 
 .rank-table,
@@ -198,4 +218,46 @@
 
 button[disabled] {
   opacity: 0.2;
+}
+
+.club-sort {
+  margin-top: 15px;
+}
+
+.club-rank {
+  max-width: 300px;
+  min-height: 60px;
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+}
+.club-rank h1 {
+  font-size: 2rem;
+  color: white;
+}
+
+.club-sort,
+.player-sort {
+  padding: 50px;
+  border-radius: 1em;
+  background-color: rgb(240, 240, 240);
+}
+
+.team-tables {
+  display: flex;
+  justify-content: space-between;
+}
+
+.supporter-table {
+  width: 39%;
+}
+
+.main-table {
+  width: 60%;
+}
+
+.supporters {
+  margin-left: 100px;
 }

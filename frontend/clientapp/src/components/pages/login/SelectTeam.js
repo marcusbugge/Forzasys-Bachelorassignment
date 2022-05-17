@@ -11,7 +11,7 @@ export default function SelectTeam(props) {
   useEffect(() => {
     const fetchData = async () => {
       axios
-        .get("http://localhost:5000/api/teams")
+        .get("http://localhost:5000/api/clubs")
         .then((response) => checkData(response.data))
         .catch((error) => {
           console.error("There was an error!", error);
@@ -40,13 +40,13 @@ export default function SelectTeam(props) {
         <Loading className="loading-signup" />
       ) : (
         <div>
-          <h1 className="chooseteamh1">Choose your favorite team!</h1>
+          <h1 className="chooseteamh1">Velg din favoritt klubb!</h1>
           <div className="chooseteam-cnt">
             {teams.map((item) => (
               <div
                 onClick={(e) => selectTeam(item.id)}
                 key={item.name}
-                className="team"
+                className={props.team == item.id ? "selectedTeam" : "team"}
               >
                 <div className="team-img-cnt" value={item.name}>
                   <img src={require("../../../assets/teamLogos/"+item.logo)} alt={item.name} />
